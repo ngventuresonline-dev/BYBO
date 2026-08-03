@@ -25,6 +25,7 @@ const plexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://bybo.in"),
   title: {
     default: "BYBO — AI systems built around your business",
     template: "%s — BYBO",
