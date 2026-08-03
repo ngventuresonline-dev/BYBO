@@ -14,6 +14,85 @@ import {
 import { ArrowUpRight, Check } from "lucide-react";
 import { industrySolutions } from "@/lib/content";
 
+type Industry = (typeof industrySolutions)[number];
+
+function IndustryStageMobileDetail({
+  industry,
+  reduceMotion,
+}: {
+  industry: Industry;
+  reduceMotion: boolean | null;
+}) {
+  return (
+    <motion.div
+      id={`industry-stage-panel-${industry.slug}`}
+      role="tabpanel"
+      initial={reduceMotion ? false : { opacity: 0, height: 0 }}
+      animate={{ opacity: 1, height: "auto" }}
+      exit={reduceMotion ? undefined : { opacity: 0, height: 0 }}
+      transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+      className="overflow-hidden lg:hidden"
+    >
+      <div className="space-y-4 px-1 pb-2 pt-3">
+        <div className="min-w-0">
+          <p className="font-mono text-[0.58rem] uppercase tracking-[0.15em] text-signal">
+            {industry.tagline}
+          </p>
+          <h4 className="mt-2 font-display text-xl font-bold tracking-[-0.045em] text-pretty text-void">
+            {industry.name}
+          </h4>
+          <p className="mt-2 text-sm leading-6 text-pretty text-void/65">
+            {industry.conversation}
+          </p>
+        </div>
+
+        <div className="rounded-2xl border border-void/10 bg-void/[0.04] p-4">
+          <p className="font-mono text-[0.52rem] uppercase tracking-[0.13em] text-void/50">
+            How BYBO supports this industry
+          </p>
+          <ul className="mt-3 space-y-2.5">
+            {industry.outcomes.map((outcome) => (
+              <li
+                key={outcome}
+                className="flex items-start gap-2 text-xs leading-5 text-void/72"
+              >
+                <Check size={12} className="mt-0.5 shrink-0 text-signal" />
+                {outcome}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="relative h-36 overflow-hidden rounded-xl">
+          <Image
+            src={industry.image}
+            alt={`${industry.name} working environment`}
+            fill
+            sizes="100vw"
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(11,11,12,0.45)_0%,transparent_55%)]" />
+        </div>
+
+        <div className="flex flex-col gap-3 pt-1">
+          <Link
+            href={`/apply?industry=${industry.slug}`}
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-signal px-5 font-mono text-[0.62rem] font-bold uppercase tracking-[0.12em] text-signal-ink transition-transform hover:-translate-y-0.5"
+          >
+            Discuss for your industry <ArrowUpRight size={13} />
+          </Link>
+          <Link
+            href="/industries"
+            className="inline-flex min-h-11 items-center justify-center gap-2 font-mono text-[0.62rem] font-semibold uppercase tracking-[0.12em] text-void/45 transition-colors hover:text-void"
+          >
+            View all industries <ArrowUpRight size={13} />
+          </Link>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 export function IndustryStage() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -30,6 +109,8 @@ export function IndustryStage() {
 
   useEffect(() => {
     if (paused || reduceMotion) return;
+    if (window.matchMedia("(max-width: 1023px)").matches) return;
+
     const timer = window.setInterval(() => {
       setActiveIndex((current) => (current + 1) % industrySolutions.length);
     }, 6500);
@@ -37,6 +118,7 @@ export function IndustryStage() {
   }, [paused, reduceMotion]);
 
   const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (window.matchMedia("(max-width: 1023px)").matches) return;
     const rect = event.currentTarget.getBoundingClientRect();
     pointerX.set(((event.clientX - rect.left) / rect.width) * 2 - 1);
     pointerY.set(((event.clientY - rect.top) / rect.height) * 2 - 1);
@@ -56,7 +138,7 @@ export function IndustryStage() {
       onPointerLeave={resetPointer}
     >
       <div className="grid min-w-0 lg:min-h-[38rem] lg:grid-cols-[0.38fr_1fr]">
-        <div className="relative z-20 flex min-w-0 flex-col border-b border-white/10 p-4 sm:p-5 lg:border-b-0 lg:border-r lg:p-8">
+        <div className="relative z-20 flex min-w-0 flex-col p-4 sm:p-5 lg:border-r lg:border-white/10 lg:p-8">
           <div>
             <p className="font-mono text-[0.58rem] uppercase tracking-[0.15em] text-white/50">
               Industry environments
@@ -67,51 +149,61 @@ export function IndustryStage() {
           </div>
 
           <div
-            className="industry-list-scroll mt-8 max-h-[22rem] space-y-1 overflow-y-auto overscroll-contain pr-1 lg:mt-auto lg:max-h-[28rem]"
+            className="industry-list-scroll mt-8 space-y-1 lg:mt-auto lg:max-h-[28rem] lg:overflow-y-auto lg:overscroll-contain lg:pr-1"
             role="tablist"
             aria-label="Select an industry environment"
           >
             {industrySolutions.map((industry, index) => {
               const selected = activeIndex === index;
               return (
-                <button
-                  key={industry.slug}
-                  type="button"
-                  role="tab"
-                  aria-selected={selected}
-                  aria-controls="industry-stage-panel"
-                  onClick={() => setActiveIndex(index)}
-                  className={`group relative flex min-h-12 w-full min-w-0 cursor-pointer items-start gap-3 overflow-hidden rounded-xl px-3 py-3 text-left transition-colors duration-300 ${
-                    selected
-                      ? "bg-white text-void"
-                      : "text-white/45 hover:bg-white/[0.045] hover:text-white"
-                  }`}
-                >
-                  <span
-                    className={`mt-0.5 shrink-0 font-mono text-[0.52rem] leading-none ${
-                      selected ? "text-signal-text" : "text-white/45"
+                <div key={industry.slug} className="min-w-0">
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={selected}
+                    aria-controls={`industry-stage-panel-${industry.slug}`}
+                    onClick={() => setActiveIndex(index)}
+                    className={`group relative flex min-h-12 w-full min-w-0 cursor-pointer items-start gap-3 overflow-hidden rounded-xl px-3 py-3 text-left transition-colors duration-300 ${
+                      selected
+                        ? "bg-white text-void"
+                        : "text-white/45 hover:bg-white/[0.045] hover:text-white"
                     }`}
                   >
-                    0{index + 1}
-                  </span>
-                  <span className="min-w-0 flex-1 text-pretty text-xs font-semibold leading-snug sm:text-sm">
-                    {industry.name}
-                  </span>
-                  {selected && !reduceMotion && (
-                    <motion.span
-                      key={`${industry.slug}-progress`}
-                      className="absolute inset-x-0 bottom-0 h-px origin-left bg-signal"
-                      initial={{ scaleX: 0 }}
-                      animate={{ scaleX: 1 }}
-                      transition={{ duration: 6.5, ease: "linear" }}
-                    />
-                  )}
-                </button>
+                    <span
+                      className={`mt-0.5 shrink-0 font-mono text-[0.52rem] leading-none ${
+                        selected ? "text-signal-text" : "text-white/45"
+                      }`}
+                    >
+                      0{index + 1}
+                    </span>
+                    <span className="min-w-0 flex-1 text-pretty text-xs font-semibold leading-snug sm:text-sm">
+                      {industry.name}
+                    </span>
+                    {selected && !reduceMotion && (
+                      <motion.span
+                        key={`${industry.slug}-progress`}
+                        className="absolute inset-x-0 bottom-0 hidden h-px origin-left bg-signal lg:block"
+                        initial={{ scaleX: 0 }}
+                        animate={{ scaleX: 1 }}
+                        transition={{ duration: 6.5, ease: "linear" }}
+                      />
+                    )}
+                  </button>
+
+                  <AnimatePresence initial={false}>
+                    {selected && (
+                      <IndustryStageMobileDetail
+                        industry={industry}
+                        reduceMotion={reduceMotion}
+                      />
+                    )}
+                  </AnimatePresence>
+                </div>
               );
             })}
           </div>
 
-          <div className="mt-7 flex flex-col gap-3 lg:mt-8">
+          <div className="mt-7 hidden flex-col gap-3 lg:mt-8 lg:flex">
             <Link
               href={`/apply?industry=${active.slug}`}
               className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-signal px-5 font-mono text-[0.62rem] font-bold uppercase tracking-[0.12em] text-signal-ink transition-transform hover:-translate-y-0.5"
@@ -130,7 +222,7 @@ export function IndustryStage() {
         <div
           id="industry-stage-panel"
           role="tabpanel"
-          className="relative min-h-[20rem] overflow-hidden sm:min-h-[28rem] lg:min-h-[34rem]"
+          className="relative hidden min-h-[34rem] overflow-hidden lg:block"
         >
           <AnimatePresence mode="wait">
             <motion.div
@@ -149,7 +241,7 @@ export function IndustryStage() {
                   src={active.image}
                   alt={`${active.name} working environment`}
                   fill
-                  sizes="(min-width: 1024px) 68vw, 100vw"
+                  sizes="68vw"
                   className="object-cover"
                 />
               </motion.div>
@@ -160,7 +252,7 @@ export function IndustryStage() {
 
           <motion.div
             aria-hidden="true"
-            className="pointer-events-none absolute -right-[7rem] -top-[7rem] hidden h-[25rem] w-[25rem] rounded-full border border-white/20 bg-white/[0.035] shadow-[inset_0_0_70px_rgba(255,255,255,0.05),0_0_80px_rgba(176,38,255,0.08)] backdrop-blur-[2px] lg:block"
+            className="pointer-events-none absolute -right-[7rem] -top-[7rem] h-[25rem] w-[25rem] rounded-full border border-white/20 bg-white/[0.035] shadow-[inset_0_0_70px_rgba(255,255,255,0.05),0_0_80px_rgba(176,38,255,0.08)] backdrop-blur-[2px]"
             style={
               reduceMotion
                 ? undefined
@@ -179,7 +271,7 @@ export function IndustryStage() {
 
           <motion.div
             aria-hidden="true"
-            className="pointer-events-none absolute left-[9%] top-[13%] hidden h-20 w-20 rounded-[1.4rem] border border-white/15 bg-white/[0.045] backdrop-blur-md sm:block"
+            className="pointer-events-none absolute left-[9%] top-[13%] h-20 w-20 rounded-[1.4rem] border border-white/15 bg-white/[0.045] backdrop-blur-md"
             animate={
               reduceMotion
                 ? undefined
@@ -188,7 +280,7 @@ export function IndustryStage() {
             transition={{ duration: 7.5, repeat: Infinity, ease: "easeInOut" }}
           />
 
-          <div className="absolute inset-x-0 bottom-0 z-10 p-6 sm:p-9 lg:p-10">
+          <div className="absolute inset-x-0 bottom-0 z-10 p-10">
             <AnimatePresence mode="wait">
               <motion.div
                 key={`${active.slug}-copy`}
