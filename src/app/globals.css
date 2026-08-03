@@ -172,6 +172,48 @@ button {
   background-size: 66px 66px;
 }
 
+.industry-list-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
+}
+
+.industry-list-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.industry-list-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.industry-list-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+}
+
+@media (max-width: 1023px) {
+  .split-explorer-card {
+    overflow: visible;
+  }
+
+  .mobile-chip-row {
+    margin-top: 1rem;
+    padding-bottom: 0.25rem;
+    scroll-padding-inline: 0.25rem;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .mobile-panel-thumb {
+    height: 9.5rem;
+    border-radius: 0.85rem;
+    overflow: hidden;
+  }
+
+  .section-shell,
+  .page-shell {
+    scroll-margin-top: 5.5rem;
+  }
+}
+
 .grain {
   position: relative;
 }
@@ -215,6 +257,226 @@ button {
 
 .bg-signal {
   color: var(--color-signal-ink);
+}
+
+/* Animated plasma accent surfaces */
+.signal-accent-surface {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.signal-accent-band {
+  background: var(--color-signal);
+  color: var(--color-signal-ink);
+}
+
+.signal-accent-card {
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: var(--color-signal);
+  color: var(--color-signal-ink);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.06) inset,
+    0 20px 60px rgba(var(--color-signal-rgb), 0.35);
+}
+
+.signal-accent-soft {
+  border: 1px solid rgba(var(--color-signal-rgb), 0.38);
+  background:
+    linear-gradient(
+      145deg,
+      rgba(var(--color-signal-rgb), 0.16) 0%,
+      rgba(var(--color-signal-rgb), 0.06) 48%,
+      rgba(8, 8, 8, 0.55) 100%
+    ),
+    rgba(8, 8, 8, 0.72);
+  color: var(--color-cream);
+  box-shadow: 0 0 40px rgba(var(--color-signal-rgb), 0.12);
+}
+
+.signal-accent-content {
+  position: relative;
+  z-index: 2;
+}
+
+.signal-accent-plasma {
+  position: absolute;
+  inset: -40%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.85;
+  background:
+    radial-gradient(
+      circle at 18% 22%,
+      rgba(255, 255, 255, 0.38) 0%,
+      transparent 42%
+    ),
+    radial-gradient(
+      circle at 82% 78%,
+      rgba(196, 74, 255, 0.55) 0%,
+      transparent 46%
+    ),
+    radial-gradient(
+      circle at 55% 45%,
+      rgba(255, 255, 255, 0.12) 0%,
+      transparent 55%
+    );
+  animation: signal-plasma-drift 9s ease-in-out infinite;
+}
+
+.signal-accent-plasma-soft {
+  opacity: 0.65;
+  background:
+    radial-gradient(
+      circle at 12% 18%,
+      rgba(var(--color-signal-rgb), 0.45) 0%,
+      transparent 44%
+    ),
+    radial-gradient(
+      circle at 88% 82%,
+      rgba(var(--color-signal-rgb), 0.28) 0%,
+      transparent 48%
+    );
+  animation: signal-plasma-drift 11s ease-in-out infinite reverse;
+}
+
+.signal-accent-orb {
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: 999px;
+  filter: blur(28px);
+  mix-blend-mode: screen;
+}
+
+.signal-accent-orb-a {
+  top: -18%;
+  right: -8%;
+  width: 11rem;
+  height: 11rem;
+  background: rgba(255, 255, 255, 0.28);
+  animation: signal-orb-float-a 7s ease-in-out infinite;
+}
+
+.signal-accent-orb-b {
+  bottom: -22%;
+  left: -6%;
+  width: 9rem;
+  height: 9rem;
+  background: rgba(144, 19, 212, 0.55);
+  animation: signal-orb-float-b 8.5s ease-in-out infinite;
+}
+
+.signal-accent-scan {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: 0.35;
+}
+
+.signal-accent-scan::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -120%;
+  height: 42%;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.22) 48%,
+    transparent 100%
+  );
+  animation: signal-accent-scan 5.5s linear infinite;
+}
+
+.signal-accent-edge {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    110deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.55) 45%,
+    transparent 55%,
+    rgba(255, 255, 255, 0.25) 100%
+  );
+  background-size: 220% 100%;
+  animation: signal-edge-shimmer 4.2s ease-in-out infinite;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+}
+
+.signal-accent-active {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.signal-accent-active .signal-accent-content-inline,
+.signal-accent-active > :not(.signal-accent-plasma):not(.signal-accent-orb):not(.signal-accent-scan):not(.signal-accent-edge) {
+  position: relative;
+  z-index: 2;
+}
+
+@keyframes signal-plasma-drift {
+  0%,
+  100% {
+    transform: translate(0%, 0%) scale(1);
+  }
+  33% {
+    transform: translate(4%, -3%) scale(1.05);
+  }
+  66% {
+    transform: translate(-3%, 4%) scale(0.98);
+  }
+}
+
+@keyframes signal-orb-float-a {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(-12px, 14px);
+  }
+}
+
+@keyframes signal-orb-float-b {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(10px, -12px);
+  }
+}
+
+@keyframes signal-accent-scan {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(320%);
+  }
+}
+
+@keyframes signal-edge-shimmer {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
 }
 
 .signal-surface-muted {
@@ -723,16 +985,20 @@ button {
 
 .hero-illustration {
   position: relative;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
   border: 1px solid var(--color-line);
   border-radius: 0.85rem;
   background: #0a0a0b;
   aspect-ratio: 16 / 10;
-  max-height: 10.5rem;
+  min-height: 9rem;
+  max-height: 11.5rem;
 }
 
 .hero-illustration__head {
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
@@ -751,7 +1017,8 @@ button {
 .hero-illustration__body {
   position: relative;
   z-index: 1;
-  height: calc(100% - 1.75rem);
+  flex: 1 1 auto;
+  min-height: 0;
   padding: 0.35rem 0.5rem 0.5rem;
 }
 
@@ -765,18 +1032,25 @@ button {
   pointer-events: none;
   position: absolute;
   inset: 0;
+  z-index: 0;
   background: radial-gradient(circle at 82% 12%, rgba(176, 38, 255, 0.12), transparent 42%);
 }
 
 @media (min-width: 640px) {
   .hero-illustration {
-    max-height: 12rem;
+    min-height: 10rem;
+    max-height: 13rem;
   }
 }
 
 @media (min-width: 1024px) {
   .hero-illustration {
+    min-height: 11rem;
     max-height: none;
+  }
+
+  .page-hero-aside-wrap {
+    align-self: stretch;
   }
 }
 
@@ -860,7 +1134,7 @@ select.form-field option {
 @media (max-width: 767px) {
   :root {
     --page-x: clamp(1rem, 4.5vw, 1.25rem);
-    --section-y: clamp(3.5rem, 8vw, 5rem);
+    --section-y: clamp(2.75rem, 7vw, 4.25rem);
   }
 
   .display-title {
@@ -922,6 +1196,13 @@ select.form-field option {
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+
+  .signal-accent-plasma,
+  .signal-accent-orb,
+  .signal-accent-scan::after,
+  .signal-accent-edge {
+    animation: none !important;
   }
 
   *,

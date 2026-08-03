@@ -14,6 +14,7 @@ import {
 import { FadeIn } from "@/components/FadeIn";
 import { CapabilityModulesSection } from "@/components/CapabilityModulesSection";
 import { SystemHeroIllustration } from "@/components/page-visuals/HeroIllustrations";
+import { SignalAccentSurface } from "@/components/SignalAccentSurface";
 import { systems } from "@/lib/content";
 
 type Props = {
@@ -337,20 +338,26 @@ export default async function SystemDetailPage({ params }: Props) {
             ].map((step, index) => (
               <div key={step.label} className="contents">
                 <FadeIn delay={index * 0.07}>
-                  <div
-                    className={`h-full rounded-2xl border p-6 ${
-                      index === 1
-                        ? "border-signal bg-signal"
-                        : "border-line bg-void"
-                    }`}
-                  >
-                    <p className={`technical-label ${index === 1 ? "signal-surface-subtle" : "text-dim"}`}>
-                      {step.label}
-                    </p>
-                    <p className={`mt-5 text-base leading-7 ${index === 1 ? "text-signal-ink" : "text-fog"}`}>
-                      {step.text}
-                    </p>
-                  </div>
+                  {index === 1 ? (
+                    <SignalAccentSurface
+                      variant="card"
+                      className="h-full rounded-2xl p-6"
+                    >
+                      <p className="technical-label signal-surface-subtle">
+                        {step.label}
+                      </p>
+                      <p className="mt-5 text-base leading-7 text-signal-ink">
+                        {step.text}
+                      </p>
+                    </SignalAccentSurface>
+                  ) : (
+                    <div className="h-full rounded-2xl border border-line bg-void p-6">
+                      <p className="technical-label text-dim">{step.label}</p>
+                      <p className="mt-5 text-base leading-7 text-fog">
+                        {step.text}
+                      </p>
+                    </div>
+                  )}
                 </FadeIn>
                 {index < 2 && (
                   <div className="hidden items-center justify-center text-signal lg:flex">

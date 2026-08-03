@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, Check, ChevronRight } from "lucide-react";
+import { SignalAccentLayers } from "@/components/SignalAccentSurface";
 import { systems } from "@/lib/content";
 
 type System = (typeof systems)[number];
@@ -90,17 +91,16 @@ function SystemRowButton({
     <button
       type="button"
       onClick={() => onSelect(index)}
-      className={`group flex min-h-[5.25rem] w-full items-center justify-between gap-4 px-5 text-left transition-colors sm:px-7 ${
+      className={`group relative flex min-h-[5.25rem] w-full items-center justify-between gap-4 px-5 text-left transition-colors sm:px-7 ${
         isActive
-          ? expanded
-            ? "bg-signal text-signal-ink"
-            : "bg-signal text-signal-ink"
+          ? "signal-accent-active bg-signal text-signal-ink"
           : "bg-panel text-fog hover:bg-panel-2 hover:text-cream"
       }`}
       aria-expanded={isActive}
       aria-controls={`system-detail-${system.slug}`}
     >
-      <span className="flex items-center gap-4">
+      {isActive && <SignalAccentLayers tone="solid" />}
+      <span className="relative z-[2] flex items-center gap-4">
         <span
           className={`font-mono text-[0.62rem] ${
             isActive ? "signal-surface-subtle" : "text-dim"
@@ -114,7 +114,7 @@ function SystemRowButton({
       </span>
       <ChevronRight
         size={17}
-        className={`shrink-0 transition-transform ${
+        className={`relative z-[2] shrink-0 transition-transform ${
           isActive
             ? expanded
               ? "rotate-90 translate-x-0"

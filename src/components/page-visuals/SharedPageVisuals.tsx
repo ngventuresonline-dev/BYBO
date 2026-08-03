@@ -53,7 +53,7 @@ export function EngagementTimelineVisual() {
 
 export function ApplyFlowVisual() {
   const steps = [
-    { label: "Submit workflow", detail: "2 min form" },
+    { label: "Submit details", detail: "Under 1 min" },
     { label: "Qualification call", detail: "30–45 min" },
     { label: "Blueprint if justified", detail: "7–10 days" },
   ];

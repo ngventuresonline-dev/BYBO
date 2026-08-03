@@ -7,6 +7,7 @@ import { FadeIn } from "@/components/FadeIn";
 import { PageHero } from "@/components/PageHero";
 import { PageHeroIllustration } from "@/components/page-visuals/HeroIllustrations";
 import { BlueprintProcessVisual } from "@/components/page-visuals/BlueprintVisuals";
+import { SignalAccentSurface } from "@/components/SignalAccentSurface";
 
 export const metadata: Metadata = {
   title: "AI Opportunity Blueprint",
@@ -183,7 +184,7 @@ export default function BlueprintPage() {
 
       <section className="border-t border-line">
         <div className="page-shell py-12">
-          <div className="bg-signal p-8 sm:p-12">
+          <SignalAccentSurface variant="band" className="p-8 sm:p-12">
             <p className="technical-label signal-surface-subtle">Start with clarity</p>
             <div className="mt-4 flex flex-col justify-between gap-8 lg:flex-row lg:items-end">
               <h2 className="cta-title max-w-3xl">
@@ -196,7 +197,7 @@ export default function BlueprintPage() {
                 Apply now <ArrowRight size={15} />
               </Link>
             </div>
-          </div>
+          </SignalAccentSurface>
         </div>
       </section>
     </>

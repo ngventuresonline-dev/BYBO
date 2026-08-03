@@ -15,6 +15,7 @@ import {
   BlueprintDeliverableVisual,
   getBlueprintVisualKey,
 } from "@/components/page-visuals/BlueprintVisuals";
+import { SignalAccentLayers } from "@/components/SignalAccentSurface";
 
 type Deliverable = {
   title: string;
@@ -84,13 +85,14 @@ export function BlueprintDeliverablesExplorer({ deliverables }: Props) {
               key={item.title}
               type="button"
               onClick={() => setActive(index)}
-              className={`flex min-h-[4.5rem] w-full items-center justify-between gap-3 border-b border-line px-6 text-left last:border-b-0 ${
+              className={`relative flex min-h-[4.5rem] w-full items-center justify-between gap-3 border-b border-line px-6 text-left last:border-b-0 ${
                 active === index
-                  ? "bg-signal text-signal-ink"
+                  ? "signal-accent-active bg-signal text-signal-ink"
                   : "text-fog hover:bg-panel-2 hover:text-cream"
               }`}
             >
-              <span className="flex items-center gap-3">
+              {active === index && <SignalAccentLayers tone="solid" />}
+              <span className="relative z-[2] flex items-center gap-3">
                 <span
                   className={`font-mono text-[0.58rem] ${
                     active === index ? "signal-surface-subtle" : "text-dim"
@@ -100,7 +102,7 @@ export function BlueprintDeliverablesExplorer({ deliverables }: Props) {
                 </span>
                 <span className="font-display text-sm font-bold">{item.title}</span>
               </span>
-              <ChevronRight size={15} />
+              <ChevronRight size={15} className="relative z-[2]" />
             </button>
           ))}
         </div>
@@ -133,11 +135,12 @@ export function BlueprintDeliverablesExplorer({ deliverables }: Props) {
               <button
                 type="button"
                 onClick={() => setActive(index)}
-                className={`flex min-h-[4.5rem] w-full items-center justify-between gap-3 px-5 text-left sm:px-6 ${
-                  isActive ? "bg-signal text-signal-ink" : "text-fog"
+                className={`relative flex min-h-[4.5rem] w-full items-center justify-between gap-3 px-5 text-left sm:px-6 ${
+                  isActive ? "signal-accent-active bg-signal text-signal-ink" : "text-fog"
                 }`}
               >
-                <span className="flex items-center gap-3">
+                {isActive && <SignalAccentLayers tone="solid" />}
+                <span className="relative z-[2] flex items-center gap-3">
                   <span
                     className={`font-mono text-[0.58rem] ${
                       isActive ? "signal-surface-subtle" : "text-dim"
@@ -149,7 +152,7 @@ export function BlueprintDeliverablesExplorer({ deliverables }: Props) {
                 </span>
                 <ChevronRight
                   size={15}
-                  className={isActive ? "rotate-90" : undefined}
+                  className={`relative z-[2] ${isActive ? "rotate-90" : undefined}`}
                 />
               </button>
               <AnimatePresence initial={false}>

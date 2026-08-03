@@ -9,6 +9,7 @@ import {
   Megaphone,
   Workflow,
 } from "lucide-react";
+import { SignalAccentLayers } from "@/components/SignalAccentSurface";
 
 const events = [
   {
@@ -123,15 +124,18 @@ export function LiveSystemPanel() {
             <button
               key={event.code}
               onClick={() => setActive(index)}
-              className={`min-h-11 flex-1 border transition-colors ${
+              className={`relative min-h-11 flex-1 overflow-hidden border transition-colors ${
                 index === active
-                  ? "border-signal bg-signal text-signal-ink"
+                  ? "signal-accent-active border-signal bg-signal text-signal-ink"
                   : "border-line bg-panel text-dim hover:border-dim hover:text-cream"
               }`}
               aria-label={`Show ${event.title}`}
               aria-pressed={index === active}
             >
-              <span className="font-mono text-[0.58rem] font-bold">{event.code}</span>
+              {index === active && <SignalAccentLayers tone="solid" />}
+              <span className="relative z-[2] font-mono text-[0.58rem] font-bold">
+                {event.code}
+              </span>
             </button>
           ))}
         </div>

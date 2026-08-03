@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowRight, Clock3 } from "lucide-react";
 import { FadeIn } from "@/components/FadeIn";
 import { InsightArticleContent } from "@/components/InsightArticleContent";
 import { InsightArticleHeroIllustration } from "@/components/page-visuals/HeroIllustrations";
+import { SignalAccentSurface } from "@/components/SignalAccentSurface";
 import {
   getInsightArticle,
   getRelatedArticles,
@@ -142,7 +143,7 @@ export default async function InsightArticlePage({ params }: Props) {
             )}
 
             <FadeIn delay={0.14}>
-              <div className="rounded-[1.2rem] border border-signal/30 bg-signal/10 p-5">
+              <SignalAccentSurface variant="soft" className="rounded-[1.2rem] p-5">
                 <p className="technical-label text-signal">Next step</p>
                 <p className="mt-3 text-sm leading-6 text-fog">
                   Map one workflow. We will tell you honestly whether it deserves
@@ -151,7 +152,7 @@ export default async function InsightArticlePage({ params }: Props) {
                 <Link href="/apply" className="signal-button mt-5 w-full sm:w-auto">
                   Discuss your workflow <ArrowRight size={14} />
                 </Link>
-              </div>
+              </SignalAccentSurface>
             </FadeIn>
           </aside>
         </div>

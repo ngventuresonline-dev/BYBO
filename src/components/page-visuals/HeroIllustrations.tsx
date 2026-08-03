@@ -34,7 +34,13 @@ function HeroIllustrationFrame({
 
 function Svg({ children, viewBox = "0 0 320 200" }: { children: React.ReactNode; viewBox?: string }) {
   return (
-    <svg viewBox={viewBox} className="hero-illustration__svg" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox={viewBox}
+      preserveAspectRatio="xMidYMid meet"
+      className="hero-illustration__svg"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
       {children}
     </svg>
   );

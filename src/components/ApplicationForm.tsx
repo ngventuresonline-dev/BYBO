@@ -2,7 +2,7 @@
 
 import { FormEvent, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { ArrowLeft, ArrowRight, Check, Mail, MessageCircle } from "lucide-react";
+import { ArrowRight, Check, Mail, MessageCircle } from "lucide-react";
 import { industrySolutions, systems } from "@/lib/content";
 
 type FormData = {
@@ -12,12 +12,6 @@ type FormData = {
   company: string;
   role: string;
   website: string;
-  teamSize: string;
-  system: string;
-  workflow: string;
-  frequency: string;
-  tools: string;
-  goal: string;
 };
 
 const initialData: FormData = {
@@ -27,12 +21,6 @@ const initialData: FormData = {
   company: "",
   role: "",
   website: "",
-  teamSize: "",
-  system: "",
-  workflow: "",
-  frequency: "",
-  tools: "",
-  goal: "",
 };
 
 const volumeLabels: Record<string, string> = {
@@ -75,10 +63,12 @@ export function ApplicationForm() {
           : startingInterest,
       volume: volumeLabels[startingVolume] ?? startingVolume,
       readiness: readinessLabels[startingReadiness] ?? startingReadiness,
+      systemName: systems.find((system) => system.slug === startingSystem)?.name,
     }),
     [
       startingIndustry,
       startingInterest,
+      startingSystem,
       startingVolume,
       startingReadiness,
     ],
@@ -89,23 +79,13 @@ export function ApplicationForm() {
       sourceContext.interest ||
       sourceContext.volume ||
       sourceContext.readiness ||
-      (startingSystem && systems.some((system) => system.slug === startingSystem)),
+      sourceContext.systemName,
   );
 
-  const [step, setStep] = useState(0);
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [warnings, setWarnings] = useState<Record<string, string>>({});
-  const [data, setData] = useState<FormData>(() => ({
-    ...initialData,
-    system: systems.some((system) => system.slug === startingSystem)
-      ? startingSystem
-      : "",
-    goal:
-      sourceContext.interest === "AI Opportunity Blueprint"
-        ? "Evaluate whether an AI Opportunity Blueprint is the right next step for our workflow."
-        : "",
-  }));
+  const [data, setData] = useState<FormData>(initialData);
 
   const update = (field: keyof FormData, value: string) => {
     setData((current) => ({ ...current, [field]: value }));
@@ -113,37 +93,27 @@ export function ApplicationForm() {
     setWarnings((current) => ({ ...current, [field]: "" }));
   };
 
-  const validateStep = () => {
+  const validate = () => {
     const nextErrors: Record<string, string> = {};
     const nextWarnings: Record<string, string> = {};
 
-    if (step === 0) {
-      if (!data.name.trim()) nextErrors.name = "Please enter your name.";
-      if (!data.email.trim()) {
-        nextErrors.email = "Please enter your work email.";
-      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
-        nextErrors.email = "Please enter a valid email.";
-      }
-      if (!data.company.trim()) nextErrors.company = "Please enter the company.";
-      if (!data.role.trim()) nextErrors.role = "Please enter your role.";
-      if (!data.phone.trim()) {
-        nextErrors.phone = "Please enter a phone number.";
-      } else if (!isValidPhone(data.phone)) {
-        nextErrors.phone = "Please enter a valid phone number (at least 10 digits).";
-      }
-      if (!data.website.trim()) {
-        nextWarnings.website =
-          "A company website helps us prepare for the call. Add yours if you have one — you can still continue without it.";
-      }
+    if (!data.name.trim()) nextErrors.name = "Please enter your name.";
+    if (!data.email.trim()) {
+      nextErrors.email = "Please enter your work email.";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+      nextErrors.email = "Please enter a valid email.";
     }
-
-    if (step === 1) {
-      if (!data.workflow.trim()) {
-        nextErrors.workflow = "Describe the workflow or bottleneck.";
-      }
-      if (!data.frequency) {
-        nextErrors.frequency = "Select how often this happens.";
-      }
+    if (!data.company.trim()) nextErrors.company = "Please enter the company.";
+    if (!data.role.trim()) nextErrors.role = "Please enter your role.";
+    if (!data.phone.trim()) {
+      nextErrors.phone = "Please enter a phone number.";
+    } else if (!isValidPhone(data.phone)) {
+      nextErrors.phone =
+        "Please enter a valid phone number (at least 10 digits).";
+    }
+    if (!data.website.trim()) {
+      nextWarnings.website =
+        "A company website helps us prepare for the call. Add yours if you have one — you can still continue without it.";
     }
 
     setErrors(nextErrors);
@@ -151,17 +121,13 @@ export function ApplicationForm() {
     return Object.keys(nextErrors).length === 0;
   };
 
-  const next = () => {
-    if (validateStep()) setStep((current) => Math.min(current + 1, 2));
-  };
-
   const submit = (event: FormEvent) => {
     event.preventDefault();
+    if (!validate()) return;
     setSubmitted(true);
   };
 
   const summary = useMemo(() => {
-    const selectedSystem = systems.find((system) => system.slug === data.system);
     const contextLines = [
       sourceContext.interest
         ? `Interest: ${sourceContext.interest}`
@@ -169,27 +135,23 @@ export function ApplicationForm() {
       sourceContext.industryName
         ? `Industry: ${sourceContext.industryName}`
         : null,
+      sourceContext.systemName ? `System: ${sourceContext.systemName}` : null,
       sourceContext.volume ? `Opportunity volume: ${sourceContext.volume}` : null,
       sourceContext.readiness
         ? `Current readiness: ${sourceContext.readiness}`
         : null,
     ].filter(Boolean);
 
-    return [
-      ...contextLines,
+    const contactLines = [
       `Name: ${data.name}`,
       `Company: ${data.company}`,
       `Role: ${data.role}`,
       `Email: ${data.email}`,
-      `Phone: ${data.phone || "Not provided"}`,
-      `Website: ${data.website || "Not provided"}`,
-      `Team size: ${data.teamSize || "Not provided"}`,
-      `System: ${selectedSystem?.name || "Unsure"}`,
-      `Workflow: ${data.workflow}`,
-      `Frequency: ${data.frequency}`,
-      `Current tools: ${data.tools || "Not provided"}`,
-      `Desired outcome: ${data.goal || "Not provided"}`,
-    ].join("\n");
+      `Phone: ${data.phone}`,
+      data.website ? `Website: ${data.website}` : null,
+    ].filter(Boolean);
+
+    return [...contextLines, ...contactLines].join("\n");
   }, [data, sourceContext]);
 
   const emailSubject = sourceContext.interest
@@ -247,21 +209,11 @@ export function ApplicationForm() {
 
   return (
     <form onSubmit={submit} className="technical-card overflow-hidden" noValidate>
-      <div className="flex flex-col gap-4 border-b border-line px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-8">
-        <div>
-          <p className="technical-label text-signal">Consultation application</p>
-          <p className="mt-2 text-sm text-fog">
-            Enough context for a useful first conversation.
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          {[0, 1, 2].map((index) => (
-            <span
-              key={index}
-              className={`h-1.5 w-12 ${index <= step ? "bg-signal" : "bg-line"}`}
-            />
-          ))}
-        </div>
+      <div className="border-b border-line px-5 py-5 sm:px-8">
+        <p className="technical-label text-signal">Consultation application</p>
+        <p className="mt-2 text-sm text-fog">
+          Your details are enough for a useful first conversation.
+        </p>
       </div>
 
       {hasSourceContext && (
@@ -274,13 +226,8 @@ export function ApplicationForm() {
             {sourceContext.industryName && (
               <ContextChip label={sourceContext.industryName} />
             )}
-            {data.system && (
-              <ContextChip
-                label={
-                  systems.find((system) => system.slug === data.system)?.name ??
-                  data.system
-                }
-              />
+            {sourceContext.systemName && (
+              <ContextChip label={sourceContext.systemName} />
             )}
             {sourceContext.volume && (
               <ContextChip label={sourceContext.volume} />
@@ -292,202 +239,81 @@ export function ApplicationForm() {
         </div>
       )}
 
-      <div className="min-h-0 p-5 sm:min-h-[34rem] sm:p-8 lg:p-10">
-        {step === 0 && (
-          <div>
-            <StepHeading
-              label="01 / You and the business"
-              title="Who owns the opportunity?"
+      <div className="p-5 sm:p-8 lg:p-10">
+        <StepHeading
+          label="Your details"
+          title="Who should we speak with?"
+        />
+        <div className="mt-9 grid gap-x-8 gap-y-6 sm:grid-cols-2">
+          <Field label="Your name" error={errors.name}>
+            <input
+              className="form-field"
+              value={data.name}
+              onChange={(event) => update("name", event.target.value)}
+              autoComplete="name"
+              placeholder="Full name"
             />
-            <div className="mt-9 grid gap-x-8 gap-y-6 sm:grid-cols-2">
-              <Field label="Your name" error={errors.name}>
-                <input
-                  className="form-field"
-                  value={data.name}
-                  onChange={(event) => update("name", event.target.value)}
-                  autoComplete="name"
-                  placeholder="Full name"
-                />
-              </Field>
-              <Field label="Work email" error={errors.email}>
-                <input
-                  className="form-field"
-                  type="email"
-                  value={data.email}
-                  onChange={(event) => update("email", event.target.value)}
-                  autoComplete="email"
-                  placeholder="name@company.com"
-                />
-              </Field>
-              <Field label="Company" error={errors.company}>
-                <input
-                  className="form-field"
-                  value={data.company}
-                  onChange={(event) => update("company", event.target.value)}
-                  autoComplete="organization"
-                  placeholder="Company name"
-                />
-              </Field>
-              <Field label="Your role" error={errors.role}>
-                <input
-                  className="form-field"
-                  value={data.role}
-                  onChange={(event) => update("role", event.target.value)}
-                  autoComplete="organization-title"
-                  placeholder="Founder, operations lead…"
-                />
-              </Field>
-              <Field label="Phone" error={errors.phone}>
-                <input
-                  className="form-field"
-                  type="tel"
-                  value={data.phone}
-                  onChange={(event) => update("phone", event.target.value)}
-                  autoComplete="tel"
-                  placeholder="+91 98765 43210"
-                  required
-                />
-              </Field>
-              <Field label="Website" hint={warnings.website}>
-                <input
-                  className="form-field"
-                  type="url"
-                  value={data.website}
-                  onChange={(event) => update("website", event.target.value)}
-                  placeholder="https://yourcompany.com"
-                />
-              </Field>
-            </div>
-          </div>
-        )}
-
-        {step === 1 && (
-          <div>
-            <StepHeading
-              label="02 / The workflow"
-              title="Where does momentum break?"
+          </Field>
+          <Field label="Work email" error={errors.email}>
+            <input
+              className="form-field"
+              type="email"
+              value={data.email}
+              onChange={(event) => update("email", event.target.value)}
+              autoComplete="email"
+              placeholder="name@company.com"
             />
-            <div className="mt-9 grid gap-x-8 gap-y-7 sm:grid-cols-2">
-              <Field label="Closest system">
-                <select
-                  className="form-field"
-                  value={data.system}
-                  onChange={(event) => update("system", event.target.value)}
-                >
-                  <option value="">I am not sure yet</option>
-                  {systems.map((system) => (
-                    <option key={system.slug} value={system.slug}>
-                      {system.name}
-                    </option>
-                  ))}
-                </select>
-              </Field>
-              <Field label="Team size">
-                <select
-                  className="form-field"
-                  value={data.teamSize}
-                  onChange={(event) => update("teamSize", event.target.value)}
-                >
-                  <option value="">Select</option>
-                  <option value="1–10">1–10</option>
-                  <option value="11–50">11–50</option>
-                  <option value="51–200">51–200</option>
-                  <option value="200+">200+</option>
-                </select>
-              </Field>
-              <Field
-                label="Describe the workflow or bottleneck"
-                error={errors.workflow}
-                className="sm:col-span-2"
-              >
-                <textarea
-                  className="form-field"
-                  value={data.workflow}
-                  onChange={(event) => update("workflow", event.target.value)}
-                  placeholder="What happens today, where does it slow down, and who is involved?"
-                />
-              </Field>
-              <Field label="How often does it happen?" error={errors.frequency}>
-                <select
-                  className="form-field"
-                  value={data.frequency}
-                  onChange={(event) => update("frequency", event.target.value)}
-                >
-                  <option value="">Select frequency</option>
-                  <option value="A few times each month">A few times each month</option>
-                  <option value="Every week">Every week</option>
-                  <option value="Every working day">Every working day</option>
-                  <option value="Dozens or hundreds daily">
-                    Dozens or hundreds daily
-                  </option>
-                </select>
-              </Field>
-              <Field label="Tools involved (optional)">
-                <input
-                  className="form-field"
-                  value={data.tools}
-                  onChange={(event) => update("tools", event.target.value)}
-                  placeholder="WhatsApp, Zoho, Sheets, Shopify…"
-                />
-              </Field>
-            </div>
-          </div>
-        )}
-
-        {step === 2 && (
-          <div>
-            <StepHeading
-              label="03 / The business case"
-              title="What should change if this works?"
+          </Field>
+          <Field label="Company" error={errors.company}>
+            <input
+              className="form-field"
+              value={data.company}
+              onChange={(event) => update("company", event.target.value)}
+              autoComplete="organization"
+              placeholder="Company name"
             />
-            <div className="mt-9">
-              <Field label="Desired outcome">
-                <textarea
-                  className="form-field"
-                  value={data.goal}
-                  onChange={(event) => update("goal", event.target.value)}
-                  placeholder="Faster response, fewer errors, better conversion, shorter processing time…"
-                />
-              </Field>
+          </Field>
+          <Field label="Your role" error={errors.role}>
+            <input
+              className="form-field"
+              value={data.role}
+              onChange={(event) => update("role", event.target.value)}
+              autoComplete="organization-title"
+              placeholder="Founder, operations lead…"
+            />
+          </Field>
+          <Field label="Phone" error={errors.phone}>
+            <input
+              className="form-field"
+              type="tel"
+              value={data.phone}
+              onChange={(event) => update("phone", event.target.value)}
+              autoComplete="tel"
+              placeholder="+91 98765 43210"
+              required
+            />
+          </Field>
+          <Field label="Website" hint={warnings.website}>
+            <input
+              className="form-field"
+              type="url"
+              value={data.website}
+              onChange={(event) => update("website", event.target.value)}
+              placeholder="https://yourcompany.com"
+            />
+          </Field>
+        </div>
 
-              <div className="mt-10 grid gap-4 border border-line bg-void/45 p-5 sm:grid-cols-3">
-                {[
-                  ["No obligation", "The consultation is for qualification, not a forced sales process."],
-                  ["No fake diagnosis", "We will not promise ROI before reviewing the workflow and baseline."],
-                  ["No silent storage", "This preview prepares an email or WhatsApp message; it does not store your data."],
-                ].map(([title, text]) => (
-                  <div key={title}>
-                    <p className="technical-label text-signal">{title}</p>
-                    <p className="mt-2 text-xs leading-5 text-dim">{text}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
+        <p className="mt-8 text-xs leading-5 text-dim">
+          No obligation. We&apos;ll use the first call to qualify the
+          opportunity — not to force a sales process. Nothing is stored here;
+          you send the application by email or WhatsApp.
+        </p>
 
-        <div className="mt-10 flex items-center justify-between border-t border-line pt-6">
-          {step > 0 ? (
-            <button
-              type="button"
-              onClick={() => setStep((current) => current - 1)}
-              className="ghost-button"
-            >
-              <ArrowLeft size={14} /> Back
-            </button>
-          ) : (
-            <span />
-          )}
-
-          {step < 2 ? (
-            <button type="button" onClick={next} className="signal-button">
-              Continue <ArrowRight size={14} />
-            </button>
-          ) : (
-            <button type="submit" className="signal-button">
-              Prepare application <ArrowRight size={14} />
-            </button>
-          )}
+        <div className="mt-8 flex justify-end border-t border-line pt-6">
+          <button type="submit" className="signal-button">
+            Prepare application <ArrowRight size={14} />
+          </button>
         </div>
       </div>
     </form>

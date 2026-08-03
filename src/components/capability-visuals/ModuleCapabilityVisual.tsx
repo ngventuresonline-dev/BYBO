@@ -10,8 +10,8 @@ function VisualFrame({
   children: React.ReactNode;
 }) {
   return (
-    <div className="relative aspect-[16/10] overflow-hidden rounded-xl border border-white/10 bg-[#0a0a0b]">
-      <div className="flex items-center justify-between border-b border-white/10 px-3 py-2">
+    <div className="relative flex aspect-[4/3] flex-col overflow-hidden rounded-xl border border-white/10 bg-[#0a0a0b] sm:aspect-[16/10]">
+      <div className="flex shrink-0 items-center justify-between border-b border-white/10 px-3 py-2">
         <span className="font-mono text-[0.48rem] uppercase tracking-[0.14em] text-white/35">
           {label}
         </span>
@@ -22,8 +22,8 @@ function VisualFrame({
           </span>
         </span>
       </div>
-      <div className="relative h-[calc(100%-1.75rem)] p-3 sm:p-4">{children}</div>
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_80%_0%,rgba(176,38,255,0.12),transparent_40%)]" />
+      <div className="relative z-[1] min-h-0 flex-1 p-3 sm:p-4">{children}</div>
+      <div className="pointer-events-none absolute inset-0 z-0 bg-[radial-gradient(circle_at_80%_0%,rgba(176,38,255,0.12),transparent_40%)]" />
     </div>
   );
 }
@@ -398,42 +398,93 @@ function PlatformLayersVisual() {
 }
 
 function AgentToolsVisual() {
-  const tools = ["CRM", "Email", "ERP", "Docs", "Slack"];
+  const tools = [
+    { label: "CRM", x: 200, y: 46 },
+    { label: "Email", x: 318, y: 98 },
+    { label: "ERP", x: 282, y: 196 },
+    { label: "Docs", x: 118, y: 196 },
+    { label: "Slack", x: 82, y: 98 },
+  ];
+  const center = { x: 200, y: 118 };
 
   return (
     <VisualFrame label="Agent · scoped tools">
-      <div className="relative flex h-full items-center justify-center">
-        <motion.div
-          animate={{
-            boxShadow: [
-              "0 0 0 rgba(176,38,255,0)",
-              "0 0 30px rgba(176,38,255,0.25)",
-              "0 0 0 rgba(176,38,255,0)",
-            ],
-          }}
-          transition={{ duration: 2.4, repeat: Infinity }}
-          className="flex h-16 w-16 items-center justify-center rounded-2xl border border-signal/50 bg-signal/15"
+      <svg
+        viewBox="0 0 400 220"
+        className="h-full w-full"
+        fill="none"
+        aria-hidden="true"
+      >
+        {tools.map((tool) => (
+          <line
+            key={`line-${tool.label}`}
+            x1={center.x}
+            y1={center.y}
+            x2={tool.x}
+            y2={tool.y}
+            stroke="rgba(176,38,255,0.28)"
+            strokeWidth="1"
+          />
+        ))}
+
+        <circle
+          cx={center.x}
+          cy={center.y}
+          r="54"
+          stroke="rgba(176,38,255,0.18)"
+          strokeWidth="1"
+          strokeDasharray="4 6"
+        />
+
+        <rect
+          x={center.x - 34}
+          y={center.y - 22}
+          width="68"
+          height="44"
+          rx="10"
+          fill="rgba(176,38,255,0.14)"
+          stroke="rgba(176,38,255,0.55)"
+          strokeWidth="1.2"
+        />
+        <text
+          x={center.x}
+          y={center.y + 4}
+          textAnchor="middle"
+          fill="#d4a0ff"
+          fontSize="11"
+          fontFamily="ui-monospace, monospace"
+          fontWeight="700"
+          letterSpacing="2"
         >
-          <span className="font-mono text-[0.5rem] font-bold text-signal">AGENT</span>
-        </motion.div>
-        {tools.map((tool, index) => {
-          const angle = (index / tools.length) * Math.PI * 2 - Math.PI / 2;
-          const x = Math.cos(angle) * 42;
-          const y = Math.sin(angle) * 32;
-          return (
-            <motion.div
-              key={tool}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2 + index * 0.08 }}
-              className="absolute rounded-lg border border-white/15 bg-white/[0.04] px-2 py-1 font-mono text-[0.42rem] text-white/55"
-              style={{ transform: `translate(${x}%, ${y}%)` }}
+          AGENT
+        </text>
+
+        {tools.map((tool) => (
+          <g key={tool.label}>
+            <rect
+              x={tool.x - 28}
+              y={tool.y - 12}
+              width="56"
+              height="24"
+              rx="6"
+              fill="rgba(255,255,255,0.04)"
+              stroke="rgba(255,255,255,0.14)"
+              strokeWidth="1"
+            />
+            <text
+              x={tool.x}
+              y={tool.y + 4}
+              textAnchor="middle"
+              fill="rgba(255,255,255,0.62)"
+              fontSize="9"
+              fontFamily="ui-monospace, monospace"
+              letterSpacing="0.6"
             >
-              {tool}
-            </motion.div>
-          );
-        })}
-      </div>
+              {tool.label}
+            </text>
+          </g>
+        ))}
+      </svg>
     </VisualFrame>
   );
 }

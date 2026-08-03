@@ -92,7 +92,7 @@ export function OpportunityFinder() {
         </div>
       </div>
 
-      <div className="min-h-[27rem] p-5 sm:p-7 lg:p-10">
+      <div className="min-h-0 p-5 sm:p-7 lg:min-h-[27rem] lg:p-10">
         <AnimatePresence mode="wait">
           {step === 0 && (
             <QuestionFrame
@@ -157,11 +157,11 @@ export function OpportunityFinder() {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="flex min-h-[21rem] flex-col justify-between"
+              className="flex min-h-0 flex-col justify-between gap-8"
             >
               <div>
                 <p className="technical-label text-success">Suggested starting point</p>
-                <h3 className="section-title mt-5 max-w-3xl">
+                <h3 className="section-title mt-4 max-w-3xl sm:mt-5">
                   Explore {result.name}
                 </h3>
                 <p className="mt-4 max-w-2xl text-base leading-7 text-fog">
@@ -216,7 +216,7 @@ function QuestionFrame({
       <div className="flex items-start justify-between gap-5">
         <div>
           <p className="technical-label text-signal">{label}</p>
-          <h3 className="section-title mt-5 max-w-3xl">
+          <h3 className="section-title mt-4 max-w-3xl sm:mt-5">
             {title}
           </h3>
         </div>
@@ -247,7 +247,7 @@ function OptionButton({
   return (
     <button
       onClick={onClick}
-      className="group flex min-h-24 items-center justify-between gap-4 border border-line bg-void/50 p-5 text-left transition-colors hover:border-signal hover:bg-signal hover:text-signal-ink"
+      className="group flex min-h-[4.5rem] items-center justify-between gap-4 border border-line bg-void/50 p-4 text-left transition-colors hover:border-signal hover:bg-signal hover:text-signal-ink sm:min-h-24 sm:p-5"
     >
       <span>
         <span className="block font-display text-base font-bold tracking-[-0.025em]">

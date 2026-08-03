@@ -7,6 +7,7 @@ import {
   insightVisualMap,
   type InsightVisualKey,
 } from "@/components/page-visuals/InsightVisuals";
+import { SignalAccentSurface } from "@/components/SignalAccentSurface";
 
 function VisualBlock({
   visual,
@@ -79,14 +80,21 @@ function BlockRenderer({ block }: { block: InsightBlock }) {
       );
 
     case "callout":
-      return (
+      return block.variant === "action" ? (
+        <SignalAccentSurface
+          as="aside"
+          variant="soft"
+          className="my-10 rounded-[1.2rem] p-6 sm:p-7"
+        >
+          <p className="technical-label text-signal">{block.title}</p>
+          <p className="mt-3 text-sm leading-7 text-fog">{block.body}</p>
+        </SignalAccentSurface>
+      ) : (
         <aside
           className={`my-10 rounded-[1.2rem] border p-6 sm:p-7 ${
-            block.variant === "action"
-              ? "border-signal/35 bg-signal/10"
-              : block.variant === "caution"
-                ? "border-white/15 bg-white/[0.03]"
-                : "border-line bg-panel"
+            block.variant === "caution"
+              ? "border-white/15 bg-white/[0.03]"
+              : "border-line bg-panel"
           }`}
         >
           <p className="technical-label text-signal">{block.title}</p>
