@@ -191,23 +191,6 @@ button {
 }
 
 @media (max-width: 1023px) {
-  .split-explorer-card {
-    overflow: visible;
-  }
-
-  .mobile-chip-row {
-    margin-top: 1rem;
-    padding-bottom: 0.25rem;
-    scroll-padding-inline: 0.25rem;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .mobile-panel-thumb {
-    height: 9.5rem;
-    border-radius: 0.85rem;
-    overflow: hidden;
-  }
-
   .section-shell,
   .page-shell {
     scroll-margin-top: 5.5rem;
