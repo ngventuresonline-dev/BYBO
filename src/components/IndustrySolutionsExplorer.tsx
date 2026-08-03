@@ -24,17 +24,17 @@ function IndustryExplorerMobileDetail({
       animate={{ opacity: 1, height: "auto" }}
       exit={reduceMotion ? undefined : { opacity: 0, height: 0 }}
       transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-      className="overflow-hidden lg:hidden"
+      className="overflow-hidden border-t border-white/10 lg:hidden"
     >
-      <div className="space-y-5 px-1 pb-2 pt-3">
+      <div className="space-y-5 px-3 pb-4 pt-4">
         <div className="min-w-0">
           <p className="font-mono text-[0.58rem] uppercase tracking-[0.15em] text-signal">
             {industry.tagline}
           </p>
-          <h2 className="section-title mt-3 !text-xl text-pretty text-void sm:!text-2xl">
+          <h2 className="section-title mt-3 !text-xl text-pretty text-cream sm:!text-2xl">
             {industry.name}
           </h2>
-          <p className="mt-3 text-sm leading-7 text-pretty text-void/72 sm:text-base">
+          <p className="mt-3 text-sm leading-7 text-pretty text-white/72 sm:text-base">
             {industry.conversation}
           </p>
         </div>
@@ -47,18 +47,18 @@ function IndustryExplorerMobileDetail({
             return (
               <div
                 key={provision.title}
-                className="rounded-xl border border-void/10 bg-void/[0.04] p-4"
+                className="rounded-xl border border-white/12 bg-black/35 p-4"
               >
-                <p className="font-display text-sm font-bold text-void sm:text-base">
+                <p className="font-display text-sm font-bold text-cream sm:text-base">
                   {provision.title}
                 </p>
-                <p className="mt-2 text-xs leading-6 text-void/58">
+                <p className="mt-2 text-xs leading-6 text-white/58">
                   {provision.description}
                 </p>
                 {system && (
                   <Link
                     href={`/systems/${system.slug}`}
-                    className="mt-4 inline-flex items-center gap-1.5 font-mono text-[0.55rem] uppercase tracking-[0.1em] text-signal hover:text-void"
+                    className="mt-4 inline-flex items-center gap-1.5 font-mono text-[0.55rem] uppercase tracking-[0.1em] text-signal hover:text-cream"
                   >
                     {system.name} <ArrowUpRight size={11} />
                   </Link>
@@ -68,25 +68,25 @@ function IndustryExplorerMobileDetail({
           })}
         </div>
 
-        <div className="border-t border-void/10 pt-4">
-          <p className="technical-label text-void/50">What changes</p>
+        <div className="border-t border-white/10 pt-4">
+          <p className="technical-label text-white/50">What changes</p>
           <ul className="mt-4 space-y-2">
             {industry.outcomes.map((outcome) => (
               <li
                 key={outcome}
-                className="flex items-start gap-2 text-xs leading-5 text-void/70"
+                className="flex items-start gap-2 text-xs leading-5 text-white/70"
               >
                 <Check size={12} className="mt-0.5 shrink-0 text-signal" />
                 {outcome}
               </li>
             ))}
           </ul>
-          <p className="mt-4 text-xs leading-6 text-void/45">
+          <p className="mt-4 text-xs leading-6 text-white/45">
             {industry.engagement}
           </p>
         </div>
 
-        <div className="relative h-36 overflow-hidden rounded-xl">
+        <div className="relative h-40 overflow-hidden rounded-xl border border-white/10">
           <Image
             src={industry.image}
             alt={`${industry.name} operating environment`}
@@ -94,7 +94,7 @@ function IndustryExplorerMobileDetail({
             sizes="100vw"
             className="object-cover"
           />
-          <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(11,11,12,0.45)_0%,transparent_55%)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(11,11,12,0.5)_0%,transparent_55%)]" />
         </div>
 
         <Link
@@ -141,18 +141,26 @@ export function IndustrySolutionsExplorer() {
               const selected = index === activeIndex;
               return (
                 <div key={industry.slug} className="min-w-0">
-                  <button
-                    type="button"
-                    role="tab"
-                    aria-selected={selected}
-                    aria-controls={`industry-explorer-panel-${industry.slug}`}
-                    onClick={() => setActiveIndex(index)}
-                    className={`relative mb-1 flex min-h-14 w-full min-w-0 items-start gap-3 rounded-xl px-4 py-3.5 text-left transition-colors ${
+                  <div
+                    className={`mb-1 overflow-hidden rounded-xl ${
                       selected
-                        ? "bg-white text-void"
-                        : "text-white/45 hover:bg-white/[0.045] hover:text-white"
+                        ? "border border-white/12 bg-white/[0.03]"
+                        : ""
                     }`}
                   >
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={selected}
+                      aria-controls={`industry-explorer-panel-${industry.slug}`}
+                      aria-expanded={selected}
+                      onClick={() => setActiveIndex(index)}
+                      className={`relative flex min-h-14 w-full min-w-0 items-start gap-3 px-4 py-3.5 text-left transition-colors ${
+                        selected
+                          ? "bg-white text-void"
+                          : "rounded-xl text-white/45 hover:bg-white/[0.045] hover:text-white"
+                      }`}
+                    >
                     <span
                       className={`mt-0.5 shrink-0 font-mono text-[0.52rem] leading-none ${
                         selected ? "text-signal-text" : "text-white/45"
@@ -182,6 +190,7 @@ export function IndustrySolutionsExplorer() {
                       />
                     )}
                   </AnimatePresence>
+                  </div>
                 </div>
               );
             })}

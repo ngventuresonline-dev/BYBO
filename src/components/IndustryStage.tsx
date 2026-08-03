@@ -31,30 +31,30 @@ function IndustryStageMobileDetail({
       animate={{ opacity: 1, height: "auto" }}
       exit={reduceMotion ? undefined : { opacity: 0, height: 0 }}
       transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-      className="overflow-hidden lg:hidden"
+      className="overflow-hidden border-t border-white/10 lg:hidden"
     >
-      <div className="space-y-4 px-1 pb-2 pt-3">
+      <div className="space-y-4 px-3 pb-4 pt-4">
         <div className="min-w-0">
           <p className="font-mono text-[0.58rem] uppercase tracking-[0.15em] text-signal">
             {industry.tagline}
           </p>
-          <h4 className="mt-2 font-display text-xl font-bold tracking-[-0.045em] text-pretty text-void">
+          <h4 className="mt-2 font-display text-xl font-bold tracking-[-0.045em] text-pretty text-cream">
             {industry.name}
           </h4>
-          <p className="mt-2 text-sm leading-6 text-pretty text-void/65">
+          <p className="mt-2 text-sm leading-6 text-pretty text-white/58">
             {industry.conversation}
           </p>
         </div>
 
-        <div className="rounded-2xl border border-void/10 bg-void/[0.04] p-4">
-          <p className="font-mono text-[0.52rem] uppercase tracking-[0.13em] text-void/50">
+        <div className="rounded-2xl border border-white/12 bg-black/35 p-4">
+          <p className="font-mono text-[0.52rem] uppercase tracking-[0.13em] text-white/50">
             How BYBO supports this industry
           </p>
           <ul className="mt-3 space-y-2.5">
             {industry.outcomes.map((outcome) => (
               <li
                 key={outcome}
-                className="flex items-start gap-2 text-xs leading-5 text-void/72"
+                className="flex items-start gap-2 text-xs leading-5 text-white/72"
               >
                 <Check size={12} className="mt-0.5 shrink-0 text-signal" />
                 {outcome}
@@ -63,7 +63,7 @@ function IndustryStageMobileDetail({
           </ul>
         </div>
 
-        <div className="relative h-36 overflow-hidden rounded-xl">
+        <div className="relative h-40 overflow-hidden rounded-xl border border-white/10">
           <Image
             src={industry.image}
             alt={`${industry.name} working environment`}
@@ -71,7 +71,7 @@ function IndustryStageMobileDetail({
             sizes="100vw"
             className="object-cover"
           />
-          <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(11,11,12,0.45)_0%,transparent_55%)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(11,11,12,0.5)_0%,transparent_55%)]" />
         </div>
 
         <div className="flex flex-col gap-3 pt-1">
@@ -83,7 +83,7 @@ function IndustryStageMobileDetail({
           </Link>
           <Link
             href="/industries"
-            className="inline-flex min-h-11 items-center justify-center gap-2 font-mono text-[0.62rem] font-semibold uppercase tracking-[0.12em] text-void/45 transition-colors hover:text-void"
+            className="inline-flex min-h-11 items-center justify-center gap-2 font-mono text-[0.62rem] font-semibold uppercase tracking-[0.12em] text-white/45 transition-colors hover:text-white"
           >
             View all industries <ArrowUpRight size={13} />
           </Link>
@@ -157,18 +157,26 @@ export function IndustryStage() {
               const selected = activeIndex === index;
               return (
                 <div key={industry.slug} className="min-w-0">
-                  <button
-                    type="button"
-                    role="tab"
-                    aria-selected={selected}
-                    aria-controls={`industry-stage-panel-${industry.slug}`}
-                    onClick={() => setActiveIndex(index)}
-                    className={`group relative flex min-h-12 w-full min-w-0 cursor-pointer items-start gap-3 overflow-hidden rounded-xl px-3 py-3 text-left transition-colors duration-300 ${
+                  <div
+                    className={`mb-1 overflow-hidden rounded-xl ${
                       selected
-                        ? "bg-white text-void"
-                        : "text-white/45 hover:bg-white/[0.045] hover:text-white"
+                        ? "border border-white/12 bg-white/[0.03]"
+                        : ""
                     }`}
                   >
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={selected}
+                      aria-controls={`industry-stage-panel-${industry.slug}`}
+                      aria-expanded={selected}
+                      onClick={() => setActiveIndex(index)}
+                      className={`group relative flex min-h-12 w-full min-w-0 cursor-pointer items-start gap-3 overflow-hidden px-3 py-3 text-left transition-colors duration-300 ${
+                        selected
+                          ? "bg-white text-void"
+                          : "rounded-xl text-white/45 hover:bg-white/[0.045] hover:text-white"
+                      }`}
+                    >
                     <span
                       className={`mt-0.5 shrink-0 font-mono text-[0.52rem] leading-none ${
                         selected ? "text-signal-text" : "text-white/45"
@@ -198,6 +206,7 @@ export function IndustryStage() {
                       />
                     )}
                   </AnimatePresence>
+                  </div>
                 </div>
               );
             })}
