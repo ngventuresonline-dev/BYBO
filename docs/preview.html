@@ -1,0 +1,1402 @@
+<title>BYBO — Site Design Preview</title>
+
+<style>
+  :root {
+    --void: #080808;
+    --panel: #0e0e0f;
+    --panel-2: #141415;
+    --cream: #f1f0eb;
+    --fog: #aaa8a1;
+    --dim: #6e6d68;
+    --line: #272728;
+    --line-soft: #1b1b1c;
+    --signal: #ff5722;
+    --signal-hi: #ff6a3b;
+    --success: #48d597;
+
+    --ff-display: "Archivo", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --ff-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, "Courier New", monospace;
+
+    --page-x: clamp(1.25rem, 4vw, 3rem);
+    --sec-y: clamp(4.5rem, 9vw, 8rem);
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Committed single visual world: a dark instrument panel.
+     Tokens are intentionally not redefined per theme — the brand is dark. */
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--void);
+    color: var(--cream);
+    font-family: var(--ff-display);
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--signal);
+    outline-offset: 4px;
+  }
+
+  ::selection { background: var(--signal); color: var(--void); }
+
+  /* ---------- shared primitives ---------- */
+
+  .shell {
+    width: min(100%, 1240px);
+    margin-inline: auto;
+    padding-inline: var(--page-x);
+  }
+
+  .sec { padding-block: var(--sec-y); }
+
+  .label {
+    font-family: var(--ff-mono);
+    font-size: 0.64rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    line-height: 1.4;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    color: var(--signal);
+    font-family: var(--ff-mono);
+    font-size: 0.66rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  .eyebrow::before {
+    content: "";
+    width: 0.4rem;
+    height: 0.4rem;
+    background: currentColor;
+  }
+
+  .h-display {
+    margin: 0;
+    font-size: clamp(2.9rem, 7vw, 6.4rem);
+    font-weight: 800;
+    letter-spacing: -0.062em;
+    line-height: 0.9;
+    text-wrap: balance;
+  }
+
+  .h-sec {
+    margin: 0;
+    font-size: clamp(2.1rem, 4.6vw, 3.9rem);
+    font-weight: 800;
+    letter-spacing: -0.05em;
+    line-height: 0.96;
+    text-wrap: balance;
+  }
+
+  .h-sub {
+    margin: 0;
+    font-size: clamp(1.3rem, 2vw, 1.6rem);
+    font-weight: 700;
+    letter-spacing: -0.035em;
+    line-height: 1.15;
+  }
+
+  .body-lg {
+    margin: 0;
+    color: var(--fog);
+    font-size: clamp(1rem, 1.35vw, 1.16rem);
+    line-height: 1.65;
+    max-width: 62ch;
+  }
+
+  .body {
+    margin: 0;
+    color: var(--fog);
+    font-size: 0.94rem;
+    line-height: 1.62;
+  }
+
+  .rule { height: 1px; background: var(--line); border: 0; margin: 0; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    min-height: 3.15rem;
+    padding: 0.9rem 1.4rem;
+    border: 1px solid transparent;
+    font-family: var(--ff-mono);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: transform 220ms var(--ease), background-color 220ms ease,
+                border-color 220ms ease, color 220ms ease;
+  }
+  .btn-signal { background: var(--signal); color: var(--void); }
+  .btn-signal:hover { background: var(--signal-hi); transform: translateY(-2px); }
+  .btn-ghost {
+    border-color: var(--line);
+    background: rgba(255,255,255,0.015);
+    color: var(--cream);
+  }
+  .btn-ghost:hover { border-color: #4b4b4d; background: rgba(255,255,255,0.05); transform: translateY(-2px); }
+
+  .arrow { display: inline-block; font-family: var(--ff-mono); }
+
+  /* ---------- preview chrome ---------- */
+
+  .route {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    padding: 0.85rem var(--page-x);
+    background: var(--signal);
+    color: var(--void);
+    font-family: var(--ff-mono);
+    font-size: 0.64rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .route span:last-child { font-weight: 500; opacity: 0.72; }
+
+  .page {
+    position: relative;
+    border-bottom: 1px solid var(--line);
+    background-image:
+      linear-gradient(rgba(255,255,255,0.026) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.026) 1px, transparent 1px);
+    background-size: 66px 66px;
+  }
+  .page::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+    opacity: 0.045;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+  }
+  .page > * { position: relative; z-index: 4; }
+
+  /* ---------- navigation ---------- */
+
+  .nav {
+    border-bottom: 1px solid var(--line-soft);
+    background: rgba(8,8,8,0.72);
+  }
+  .nav-in {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    height: 4.6rem;
+  }
+  .nav-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.28rem;
+    font-weight: 800;
+    letter-spacing: -0.045em;
+    color: var(--cream);
+    text-decoration: none;
+  }
+  .nav-mark { width: 0.62rem; height: 0.62rem; background: var(--signal); }
+  .nav-links { display: flex; align-items: center; gap: 1.7rem; }
+  .nav-links a {
+    font-family: var(--ff-mono);
+    font-size: 0.63rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--dim);
+    text-decoration: none;
+    transition: color 180ms ease;
+  }
+  .nav-links a:hover { color: var(--cream); }
+  .nav-links a.on { color: var(--signal); }
+  .nav-cta {
+    min-height: 2.5rem;
+    padding: 0.6rem 1.15rem;
+    background: var(--signal);
+    color: var(--void) !important;
+    font-weight: 700 !important;
+  }
+  @media (max-width: 900px) {
+    .nav-links { display: none; }
+  }
+
+  /* ---------- hero ---------- */
+
+  .hero { padding-block: clamp(3.5rem, 7vw, 6.5rem) clamp(3.5rem, 6vw, 5.5rem); }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: clamp(2.5rem, 5vw, 4.5rem);
+    align-items: center;
+  }
+  .hero-copy { display: flex; flex-direction: column; gap: 1.9rem; align-items: flex-start; }
+  .hero-copy .h-display { max-width: 13ch; }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+  @media (max-width: 940px) {
+    .hero-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ---------- live instrument panel ---------- */
+
+  .inst {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    background: linear-gradient(145deg, rgba(255,255,255,0.028), transparent 45%), var(--panel);
+  }
+  .inst-scan {
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    height: 34%;
+    background: linear-gradient(180deg, transparent, rgba(255,87,34,0.05), transparent);
+    animation: scan 9s linear infinite;
+    pointer-events: none;
+  }
+  @keyframes scan { from { transform: translateY(-110%); } to { transform: translateY(400%); } }
+
+  .inst-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.1rem 1.35rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .inst-title { display: flex; flex-direction: column; gap: 0.4rem; }
+  .inst-title strong { font-size: 0.95rem; font-weight: 700; letter-spacing: -0.02em; }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.38rem 0.7rem;
+    border: 1px solid rgba(72,213,151,0.32);
+    color: var(--success);
+    font-family: var(--ff-mono);
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .dot { width: 0.35rem; height: 0.35rem; background: var(--success); }
+
+  .inst-metrics { display: grid; grid-template-columns: repeat(3, 1fr); }
+  .metric {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    padding: 1.15rem 1.35rem;
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .metric:nth-child(3) { border-right: 0; }
+  .metric b {
+    font-size: 1.75rem;
+    font-weight: 800;
+    letter-spacing: -0.05em;
+    font-variant-numeric: tabular-nums;
+  }
+  .metric .label { color: var(--dim); }
+  .metric small { font-family: var(--ff-mono); font-size: 0.6rem; color: var(--fog); letter-spacing: 0.06em; }
+
+  .log { padding: 1.15rem 1.35rem 1.35rem; display: flex; flex-direction: column; gap: 0.55rem; }
+  .log-row {
+    display: grid;
+    grid-template-columns: 4.6rem 1fr auto;
+    gap: 0.9rem;
+    align-items: baseline;
+    font-family: var(--ff-mono);
+    font-size: 0.665rem;
+    letter-spacing: 0.02em;
+  }
+  .log-t { color: var(--dim); font-variant-numeric: tabular-nums; }
+  .log-e { color: var(--fog); }
+  .log-m { color: var(--dim); text-align: right; }
+  .log-row.esc .log-e { color: var(--signal); }
+  .log-row.esc .log-m { color: var(--cream); }
+  .inst-foot {
+    padding: 0.8rem 1.35rem;
+    border-top: 1px solid var(--line);
+    color: var(--dim);
+  }
+
+  /* ---------- honesty strip ---------- */
+
+  .strip {
+    border-block: 1px solid var(--line);
+    background: var(--panel);
+  }
+  .strip-in {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+    padding-block: 2.1rem;
+  }
+  .strip-in p {
+    margin: 0;
+    max-width: 34ch;
+    font-size: clamp(1.35rem, 2.4vw, 2rem);
+    font-weight: 800;
+    letter-spacing: -0.042em;
+    line-height: 1.1;
+  }
+  .strip-in .body { max-width: 42ch; }
+
+  /* ---------- section header ---------- */
+
+  .sec-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2.5rem;
+    flex-wrap: wrap;
+    padding-bottom: 2.9rem;
+  }
+  .sec-head > div:first-child { display: flex; flex-direction: column; gap: 1.15rem; }
+
+  /* ---------- systems ---------- */
+
+  .sys-list { border-top: 1px solid var(--line); }
+  .sys-row {
+    display: grid;
+    grid-template-columns: 15rem 1fr 15rem auto;
+    gap: 2rem;
+    align-items: center;
+    padding-block: 1.65rem;
+    border-bottom: 1px solid var(--line);
+    text-decoration: none;
+    color: inherit;
+    transition: background-color 200ms ease, padding-inline 200ms var(--ease);
+  }
+  .sys-row:hover { background: rgba(255,255,255,0.022); padding-inline: 1rem; }
+  .sys-row:hover .sys-arrow { color: var(--signal); transform: translate(3px,-3px); }
+  .sys-name { font-size: 1.28rem; font-weight: 700; letter-spacing: -0.032em; }
+  .sys-short { color: var(--fog); font-size: 0.95rem; line-height: 1.5; }
+  .sys-for { color: var(--dim); font-family: var(--ff-mono); font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; line-height: 1.55; }
+  .sys-arrow { color: var(--dim); transition: color 200ms ease, transform 200ms var(--ease); }
+  .sys-row.lead .sys-name { color: var(--signal); }
+  @media (max-width: 900px) {
+    .sys-row { grid-template-columns: 1fr auto; gap: 0.6rem 1.5rem; }
+    .sys-short, .sys-for { grid-column: 1 / -1; }
+  }
+
+  /* ---------- before / system / after ---------- */
+
+  .tri { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--line); }
+  .tri-col {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+    padding: clamp(1.6rem, 3vw, 2.6rem);
+    border-right: 1px solid var(--line);
+    background: var(--panel);
+  }
+  .tri-col:last-child { border-right: 0; }
+  .tri-col.now { background: var(--panel-2); }
+  .tri-col.now .tri-k { color: var(--signal); }
+  .tri-k { color: var(--dim); }
+  .tri-col p { margin: 0; color: var(--fog); font-size: 0.98rem; line-height: 1.6; }
+  .tri-col.now p { color: var(--cream); }
+  @media (max-width: 860px) {
+    .tri { grid-template-columns: 1fr; }
+    .tri-col { border-right: 0; border-bottom: 1px solid var(--line); }
+    .tri-col:last-child { border-bottom: 0; }
+  }
+
+  /* ---------- engagement ladder (a real sequence — numbered) ---------- */
+
+  .ladder { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--line); }
+  .step {
+    display: flex;
+    flex-direction: column;
+    gap: 0.95rem;
+    padding: 2.2rem 1.6rem 2.4rem;
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .step:last-child { border-right: 0; }
+  .step-n {
+    font-family: var(--ff-mono);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    color: var(--dim);
+  }
+  .step.paid { background: var(--panel); }
+  .step.paid .step-n { color: var(--signal); }
+  .step h3 { margin: 0; font-size: 1.22rem; font-weight: 700; letter-spacing: -0.03em; }
+  .step .label { color: var(--dim); }
+  @media (max-width: 900px) { .ladder { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 520px) { .ladder { grid-template-columns: 1fr; } }
+
+  /* ---------- leakage calculator ---------- */
+
+  .calc { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--line); }
+  .calc-in {
+    display: flex;
+    flex-direction: column;
+    gap: 2.1rem;
+    padding: clamp(1.7rem, 3.2vw, 2.8rem);
+    border-right: 1px solid var(--line);
+    background: var(--panel);
+  }
+  .field { display: flex; flex-direction: column; gap: 0.9rem; }
+  .field-top { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
+  .field-top .label { color: var(--fog); }
+  .field-val {
+    font-family: var(--ff-mono);
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--cream);
+    font-variant-numeric: tabular-nums;
+  }
+
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 2px;
+    background: var(--line);
+    cursor: pointer;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 0.95rem;
+    height: 1.5rem;
+    background: var(--signal);
+    border: 0;
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 0.95rem;
+    height: 1.5rem;
+    background: var(--signal);
+    border: 0;
+    border-radius: 0;
+  }
+  input[type="range"]:focus-visible { outline: 2px solid var(--signal); outline-offset: 6px; }
+
+  .calc-out {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1.15rem;
+    padding: clamp(1.7rem, 3.2vw, 2.8rem);
+    background: var(--panel-2);
+  }
+  .calc-big {
+    font-size: clamp(3rem, 7vw, 5.2rem);
+    font-weight: 800;
+    letter-spacing: -0.06em;
+    line-height: 0.9;
+    color: var(--signal);
+    font-variant-numeric: tabular-nums;
+  }
+  .calc-sub { display: flex; flex-direction: column; gap: 0.5rem; }
+  .calc-note { color: var(--dim); font-family: var(--ff-mono); font-size: 0.62rem; letter-spacing: 0.08em; line-height: 1.7; }
+  @media (max-width: 860px) {
+    .calc { grid-template-columns: 1fr; }
+    .calc-in { border-right: 0; border-bottom: 1px solid var(--line); }
+  }
+
+  /* ---------- closing CTA ---------- */
+
+  .close { border-top: 1px solid var(--line); background: var(--panel); }
+  .close-in {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 3rem;
+    flex-wrap: wrap;
+    padding-block: clamp(3.5rem, 7vw, 6rem);
+  }
+  .close-in > div { display: flex; flex-direction: column; gap: 1.4rem; }
+
+  /* ---------- blueprint page ---------- */
+
+  .bp-hero { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: clamp(2.5rem, 5vw, 4.5rem); align-items: start; }
+  .bp-copy { display: flex; flex-direction: column; gap: 1.7rem; align-items: flex-start; }
+  .bp-price { border: 1px solid var(--line); background: var(--panel); }
+  .bp-price-top { padding: 1.7rem; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 0.75rem; }
+  .bp-amount { font-size: clamp(2.2rem, 4vw, 3rem); font-weight: 800; letter-spacing: -0.055em; font-variant-numeric: tabular-nums; }
+  .bp-terms { display: flex; flex-direction: column; }
+  .bp-term { display: flex; align-items: baseline; justify-content: space-between; gap: 1.5rem; padding: 0.95rem 1.7rem; border-bottom: 1px solid var(--line-soft); }
+  .bp-term:last-of-type { border-bottom: 0; }
+  .bp-term dt { color: var(--dim); font-family: var(--ff-mono); font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; }
+  .bp-term dd { margin: 0; font-size: 0.9rem; font-weight: 600; text-align: right; }
+  .bp-cta { padding: 1.7rem; border-top: 1px solid var(--line); }
+  .bp-cta .btn { width: 100%; justify-content: center; }
+  @media (max-width: 940px) { .bp-hero { grid-template-columns: 1fr; } }
+
+  .deliver { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--line); }
+  .deliver-col { padding: clamp(1.7rem, 3vw, 2.6rem); display: flex; flex-direction: column; gap: 1.5rem; }
+  .deliver-col:first-child { border-right: 1px solid var(--line); background: var(--panel); }
+  .deliver-col.not { background: transparent; }
+  .deliver ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 0.95rem; }
+  .deliver li { display: grid; grid-template-columns: 1.2rem 1fr; gap: 0.85rem; color: var(--fog); font-size: 0.95rem; line-height: 1.55; }
+  .tick { color: var(--signal); font-family: var(--ff-mono); font-size: 0.8rem; }
+  .cross { color: var(--dim); font-family: var(--ff-mono); font-size: 0.8rem; }
+  .deliver-col.not li { color: var(--dim); }
+  @media (max-width: 860px) {
+    .deliver { grid-template-columns: 1fr; }
+    .deliver-col:first-child { border-right: 0; border-bottom: 1px solid var(--line); }
+  }
+
+  /* ---------- industries page ---------- */
+
+  .bucket { display: flex; flex-direction: column; gap: 0; }
+  .bucket-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+    padding-block: 1.6rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .bucket-head h3 { margin: 0; font-size: clamp(1.5rem, 2.6vw, 2.1rem); font-weight: 800; letter-spacing: -0.045em; }
+  .bucket-head .body { max-width: 46ch; }
+
+  .vert {
+    display: grid;
+    grid-template-columns: 13rem 1fr 1fr 13rem;
+    gap: 2rem;
+    padding-block: 1.5rem;
+    border-bottom: 1px solid var(--line-soft);
+    align-items: start;
+  }
+  .vert:hover { background: rgba(255,255,255,0.02); }
+  .vert-name { font-size: 1rem; font-weight: 700; letter-spacing: -0.025em; line-height: 1.35; }
+  .vert-pain, .vert-sys { color: var(--fog); font-size: 0.875rem; line-height: 1.55; }
+  .vert-sys { color: var(--dim); }
+  .vert-metric { color: var(--signal); font-family: var(--ff-mono); font-size: 0.66rem; letter-spacing: 0.06em; line-height: 1.6; }
+  .vert-hd { padding-block: 0.9rem; border-bottom: 1px solid var(--line); }
+  .vert-hd > * { color: var(--dim); }
+  @media (max-width: 1000px) {
+    .vert { grid-template-columns: 1fr 1fr; gap: 0.75rem 1.5rem; }
+    .vert-hd { display: none; }
+    .vert-name { grid-column: 1 / -1; }
+    .vert-metric { grid-column: 1 / -1; }
+  }
+  @media (max-width: 620px) {
+    .vert { grid-template-columns: 1fr; }
+  }
+
+  /* ---------- system detail page ---------- */
+
+  .det-hero { display: flex; flex-direction: column; gap: 1.8rem; align-items: flex-start; }
+  .det-grid { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--line); }
+  .det-col { padding: clamp(1.6rem, 3vw, 2.4rem); border-right: 1px solid var(--line); display: flex; flex-direction: column; gap: 1.35rem; }
+  .det-col:last-child { border-right: 0; }
+  .det-col ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 0.85rem; }
+  .det-col li { color: var(--fog); font-size: 0.92rem; line-height: 1.55; padding-left: 1.05rem; position: relative; }
+  .det-col li::before { content: ""; position: absolute; left: 0; top: 0.62em; width: 0.32rem; height: 1px; background: var(--dim); }
+  .det-col.out li::before { background: var(--signal); }
+  @media (max-width: 860px) {
+    .det-grid { grid-template-columns: 1fr; }
+    .det-col { border-right: 0; border-bottom: 1px solid var(--line); }
+    .det-col:last-child { border-bottom: 0; }
+  }
+
+  /* ---------- footer ---------- */
+
+  .foot { border-top: 1px solid var(--line); background: var(--panel); }
+  .foot-in { display: grid; grid-template-columns: 1.2fr 2fr; gap: 3rem; padding-block: 3.5rem 2rem; }
+  .foot-brand { display: flex; flex-direction: column; gap: 1.2rem; align-items: flex-start; }
+  .foot-cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+  .foot-col { display: flex; flex-direction: column; gap: 0.9rem; }
+  .foot-col .label { color: var(--dim); }
+  .foot-col a { color: var(--fog); font-size: 0.88rem; text-decoration: none; }
+  .foot-col a:hover { color: var(--cream); }
+  .foot-bar {
+    display: flex; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap;
+    padding-block: 1.4rem; border-top: 1px solid var(--line);
+    color: var(--dim); font-family: var(--ff-mono); font-size: 0.6rem;
+    letter-spacing: 0.12em; text-transform: uppercase;
+  }
+  @media (max-width: 860px) {
+    .foot-in { grid-template-columns: 1fr; }
+    .foot-cols { grid-template-columns: 1fr 1fr; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
+
+<!-- ============================= HOME ============================= -->
+<div class="route"><span>bybo.in /</span><span>Home</span></div>
+
+<article class="page">
+  <header class="nav">
+    <div class="shell nav-in">
+      <a href="#" class="nav-brand">BYBO<span class="nav-mark"></span></a>
+      <nav class="nav-links">
+        <a href="#" class="on">Systems</a>
+        <a href="#">Blueprint</a>
+        <a href="#">How we work</a>
+        <a href="#">Industries</a>
+        <a href="#">Insights</a>
+        <a href="#">About</a>
+        <a href="#" class="btn nav-cta">Apply</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="shell hero">
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow">AI Systems · Bengaluru</p>
+        <h1 class="h-display">Most firms sell you AI. We run it.</h1>
+        <p class="body-lg">
+          BYBO finds where your business leaks money, builds the system that stops
+          it, and operates that system under a service level you can hold us to.
+        </p>
+        <div class="hero-actions">
+          <a href="#" class="btn btn-signal">Start with a Blueprint <span class="arrow">&rarr;</span></a>
+          <a href="#" class="btn btn-ghost">See the five systems</a>
+        </div>
+      </div>
+
+      <div class="inst">
+        <div class="inst-scan"></div>
+        <div class="inst-head">
+          <div class="inst-title">
+            <span class="label" style="color:var(--dim)">Revenue System</span>
+            <strong>Sharda Precision &middot; Pune</strong>
+          </div>
+          <span class="pill"><span class="dot"></span>Operating</span>
+        </div>
+
+        <div class="inst-metrics">
+          <div class="metric">
+            <span class="label">First response</span>
+            <b>41s</b>
+            <small>median, 30d</small>
+          </div>
+          <div class="metric">
+            <span class="label">Escalated</span>
+            <b>8.2%</b>
+            <small>to a human</small>
+          </div>
+          <div class="metric">
+            <span class="label">Reviewed</span>
+            <b>100%</b>
+            <small>weekly sample</small>
+          </div>
+        </div>
+
+        <div class="log">
+          <div class="log-row"><span class="log-t">09:14:02</span><span class="log-e">lead.captured</span><span class="log-m">whatsapp &middot; hi</span></div>
+          <div class="log-row"><span class="log-t">09:14:06</span><span class="log-e">intent.scored</span><span class="log-m">0.82 &middot; rfq</span></div>
+          <div class="log-row"><span class="log-t">09:14:09</span><span class="log-e">spec.matched</span><span class="log-m">3 skus</span></div>
+          <div class="log-row"><span class="log-t">09:14:38</span><span class="log-e">quote.drafted</span><span class="log-m">pending approval</span></div>
+          <div class="log-row esc"><span class="log-t">09:22:18</span><span class="log-e">confidence.low</span><span class="log-m">0.41 &rarr; escalated</span></div>
+          <div class="log-row esc"><span class="log-t">09:22:19</span><span class="log-e">human.assigned</span><span class="log-m">r. mehta</span></div>
+        </div>
+
+        <div class="inst-foot label">Illustrative operations view</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="strip">
+    <div class="shell strip-in">
+      <p>We don't publish results we can't attribute.</p>
+      <p class="body">
+        No borrowed logos, no anonymous multipliers. Every number on this site is
+        either a named client's or it isn't here. What we will show you is exactly
+        how the system works before you pay for one.
+      </p>
+    </div>
+  </section>
+
+  <section class="shell sec">
+    <div class="sec-head">
+      <div>
+        <p class="eyebrow">What we build</p>
+        <h2 class="h-sec">Five systems.<br />One operator.</h2>
+      </div>
+      <p class="body" style="max-width:38ch">
+        Start with the one bottleneck costing you the most. The others connect to
+        it later, or never — that's a business decision, not a package.
+      </p>
+    </div>
+
+    <div class="sys-list">
+      <a href="#" class="sys-row lead">
+        <span class="sys-name">Business Operations</span>
+        <span class="sys-short">Document-heavy and coordination-heavy work, handled — with exceptions routed to people.</span>
+        <span class="sys-for">Manufacturing &middot; BFSI &middot; Logistics</span>
+        <span class="sys-arrow">&#8599;</span>
+      </a>
+      <a href="#" class="sys-row">
+        <span class="sys-name">Revenue Systems</span>
+        <span class="sys-short">No lead lost, no follow-up forgotten — capture through to a CRM record you trust.</span>
+        <span class="sys-for">Real estate &middot; Education &middot; D2C</span>
+        <span class="sys-arrow">&#8599;</span>
+      </a>
+      <a href="#" class="sys-row">
+        <span class="sys-name">Customer Experience</span>
+        <span class="sys-short">Fast, grounded answers in your voice — and a written policy for when to stop and ask a human.</span>
+        <span class="sys-for">D2C &middot; Healthcare &middot; SaaS</span>
+        <span class="sys-arrow">&#8599;</span>
+      </a>
+      <a href="#" class="sys-row">
+        <span class="sys-name">Brand Intelligence</span>
+        <span class="sys-short">Reviews, conversations and competitor movement turned into research your team can act on.</span>
+        <span class="sys-for">Consumer brands &middot; Retail</span>
+        <span class="sys-arrow">&#8599;</span>
+      </a>
+      <a href="#" class="sys-row">
+        <span class="sys-name">Decision Intelligence</span>
+        <span class="sys-short">One reconciled view of the operating numbers, with what changed explained and evidenced.</span>
+        <span class="sys-for">Leadership &middot; Multi-location</span>
+        <span class="sys-arrow">&#8599;</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="shell sec" style="padding-top:0">
+    <div class="sec-head">
+      <div>
+        <p class="eyebrow">How a system behaves</p>
+        <h2 class="h-sec">One worked example.</h2>
+      </div>
+      <p class="body" style="max-width:38ch">
+        An RFQ arrives at 21:40 on a Friday from a distributor in Coimbatore.
+        Here is what happens — including the part where the system stops.
+      </p>
+    </div>
+
+    <div class="tri">
+      <div class="tri-col">
+        <span class="label tri-k">Before</span>
+        <p>
+          The mail lands in a shared inbox. On Monday someone opens it, hunts for
+          the spec sheet, checks stock with the plant, and replies by Tuesday
+          afternoon. The distributor has already asked two competitors.
+        </p>
+      </div>
+      <div class="tri-col now">
+        <span class="label tri-k">With the system</span>
+        <p>
+          The RFQ is parsed, line items matched against the catalogue, current
+          stock and lead time pulled from the ERP, and a draft quote assembled
+          with the pricing rules your team already uses — held for approval.
+        </p>
+      </div>
+      <div class="tri-col">
+        <span class="label tri-k">After</span>
+        <p>
+          Saturday morning the sales head approves or edits one draft on their
+          phone. Ambiguous specs never auto-quote — they arrive flagged, with
+          the exact clause that caused the doubt.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="shell sec" style="padding-top:0">
+    <div class="sec-head">
+      <div>
+        <p class="eyebrow">The engagement</p>
+        <h2 class="h-sec">Four stages, in order.</h2>
+      </div>
+      <p class="body" style="max-width:38ch">
+        Each stage has to earn the next one. Most firms skip the first because
+        nobody wants to pay for a diagnosis — which is precisely why so many
+        pilots die.
+      </p>
+    </div>
+
+    <div class="ladder">
+      <div class="step paid">
+        <span class="step-n">01</span>
+        <h3>Diagnose</h3>
+        <span class="label">Paid &middot; 7&ndash;10 days</span>
+        <p class="body">Map the workflow, quantify the leakage in rupees, rank opportunities, and say plainly what shouldn't be automated.</p>
+      </div>
+      <div class="step">
+        <span class="step-n">02</span>
+        <h3>Deploy</h3>
+        <span class="label">4&ndash;12 weeks</span>
+        <p class="body">Build it against your real tools and data, add controls and escalation, test on representative cases, train the team.</p>
+      </div>
+      <div class="step">
+        <span class="step-n">03</span>
+        <h3>Operate</h3>
+        <span class="label">Ongoing &middot; SLA</span>
+        <p class="body">Monitor, review failures, maintain the knowledge, control model cost, and improve the workflow every month.</p>
+      </div>
+      <div class="step">
+        <span class="step-n">04</span>
+        <h3>Productize</h3>
+        <span class="label">As patterns repeat</span>
+        <p class="body">Proven workflows become modules that deploy faster and get better with every implementation.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="shell sec" style="padding-top:0">
+    <div class="sec-head">
+      <div>
+        <p class="eyebrow">Before you talk to anyone</p>
+        <h2 class="h-sec">What is the delay<br />actually costing?</h2>
+      </div>
+      <p class="body" style="max-width:38ch">
+        Move the three sliders. This is the number your CFO will ask for, and
+        it's the number the Blueprint sets out to verify or disprove.
+      </p>
+    </div>
+
+    <div class="calc">
+      <div class="calc-in">
+        <div class="field">
+          <div class="field-top">
+            <span class="label">Cases handled per day</span>
+            <span class="field-val" id="v-cases">240</span>
+          </div>
+          <input type="range" id="r-cases" min="10" max="1200" step="10" value="240"
+                 aria-label="Cases handled per day" />
+        </div>
+
+        <div class="field">
+          <div class="field-top">
+            <span class="label">Minutes of human time each</span>
+            <span class="field-val" id="v-mins">9 min</span>
+          </div>
+          <input type="range" id="r-mins" min="1" max="45" step="1" value="9"
+                 aria-label="Minutes of human time per case" />
+        </div>
+
+        <div class="field">
+          <div class="field-top">
+            <span class="label">Loaded cost per hour</span>
+            <span class="field-val" id="v-rate">&#8377;520</span>
+          </div>
+          <input type="range" id="r-rate" min="150" max="3000" step="10" value="520"
+                 aria-label="Loaded cost per hour in rupees" />
+        </div>
+      </div>
+
+      <div class="calc-out">
+        <span class="label" style="color:var(--dim)">Annual cost of this workflow</span>
+        <div class="calc-big" id="v-out">&#8377;56.2 L</div>
+        <div class="calc-sub">
+          <p class="body" id="v-hours" style="color:var(--fog)">10,800 person-hours a year, at 300 working days.</p>
+          <p class="calc-note">
+            Not a savings claim. It is the size of the prize before feasibility,
+            exception rate and run cost are subtracted — which is what the
+            Blueprint exists to establish.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="close">
+    <div class="shell close-in">
+      <div>
+        <p class="eyebrow">Next step</p>
+        <h2 class="h-sec">Bring us one<br />bottleneck.</h2>
+      </div>
+      <div style="align-items:flex-start">
+        <p class="body" style="max-width:40ch">
+          We take on a small number of engagements at a time. Tell us which
+          workflow is hurting and we'll tell you honestly whether a Blueprint is
+          worth your money.
+        </p>
+        <a href="#" class="btn btn-signal">Apply for a consultation <span class="arrow">&rarr;</span></a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <div class="shell">
+      <div class="foot-in">
+        <div class="foot-brand">
+          <a href="#" class="nav-brand">BYBO<span class="nav-mark"></span></a>
+          <p class="body" style="max-width:34ch">
+            AI systems partner for growing Indian brands and businesses.
+            Practical implementation, managed with measurable accountability.
+          </p>
+          <a href="#" class="label" style="color:var(--signal)">hello@bybo.in &#8599;</a>
+        </div>
+        <div class="foot-cols">
+          <div class="foot-col">
+            <span class="label">Systems</span>
+            <a href="#">Business Operations</a>
+            <a href="#">Revenue Systems</a>
+            <a href="#">Customer Experience</a>
+            <a href="#">Brand Intelligence</a>
+            <a href="#">Decision Intelligence</a>
+          </div>
+          <div class="foot-col">
+            <span class="label">Company</span>
+            <a href="#">Blueprint</a>
+            <a href="#">How we work</a>
+            <a href="#">Industries</a>
+            <a href="#">Insights</a>
+            <a href="#">About</a>
+          </div>
+          <div class="foot-col">
+            <span class="label">Start</span>
+            <a href="#">Apply for consultation</a>
+            <a href="#">WhatsApp</a>
+            <a href="#">+91 63600 79756</a>
+          </div>
+        </div>
+      </div>
+      <div class="foot-bar">
+        <span>&copy; 2026 BYBO India &middot; Bengaluru</span>
+        <span>A BCON Club venture</span>
+      </div>
+    </div>
+  </footer>
+</article>
+
+<!-- ============================= BLUEPRINT ============================= -->
+<div class="route"><span>bybo.in / blueprint</span><span>The paid front door — replaces the pricing page</span></div>
+
+<article class="page">
+  <header class="nav">
+    <div class="shell nav-in">
+      <a href="#" class="nav-brand">BYBO<span class="nav-mark"></span></a>
+      <nav class="nav-links">
+        <a href="#">Systems</a>
+        <a href="#" class="on">Blueprint</a>
+        <a href="#">How we work</a>
+        <a href="#">Industries</a>
+        <a href="#">Insights</a>
+        <a href="#">About</a>
+        <a href="#" class="btn nav-cta">Apply</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="shell sec">
+    <div class="bp-hero">
+      <div class="bp-copy">
+        <p class="eyebrow">The AI Opportunity Blueprint</p>
+        <h1 class="h-display" style="max-width:11ch">Pay for the diagnosis.</h1>
+        <p class="body-lg">
+          Ten days inside one workflow. We map how it actually runs, put a rupee
+          figure on what it leaks, rank what's worth fixing against what's merely
+          possible, and hand you a ninety-day plan with named owners.
+        </p>
+        <p class="body-lg">
+          You keep the document whether or not you build with us. If the numbers
+          don't justify a system, that is the finding, and we will write it down.
+        </p>
+      </div>
+
+      <div class="bp-price">
+        <div class="bp-price-top">
+          <span class="label" style="color:var(--dim)">Fixed fee</span>
+          <span class="bp-amount">&#8377;75,000 &ndash; 1,50,000</span>
+          <span class="body" style="font-size:0.86rem">Scaled to workflow complexity, agreed before we start.</span>
+        </div>
+        <dl class="bp-terms">
+          <div class="bp-term"><dt>Duration</dt><dd>7&ndash;10 working days</dd></div>
+          <div class="bp-term"><dt>Your time</dt><dd>~6 hours total</dd></div>
+          <div class="bp-term"><dt>Credited</dt><dd>100% against build</dd></div>
+          <div class="bp-term"><dt>Output</dt><dd>Document + walkthrough</dd></div>
+          <div class="bp-term"><dt>Commitment</dt><dd>None after delivery</dd></div>
+        </dl>
+        <div class="bp-cta">
+          <a href="#" class="btn btn-signal">Apply for a Blueprint <span class="arrow">&rarr;</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="shell sec" style="padding-top:0">
+    <div class="sec-head">
+      <div>
+        <p class="eyebrow">Scope</p>
+        <h2 class="h-sec">What is and isn't<br />in the room.</h2>
+      </div>
+    </div>
+
+    <div class="deliver">
+      <div class="deliver-col">
+        <span class="label" style="color:var(--signal)">You receive</span>
+        <ul>
+          <li><span class="tick">&#10003;</span><span>A workflow map of the function as it actually runs — hand-offs, waiting time, decision points, and who owns each</span></li>
+          <li><span class="tick">&#10003;</span><span>Leakage quantified in rupees per year, with the assumptions shown so your finance team can argue with them</span></li>
+          <li><span class="tick">&#10003;</span><span>Opportunities ranked on impact, feasibility and risk — including the ones we recommend against</span></li>
+          <li><span class="tick">&#10003;</span><span>A readiness assessment of your data, integrations and controls</span></li>
+          <li><span class="tick">&#10003;</span><span>A ninety-day roadmap with sequencing, named owners and a build estimate</span></li>
+          <li><span class="tick">&#10003;</span><span>A two-hour walkthrough with your team, recorded</span></li>
+        </ul>
+      </div>
+      <div class="deliver-col not">
+        <span class="label" style="color:var(--dim)">You do not receive</span>
+        <ul>
+          <li><span class="cross">&times;</span><span>A working prototype. Demos are easy and prove almost nothing about production</span></li>
+          <li><span class="cross">&times;</span><span>A vendor comparison spreadsheet. We recommend a build path, not a shortlist</span></li>
+          <li><span class="cross">&times;</span><span>A generic AI strategy deck. Every page is about one workflow in your business</span></li>
+          <li><span class="cross">&times;</span><span>A guarantee that we will find something worth building</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="close">
+    <div class="shell close-in">
+      <div>
+        <p class="eyebrow">Fair warning</p>
+        <h2 class="h-sec">Roughly one in five<br />end in "don't build".</h2>
+      </div>
+      <div style="align-items:flex-start">
+        <p class="body" style="max-width:40ch">
+          Low volume, unstable process, or data that isn't there yet. We would
+          rather return that verdict in week two than sell you an implementation
+          that quietly fails in month nine.
+        </p>
+        <a href="#" class="btn btn-signal">Apply for a Blueprint <span class="arrow">&rarr;</span></a>
+      </div>
+    </div>
+  </section>
+</article>
+
+<!-- ============================= INDUSTRIES ============================= -->
+<div class="route"><span>bybo.in / industries</span><span>Eleven verticals across three buckets</span></div>
+
+<article class="page">
+  <header class="nav">
+    <div class="shell nav-in">
+      <a href="#" class="nav-brand">BYBO<span class="nav-mark"></span></a>
+      <nav class="nav-links">
+        <a href="#">Systems</a>
+        <a href="#">Blueprint</a>
+        <a href="#">How we work</a>
+        <a href="#" class="on">Industries</a>
+        <a href="#">Insights</a>
+        <a href="#">About</a>
+        <a href="#" class="btn nav-cta">Apply</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="shell sec">
+    <div class="sec-head">
+      <div>
+        <p class="eyebrow">Industries</p>
+        <h2 class="h-sec">Find your row.</h2>
+      </div>
+      <p class="body" style="max-width:40ch">
+        Every business believes its problem is unique. The workflows aren't —
+        the constraints, the regulations and the metric that matters are. Those
+        are what we design around.
+      </p>
+    </div>
+
+    <div class="bucket">
+      <div class="bucket-head">
+        <h3>Consumer brands</h3>
+        <p class="body">D2C, e-commerce, hospitality, retail chains — high volumes of customer and market signal.</p>
+      </div>
+      <div class="vert vert-hd">
+        <span class="label">Vertical</span>
+        <span class="label">What actually hurts</span>
+        <span class="label">Systems</span>
+        <span class="label">The metric that closes</span>
+      </div>
+      <div class="vert">
+        <span class="vert-name">D2C &amp; e-commerce</span>
+        <span class="vert-pain">"Where is my order" swamps support; RTO sits between a quarter and two-fifths; thousands of reviews unread.</span>
+        <span class="vert-sys">Customer Experience, Revenue, Brand Intelligence</span>
+        <span class="vert-metric">RTO points recovered</span>
+      </div>
+      <div class="vert">
+        <span class="vert-name">Restaurants &amp; hospitality</span>
+        <span class="vert-pain">Bookings lost to an unanswered phone at peak hour; reviews unanswered; outlet performance invisible until month end.</span>
+        <span class="vert-sys">Customer Experience, Brand Intelligence, Decision</span>
+        <span class="vert-metric">Covers captured per shift</span>
+      </div>
+      <div class="vert">
+        <span class="vert-name">Multi-location retail &amp; salons</span>
+        <span class="vert-pain">SOPs drift between outlets; no-shows go unchased; manager reporting arrives as WhatsApp screenshots.</span>
+        <span class="vert-sys">Business Operations, Decision Intelligence</span>
+        <span class="vert-metric">Variance between outlets</span>
+      </div>
+    </div>
+
+    <div class="bucket" style="margin-top:4.5rem">
+      <div class="bucket-head">
+        <h3>High-consideration</h3>
+        <p class="body">Long, complex, human buying journeys where speed of response decides who wins the deal.</p>
+      </div>
+      <div class="vert vert-hd">
+        <span class="label">Vertical</span>
+        <span class="label">What actually hurts</span>
+        <span class="label">Systems</span>
+        <span class="label">The metric that closes</span>
+      </div>
+      <div class="vert">
+        <span class="vert-name">Real estate &amp; developers</span>
+        <span class="vert-pain">Leads cost thousands each, fewer than one in five gets called within the hour, and half of booked site visits never happen.</span>
+        <span class="vert-sys">Revenue Systems, Decision Intelligence</span>
+        <span class="vert-metric">Cost per site visit — not per lead</span>
+      </div>
+      <div class="vert">
+        <span class="vert-name">Clinics &amp; diagnostics</span>
+        <span class="vert-pain">Front desk abandons calls at peak; appointment no-shows run high; pre-authorisation paperwork eats the day.</span>
+        <span class="vert-sys">Customer Experience, Business Operations</span>
+        <span class="vert-metric">Chair and slot utilisation</span>
+      </div>
+      <div class="vert">
+        <span class="vert-name">Education &amp; test prep</span>
+        <span class="vert-pain">Counsellor bandwidth collapses in admissions season; inbound spikes tenfold; fee follow-up is manual.</span>
+        <span class="vert-sys">Revenue Systems, Customer Experience</span>
+        <span class="vert-metric">Applications per counsellor</span>
+      </div>
+      <div class="vert">
+        <span class="vert-name">Lending, insurance &amp; wealth</span>
+        <span class="vert-pain">KYC and claims documents processed by hand; every customer message is compliance-bound; agent training never scales.</span>
+        <span class="vert-sys">Business Operations, Decision Intelligence</span>
+        <span class="vert-metric">Turnaround time per file</span>
+      </div>
+      <div class="vert">
+        <span class="vert-name">Law, audit &amp; architecture</span>
+        <span class="vert-pain">Billable hours burned on document review, proposal writing and rediscovering what the firm already knows.</span>
+        <span class="vert-sys">Business Operations, Revenue Systems</span>
+        <span class="vert-metric">Hours recovered per fee-earner</span>
+      </div>
+    </div>
+
+    <div class="bucket" style="margin-top:4.5rem">
+      <div class="bucket-head">
+        <h3>Operations-led</h3>
+        <p class="body">Where documents, approvals and coordination set both speed and margin.</p>
+      </div>
+      <div class="vert vert-hd">
+        <span class="label">Vertical</span>
+        <span class="label">What actually hurts</span>
+        <span class="label">Systems</span>
+        <span class="label">The metric that closes</span>
+      </div>
+      <div class="vert">
+        <span class="vert-name">Manufacturing &amp; exporters</span>
+        <span class="vert-pain">RFQ to quote takes days; the person who knows the catalogue is one person; vendor documents arrive in six formats.</span>
+        <span class="vert-sys">Business Operations, Revenue, Decision</span>
+        <span class="vert-metric">Quote turnaround and win rate</span>
+      </div>
+      <div class="vert">
+        <span class="vert-name">Logistics &amp; 3PL</span>
+        <span class="vert-pain">Proof-of-delivery and invoices keyed in by hand; exceptions found late; customers call for status all day.</span>
+        <span class="vert-sys">Business Operations, Customer Experience</span>
+        <span class="vert-metric">Documents processed per person</span>
+      </div>
+      <div class="vert">
+        <span class="vert-name">SaaS &amp; technology</span>
+        <span class="vert-pain">Support load scales with customers; onboarding is bespoke every time; churn signals surface after the renewal.</span>
+        <span class="vert-sys">Customer Experience, Decision Intelligence</span>
+        <span class="vert-metric">Deflection and net retention</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="close">
+    <div class="shell close-in">
+      <div>
+        <p class="eyebrow">Not listed</p>
+        <h2 class="h-sec">Tell us the workflow<br />instead.</h2>
+      </div>
+      <div style="align-items:flex-start">
+        <p class="body" style="max-width:40ch">
+          The vertical matters less than the shape of the work. If it is
+          repetitive, high-volume and currently held together by someone's
+          memory, we have probably seen its cousin.
+        </p>
+        <a href="#" class="btn btn-signal">Apply for a consultation <span class="arrow">&rarr;</span></a>
+      </div>
+    </div>
+  </section>
+</article>
+
+<!-- ============================= SYSTEM DETAIL ============================= -->
+<div class="route"><span>bybo.in / systems / business-operations</span><span>One of five — generated from content.ts</span></div>
+
+<article class="page">
+  <header class="nav">
+    <div class="shell nav-in">
+      <a href="#" class="nav-brand">BYBO<span class="nav-mark"></span></a>
+      <nav class="nav-links">
+        <a href="#" class="on">Systems</a>
+        <a href="#">Blueprint</a>
+        <a href="#">How we work</a>
+        <a href="#">Industries</a>
+        <a href="#">Insights</a>
+        <a href="#">About</a>
+        <a href="#" class="btn nav-cta">Apply</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="shell sec">
+    <div class="det-hero">
+      <p class="eyebrow">System</p>
+      <h1 class="h-display" style="max-width:12ch">Business Operations</h1>
+      <p class="body-lg">
+        Remove operational drag without removing operational accountability. We
+        redesign document-heavy and coordination-heavy workflows so your team
+        spends its day acting on information instead of moving it.
+      </p>
+      <a href="#" class="btn btn-signal">Start with a Blueprint <span class="arrow">&rarr;</span></a>
+    </div>
+  </section>
+
+  <section class="shell sec" style="padding-top:0">
+    <div class="det-grid">
+      <div class="det-col">
+        <span class="label" style="color:var(--dim)">What you'll recognise</span>
+        <ul>
+          <li>Documents checked field by field, by hand</li>
+          <li>Knowledge trapped in people and shared folders</li>
+          <li>Approvals and hand-offs creating quiet delay</li>
+          <li>The same exception explained to a new joiner every quarter</li>
+        </ul>
+      </div>
+      <div class="det-col">
+        <span class="label" style="color:var(--dim)">What we build</span>
+        <ul>
+          <li>Document extraction with validation rules you set</li>
+          <li>Internal knowledge assistants grounded in approved sources</li>
+          <li>Meeting-to-action workflows</li>
+          <li>SOP and onboarding support</li>
+          <li>Approval, reconciliation and exception routing</li>
+        </ul>
+      </div>
+      <div class="det-col out">
+        <span class="label" style="color:var(--signal)">What changes</span>
+        <ul>
+          <li>Processing cycles measured in hours, not days</li>
+          <li>Fewer avoidable errors reaching the customer</li>
+          <li>Institutional knowledge that stays usable when people leave</li>
+          <li>People spending their time on exceptions, which is the part that needs them</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="shell sec" style="padding-top:0">
+    <div class="sec-head">
+      <div>
+        <p class="eyebrow">Where it stops</p>
+        <h2 class="h-sec">The escalation policy<br />is the product.</h2>
+      </div>
+      <p class="body" style="max-width:38ch">
+        Anyone can extract a field from a PDF. The engineering that matters is
+        knowing when the system should refuse to answer — and making that
+        refusal land in the right person's hands with the reason attached.
+      </p>
+    </div>
+
+    <div class="tri">
+      <div class="tri-col">
+        <span class="label tri-k">Confidence threshold</span>
+        <p>Each extraction carries a score. Below the line you set, nothing is written to a system of record — it is queued for review with the source page highlighted.</p>
+      </div>
+      <div class="tri-col now">
+        <span class="label tri-k">Exception routing</span>
+        <p>Exceptions go to the person who owns that decision, not to a shared queue. Ageing is tracked. Nothing sits unclaimed past its SLA without alerting.</p>
+      </div>
+      <div class="tri-col">
+        <span class="label tri-k">Weekly review</span>
+        <p>We sample real cases every week, score them against your standard, and feed the failures back into the rules. You see that review; it is part of the retainer.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="close">
+    <div class="shell close-in">
+      <div>
+        <p class="eyebrow">Next step</p>
+        <h2 class="h-sec">Ten days to know<br />if this is worth it.</h2>
+      </div>
+      <div style="align-items:flex-start">
+        <p class="body" style="max-width:40ch">
+          The Blueprint puts a rupee figure on this workflow before anyone writes
+          a line of code — including the case for leaving it exactly as it is.
+        </p>
+        <a href="#" class="btn btn-signal">Apply for a Blueprint <span class="arrow">&rarr;</span></a>
+      </div>
+    </div>
+  </section>
+</article>
+
+<script>
+  (function () {
+    var rc = document.getElementById("r-cases");
+    var rm = document.getElementById("r-mins");
+    var rr = document.getElementById("r-rate");
+    var vc = document.getElementById("v-cases");
+    var vm = document.getElementById("v-mins");
+    var vr = document.getElementById("v-rate");
+    var out = document.getElementById("v-out");
+    var hrs = document.getElementById("v-hours");
+
+    var DAYS = 300;
+
+    function groupIN(n) {
+      var s = String(Math.round(n));
+      if (s.length <= 3) return s;
+      var last3 = s.slice(-3);
+      var rest = s.slice(0, -3);
+      return rest.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + "," + last3;
+    }
+
+    function money(n) {
+      if (n >= 1e7) return "₹" + (n / 1e7).toFixed(2) + " Cr";
+      if (n >= 1e5) return "₹" + (n / 1e5).toFixed(1) + " L";
+      return "₹" + groupIN(n);
+    }
+
+    function update() {
+      var cases = +rc.value;
+      var mins = +rm.value;
+      var rate = +rr.value;
+
+      var hoursYear = (cases * mins / 60) * DAYS;
+      var cost = hoursYear * rate;
+
+      vc.textContent = groupIN(cases);
+      vm.textContent = mins + " min";
+      vr.textContent = "₹" + groupIN(rate);
+
+      out.textContent = money(cost);
+      hrs.textContent = groupIN(hoursYear) + " person-hours a year, at " + DAYS + " working days.";
+    }
+
+    [rc, rm, rr].forEach(function (el) {
+      el.addEventListener("input", update);
+    });
+    update();
+  })();
+</script>
