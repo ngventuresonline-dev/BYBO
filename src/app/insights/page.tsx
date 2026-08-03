@@ -6,11 +6,13 @@ import { FadeIn } from "@/components/FadeIn";
 import { PageHero } from "@/components/PageHero";
 import { PageHeroIllustration } from "@/components/page-visuals/HeroIllustrations";
 import { insightArticles } from "@/lib/insight-articles";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Insights",
   description:
-    "Practical field notes and frameworks about deploying dependable AI systems inside real businesses — enterprise AI implementation, governance, and opportunity prioritisation.",
+    "Practical frameworks and field notes on deploying dependable enterprise AI—implementation, governance, opportunity prioritisation, and human-in-the-loop design.",
+  path: "/insights",
   keywords: [
     "enterprise AI insights",
     "AI implementation India",
@@ -18,7 +20,7 @@ export const metadata: Metadata = {
     "human in the loop",
     "AI opportunity framework",
   ],
-};
+});
 
 export default function InsightsPage() {
   const published = insightArticles.filter((article) => article.published);

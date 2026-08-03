@@ -8,12 +8,20 @@ import { IndustryVerticalGallery } from "@/components/IndustryVerticalGallery";
 import { PageHero } from "@/components/PageHero";
 import { PageHeroIllustration } from "@/components/page-visuals/HeroIllustrations";
 import { industrySolutions } from "@/lib/content";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Industries",
   description:
-    "How BYBO supports real estate, healthcare, F&B, retail, manufacturing, financial services, and large-scale enterprise—with AI systems built around your workflow.",
-};
+    "Industry-specific AI systems for real estate, healthcare, manufacturing, financial services, retail, F&B, and large-scale enterprise—built around your workflows and controls.",
+  path: "/industries",
+  keywords: [
+    "AI for real estate",
+    "AI for healthcare India",
+    "manufacturing AI systems",
+    "enterprise AI by industry",
+  ],
+});
 
 export default function IndustriesPage() {
   return (

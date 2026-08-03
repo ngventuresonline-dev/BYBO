@@ -16,6 +16,7 @@ import { CapabilityModulesSection } from "@/components/CapabilityModulesSection"
 import { SystemHeroIllustration } from "@/components/page-visuals/HeroIllustrations";
 import { SignalAccentSurface } from "@/components/SignalAccentSurface";
 import { systems } from "@/lib/content";
+import { pageMetadata } from "@/lib/seo";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -40,10 +41,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const resolvedSlug = legacySystemRoutes[slug] ?? slug;
   const system = systems.find((item) => item.slug === resolvedSlug);
   if (!system) return {};
-  return {
+  return pageMetadata({
     title: system.name,
-    description: system.description,
-  };
+    description: `${system.short} ${system.description}`.slice(0, 160),
+    path: `/systems/${system.slug}`,
+    keywords: [
+      system.name,
+      "enterprise AI system",
+      "BYBO",
+      ...system.capabilities.slice(0, 3),
+    ],
+  });
 }
 
 export default async function SystemDetailPage({ params }: Props) {

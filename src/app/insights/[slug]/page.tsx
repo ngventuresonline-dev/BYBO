@@ -12,6 +12,7 @@ import {
   getRelatedArticles,
   insightArticles,
 } from "@/lib/insight-articles";
+import { pageMetadata } from "@/lib/seo";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -28,21 +29,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const article = getInsightArticle(slug);
 
   if (!article?.published) {
-    return { title: "Insight not found" };
+    return pageMetadata({
+      title: "Insight not found",
+      description: "This BYBO insight article could not be found.",
+      path: `/insights/${slug}`,
+      noIndex: true,
+    });
   }
 
-  return {
+  return pageMetadata({
     title: article.title,
     description: article.metaDescription,
+    path: `/insights/${article.slug}`,
     keywords: article.seoKeywords,
-    openGraph: {
-      title: article.title,
-      description: article.metaDescription,
-      type: "article",
-      publishedTime: article.publishedAt,
-      images: [{ url: article.image, alt: article.imageAlt }],
-    },
-  };
+    ogType: "article",
+    ogImage: article.image,
+    ogImageAlt: article.imageAlt,
+    publishedTime: article.publishedAt,
+  });
 }
 
 export default async function InsightArticlePage({ params }: Props) {

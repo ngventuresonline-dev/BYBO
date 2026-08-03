@@ -13,12 +13,20 @@ import {
 } from "@/components/page-visuals/HowWeWorkVisuals";
 import { PilotVsSystemVisual } from "@/components/page-visuals/InsightVisuals";
 import { engagementStages } from "@/lib/content";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "How We Work",
   description:
-    "BYBO diagnoses, deploys, and operates practical AI systems with clear baselines, controls, and ownership.",
-};
+    "How BYBO diagnoses bottlenecks, designs AI systems, deploys with human approval and governance, and operates platforms with measurable accountability.",
+  path: "/how-we-work",
+  keywords: [
+    "AI implementation process",
+    "enterprise AI delivery",
+    "AI systems partner India",
+    "human in the loop AI",
+  ],
+});
 
 const commercialModels = [
   {

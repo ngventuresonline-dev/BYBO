@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import type { Metadata } from "next";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -19,6 +20,21 @@ import { SpatialHeroVisual } from "@/components/SpatialHeroVisual";
 import { WorkflowExplorer } from "@/components/WorkflowExplorer";
 import { FadeIn } from "@/components/FadeIn";
 import { engagementStages } from "@/lib/content";
+import { pageMetadata, SITE } from "@/lib/seo";
+
+export const metadata: Metadata = pageMetadata({
+  title: SITE.defaultTitle,
+  description: SITE.defaultDescription,
+  path: "/",
+  keywords: [
+    "enterprise AI systems India",
+    "custom AI platforms",
+    "agentic AI operations",
+    "enterprise knowledge systems",
+    "AI systems partner",
+    "BYBO",
+  ],
+});
 
 export default function HomePage() {
   return (

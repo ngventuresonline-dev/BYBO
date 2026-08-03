@@ -7,12 +7,21 @@ import { PageHeroIllustration } from "@/components/page-visuals/HeroIllustration
 import { OpportunityFinder } from "@/components/OpportunityFinder";
 import { SystemsCapabilityGrid } from "@/components/SystemsCapabilityGrid";
 import { WorkflowExplorer } from "@/components/WorkflowExplorer";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "AI Systems",
   description:
-    "Seven enterprise AI systems—custom platforms, agentic operations, knowledge systems, decision intelligence, and governed infrastructure.",
-};
+    "Explore BYBO's seven enterprise AI systems: custom platforms, agentic operations, knowledge systems, decision intelligence, document AI, workforce AI, and governed infrastructure.",
+  path: "/systems",
+  keywords: [
+    "enterprise AI systems",
+    "custom AI platforms",
+    "agentic operations",
+    "enterprise knowledge systems",
+    "decision intelligence AI",
+  ],
+});
 
 export default function SystemsPage() {
   return (

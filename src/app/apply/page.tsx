@@ -4,12 +4,15 @@ import { Suspense } from "react";
 import { ApplicationForm } from "@/components/ApplicationForm";
 import { FadeIn } from "@/components/FadeIn";
 import { ApplyFlowVisual } from "@/components/page-visuals/SharedPageVisuals";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Apply for Consultation",
   description:
-    "Describe the workflow or business bottleneck you want BYBO to investigate.",
-};
+    "Tell BYBO where your business loses time. Share your workflow bottleneck and we'll assess whether an AI system, Blueprint, or no project is the right first move.",
+  path: "/apply",
+  keywords: ["AI consultation", "enterprise AI inquiry", "BYBO apply"],
+});
 
 export default function ApplyPage() {
   return (

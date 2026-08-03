@@ -6,12 +6,19 @@ import { FadeIn } from "@/components/FadeIn";
 import { EngagementTimelineVisual } from "@/components/page-visuals/SharedPageVisuals";
 import { PageHero } from "@/components/PageHero";
 import { PageHeroIllustration } from "@/components/page-visuals/HeroIllustrations";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "About",
+export const metadata: Metadata = pageMetadata({
+  title: "About BYBO",
   description:
-    "BYBO is an AI systems partner for growing Indian brands and businesses, focused on practical implementation and accountable operations.",
-};
+    "BYBO is an enterprise AI systems partner for growing Indian businesses—focused on practical implementation, governed operations, and measurable business outcomes.",
+  path: "/about",
+  keywords: [
+    "BYBO",
+    "enterprise AI company India",
+    "AI systems partner",
+  ],
+});
 
 export default function AboutPage() {
   return (

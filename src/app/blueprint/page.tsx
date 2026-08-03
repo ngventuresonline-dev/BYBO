@@ -8,12 +8,20 @@ import { PageHero } from "@/components/PageHero";
 import { PageHeroIllustration } from "@/components/page-visuals/HeroIllustrations";
 import { BlueprintProcessVisual } from "@/components/page-visuals/BlueprintVisuals";
 import { SignalAccentSurface } from "@/components/SignalAccentSurface";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "AI Opportunity Blueprint",
   description:
-    "A 7–10 day engagement that maps workflows, ranks AI opportunities, and defines a credible 90-day implementation roadmap.",
-};
+    "A fixed-scope 7–10 day BYBO engagement that maps workflows, ranks AI opportunities, and defines a credible 90-day implementation roadmap for your business.",
+  path: "/blueprint",
+  keywords: [
+    "AI opportunity assessment",
+    "AI roadmap",
+    "enterprise AI blueprint",
+    "AI discovery engagement",
+  ],
+});
 
 const deliverables = [
   {
