@@ -4,6 +4,7 @@ import { FormEvent, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { ArrowRight, Check, Mail, MessageCircle } from "lucide-react";
 import { industrySolutions, systems } from "@/lib/content";
+import { trackLead } from "@/lib/analytics";
 
 type FormData = {
   name: string;
@@ -124,6 +125,11 @@ export function ApplicationForm() {
   const submit = (event: FormEvent) => {
     event.preventDefault();
     if (!validate()) return;
+    trackLead({
+      content_name: sourceContext.interest || "consultation",
+      industry: sourceContext.industryName || "",
+      system: sourceContext.systemName || "",
+    });
     setSubmitted(true);
   };
 

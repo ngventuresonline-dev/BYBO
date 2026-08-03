@@ -4,6 +4,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { SeoJsonLd } from "@/components/SeoJsonLd";
+import { MarketingPixels } from "@/components/MarketingPixels";
 import { SITE } from "@/lib/seo";
 import "./globals.css";
 
@@ -81,6 +82,7 @@ export default function RootLayout({
       className={`${archivoDisplay.variable} ${archivoBody.variable} ${plexMono.variable}`}
     >
       <body className="antialiased">
+        <MarketingPixels />
         <SeoJsonLd />
         <ScrollToTop />
         <a href="#main-content" className="skip-link">
