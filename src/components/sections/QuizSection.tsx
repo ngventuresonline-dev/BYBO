@@ -19,7 +19,7 @@ export function QuizSection() {
                 How AI-ready is your business?
               </h2>
               <p className="text-muted text-lg leading-relaxed mb-8">
-                Take our 2-minute assessment and get a personalized AI roadmap —
+                Take our 2-minute assessment and get a personalized AI roadmap  - 
                 free, no strings attached.
               </p>
               <Link

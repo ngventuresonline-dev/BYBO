@@ -11,7 +11,7 @@ import {
   useSpring,
   useTransform,
 } from "framer-motion";
-import { ArrowUpRight, Check } from "lucide-react";
+import { ArrowUpRight, Check, ChevronRight } from "lucide-react";
 import { industrySolutions } from "@/lib/content";
 
 type Industry = (typeof industrySolutions)[number];
@@ -31,30 +31,39 @@ function IndustryStageMobileDetail({
       animate={{ opacity: 1, height: "auto" }}
       exit={reduceMotion ? undefined : { opacity: 0, height: 0 }}
       transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-      className="overflow-hidden border-t border-white/10 lg:hidden"
+      className="overflow-hidden lg:hidden"
     >
-      <div className="space-y-4 px-3 pb-4 pt-4">
-        <div className="min-w-0">
-          <p className="font-mono text-[0.58rem] uppercase tracking-[0.15em] text-signal">
-            {industry.tagline}
-          </p>
-          <h4 className="mt-2 font-display text-xl font-bold tracking-[-0.045em] text-pretty text-cream">
-            {industry.name}
-          </h4>
-          <p className="mt-2 text-sm leading-6 text-pretty text-white/58">
-            {industry.conversation}
-          </p>
+      <div className="space-y-4 px-1 pb-4 pt-3">
+        <div className="relative h-44 overflow-hidden rounded-xl border border-white/10">
+          <Image
+            src={industry.image}
+            alt={`${industry.name} working environment`}
+            fill
+            sizes="100vw"
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(11,11,12,0.72)_0%,transparent_60%)]" />
+          <div className="absolute inset-x-0 bottom-0 p-4">
+            <p className="font-mono text-[0.55rem] uppercase tracking-[0.14em] text-signal">
+              {industry.tagline}
+            </p>
+            <h4 className="mt-1.5 font-display text-xl font-bold tracking-[-0.04em] text-cream">
+              {industry.name}
+            </h4>
+          </div>
         </div>
 
-        <div className="rounded-2xl border border-white/12 bg-black/35 p-4">
-          <p className="font-mono text-[0.52rem] uppercase tracking-[0.13em] text-white/50">
+        <p className="text-sm leading-6 text-white/60">{industry.conversation}</p>
+
+        <div className="rounded-2xl border border-white/12 bg-black/40 p-4">
+          <p className="font-mono text-[0.52rem] uppercase tracking-[0.13em] text-white/45">
             How BYBO supports this industry
           </p>
           <ul className="mt-3 space-y-2.5">
             {industry.outcomes.map((outcome) => (
               <li
                 key={outcome}
-                className="flex items-start gap-2 text-xs leading-5 text-white/72"
+                className="flex items-start gap-2 text-xs leading-5 text-white/75"
               >
                 <Check size={12} className="mt-0.5 shrink-0 text-signal" />
                 {outcome}
@@ -63,21 +72,10 @@ function IndustryStageMobileDetail({
           </ul>
         </div>
 
-        <div className="relative h-40 overflow-hidden rounded-xl border border-white/10">
-          <Image
-            src={industry.image}
-            alt={`${industry.name} working environment`}
-            fill
-            sizes="100vw"
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(11,11,12,0.5)_0%,transparent_55%)]" />
-        </div>
-
         <div className="flex flex-col gap-3 pt-1">
           <Link
             href={`/apply?industry=${industry.slug}`}
-            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-signal px-5 font-mono text-[0.62rem] font-bold uppercase tracking-[0.12em] text-signal-ink transition-transform hover:-translate-y-0.5"
+            className="signal-button w-full"
           >
             Discuss for your industry <ArrowUpRight size={13} />
           </Link>
@@ -132,65 +130,65 @@ export function IndustryStage() {
 
   return (
     <div
-      className="overflow-hidden rounded-[1.4rem] border border-white/10 bg-[#0b0b0c] text-cream shadow-[0_36px_100px_rgba(0,0,0,0.28)] sm:rounded-[2rem]"
+      className="industry-stage"
       onPointerMove={handlePointerMove}
       onPointerEnter={() => setPaused(true)}
       onPointerLeave={resetPointer}
     >
-      <div className="grid min-w-0 lg:min-h-[38rem] lg:grid-cols-[0.38fr_1fr]">
-        <div className="relative z-20 flex min-w-0 flex-col p-4 sm:p-5 lg:border-r lg:border-white/10 lg:p-8">
-          <div>
-            <p className="font-mono text-[0.58rem] uppercase tracking-[0.15em] text-white/50">
-              Industry environments
-            </p>
-            <h3 className="mt-4 font-display text-xl font-bold leading-snug tracking-[-0.04em] sm:text-2xl">
-              Context changes the system.
-            </h3>
-          </div>
+      <div className="grid min-w-0 lg:min-h-[38rem] lg:grid-cols-[0.36fr_1fr]">
+        <aside className="relative z-20 flex min-w-0 flex-col p-4 sm:p-5 lg:border-r lg:border-white/10 lg:p-7">
+          <p className="font-mono text-[0.58rem] uppercase tracking-[0.16em] text-white/45">
+            Industry environments
+          </p>
 
           <div
-            className="industry-list-scroll mt-8 space-y-1 lg:mt-auto lg:max-h-[28rem] lg:overflow-y-auto lg:overscroll-contain lg:pr-1"
+            className="industry-list-scroll mt-5 flex-1 space-y-0 lg:mt-6 lg:max-h-[26rem] lg:overflow-y-auto lg:overscroll-contain lg:pr-1"
             role="tablist"
             aria-label="Select an industry environment"
           >
             {industrySolutions.map((industry, index) => {
               const selected = activeIndex === index;
               return (
-                <div key={industry.slug} className="min-w-0">
-                  <div
-                    className={`mb-1 overflow-hidden rounded-xl ${
+                <div
+                  key={industry.slug}
+                  className={`min-w-0 border-b border-white/[0.08] last:border-b-0 ${
+                    selected ? "border-b-transparent" : ""
+                  }`}
+                >
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={selected}
+                    aria-controls={`industry-stage-panel-${industry.slug}`}
+                    aria-expanded={selected}
+                    onClick={() => setActiveIndex(index)}
+                    className={`group relative flex min-h-12 w-full min-w-0 items-center gap-3 px-3 py-3 text-left transition-colors duration-300 ${
                       selected
-                        ? "border border-white/12 bg-white/[0.03]"
-                        : ""
+                        ? "rounded-full bg-cream text-void shadow-[0_8px_24px_rgba(0,0,0,0.25)]"
+                        : "rounded-xl text-white/45 hover:bg-white/[0.04] hover:text-white"
                     }`}
                   >
-                    <button
-                      type="button"
-                      role="tab"
-                      aria-selected={selected}
-                      aria-controls={`industry-stage-panel-${industry.slug}`}
-                      aria-expanded={selected}
-                      onClick={() => setActiveIndex(index)}
-                      className={`group relative flex min-h-12 w-full min-w-0 cursor-pointer items-start gap-3 overflow-hidden px-3 py-3 text-left transition-colors duration-300 ${
-                        selected
-                          ? "bg-white text-void"
-                          : "rounded-xl text-white/45 hover:bg-white/[0.045] hover:text-white"
-                      }`}
-                    >
                     <span
-                      className={`mt-0.5 shrink-0 font-mono text-[0.52rem] leading-none ${
-                        selected ? "text-signal-text" : "text-white/45"
+                      className={`shrink-0 font-mono text-[0.55rem] leading-none ${
+                        selected ? "text-signal" : "text-white/35"
                       }`}
                     >
-                      0{index + 1}
+                      {String(index + 1).padStart(2, "0")}
                     </span>
-                    <span className="min-w-0 flex-1 text-pretty text-xs font-semibold leading-snug sm:text-sm">
+                    <span className="min-w-0 flex-1 text-pretty text-xs font-semibold leading-snug sm:text-[0.9rem]">
                       {industry.name}
                     </span>
+                    {selected && (
+                      <ChevronRight
+                        size={14}
+                        className="shrink-0 text-void/55"
+                        aria-hidden="true"
+                      />
+                    )}
                     {selected && !reduceMotion && (
                       <motion.span
                         key={`${industry.slug}-progress`}
-                        className="absolute inset-x-0 bottom-0 hidden h-px origin-left bg-signal lg:block"
+                        className="absolute inset-x-3 bottom-1 hidden h-px origin-left bg-signal lg:block"
                         initial={{ scaleX: 0 }}
                         animate={{ scaleX: 1 }}
                         transition={{ duration: 6.5, ease: "linear" }}
@@ -206,27 +204,26 @@ export function IndustryStage() {
                       />
                     )}
                   </AnimatePresence>
-                  </div>
                 </div>
               );
             })}
           </div>
 
-          <div className="mt-7 hidden flex-col gap-3 lg:mt-8 lg:flex">
+          <div className="mt-6 hidden flex-col gap-3 lg:mt-auto lg:flex">
             <Link
               href={`/apply?industry=${active.slug}`}
-              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-signal px-5 font-mono text-[0.62rem] font-bold uppercase tracking-[0.12em] text-signal-ink transition-transform hover:-translate-y-0.5"
+              className="signal-button w-full"
             >
               Discuss for your industry <ArrowUpRight size={13} />
             </Link>
             <Link
               href="/industries"
-              className="inline-flex min-h-11 items-center gap-2 font-mono text-[0.62rem] font-semibold uppercase tracking-[0.12em] text-white/45 transition-colors hover:text-white"
+              className="inline-flex min-h-10 items-center gap-2 font-mono text-[0.6rem] font-semibold uppercase tracking-[0.12em] text-white/40 transition-colors hover:text-white"
             >
               View all industries <ArrowUpRight size={13} />
             </Link>
           </div>
-        </div>
+        </aside>
 
         <div
           id="industry-stage-panel"
@@ -236,7 +233,7 @@ export function IndustryStage() {
           <AnimatePresence mode="wait">
             <motion.div
               key={active.slug}
-              initial={reduceMotion ? false : { opacity: 0, scale: 1.035 }}
+              initial={reduceMotion ? false : { opacity: 0, scale: 1.03 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={reduceMotion ? undefined : { opacity: 0 }}
               transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
@@ -254,42 +251,32 @@ export function IndustryStage() {
                   className="object-cover"
                 />
               </motion.div>
-              <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,8,8,0.66)_0%,rgba(8,8,8,0.16)_50%,rgba(8,8,8,0.3)_100%)]" />
-              <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(8,8,8,0.96)_0%,transparent_58%)]" />
+              <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,8,8,0.55)_0%,rgba(8,8,8,0.12)_48%,rgba(8,8,8,0.28)_100%)]" />
+              <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(8,8,8,0.94)_0%,transparent_58%)]" />
             </motion.div>
           </AnimatePresence>
 
           <motion.div
             aria-hidden="true"
-            className="pointer-events-none absolute -right-[7rem] -top-[7rem] h-[25rem] w-[25rem] rounded-full border border-white/20 bg-white/[0.035] shadow-[inset_0_0_70px_rgba(255,255,255,0.05),0_0_80px_rgba(176,38,255,0.08)] backdrop-blur-[2px]"
+            className="pointer-events-none absolute -right-[6rem] top-[8%] h-[22rem] w-[22rem] rounded-full border border-signal/25"
             style={
               reduceMotion
                 ? undefined
-                : { x: lensX, y: lensY, rotateX: 12, rotateY: -16 }
+                : { x: lensX, y: lensY }
             }
             animate={
               reduceMotion
                 ? undefined
-                : { rotate: [0, 8, 0], scale: [1, 1.025, 1] }
+                : { scale: [1, 1.04, 1], opacity: [0.55, 0.85, 0.55] }
             }
-            transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
           >
-            <div className="absolute inset-[18%] rounded-full border border-signal/35" />
-            <div className="absolute inset-[35%] rounded-full bg-signal/15 blur-2xl" />
+            <div className="absolute inset-[16%] rounded-full border border-signal/30" />
+            <div className="absolute inset-[32%] rounded-full border border-signal/20" />
+            <div className="absolute inset-[42%] rounded-full bg-signal/20 blur-2xl" />
           </motion.div>
 
-          <motion.div
-            aria-hidden="true"
-            className="pointer-events-none absolute left-[9%] top-[13%] h-20 w-20 rounded-[1.4rem] border border-white/15 bg-white/[0.045] backdrop-blur-md"
-            animate={
-              reduceMotion
-                ? undefined
-                : { y: [0, -12, 0], rotate: [8, 14, 8] }
-            }
-            transition={{ duration: 7.5, repeat: Infinity, ease: "easeInOut" }}
-          />
-
-          <div className="absolute inset-x-0 bottom-0 z-10 p-10">
+          <div className="absolute inset-x-0 bottom-0 z-10 p-8 xl:p-10">
             <AnimatePresence mode="wait">
               <motion.div
                 key={`${active.slug}-copy`}
@@ -298,29 +285,32 @@ export function IndustryStage() {
                 exit={reduceMotion ? undefined : { opacity: 0, y: -8 }}
                 transition={{ duration: 0.38, ease: "easeOut" }}
               >
-                <div className="grid min-w-0 gap-6 lg:grid-cols-[1fr_0.8fr] lg:items-end">
+                <div className="grid min-w-0 gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
                   <div className="min-w-0">
                     <p className="font-mono text-[0.58rem] uppercase tracking-[0.15em] text-signal">
                       {active.tagline}
                     </p>
-                    <h4 className="mt-3 font-display text-2xl font-bold tracking-[-0.045em] text-pretty sm:text-3xl">
+                    <h4 className="mt-3 font-display text-3xl font-bold tracking-[-0.045em] text-pretty text-cream xl:text-[2.15rem]">
                       {active.name}
                     </h4>
-                    <p className="mt-3 text-sm leading-6 text-pretty text-white/58">
+                    <p className="mt-3 max-w-md text-sm leading-6 text-pretty text-white/65">
                       {active.conversation}
                     </p>
                   </div>
-                  <div className="rounded-2xl border border-white/12 bg-black/35 p-4 backdrop-blur-xl">
-                    <p className="font-mono text-[0.52rem] uppercase tracking-[0.13em] text-white/50">
+                  <div className="rounded-2xl border border-white/12 bg-black/45 p-5 backdrop-blur-xl">
+                    <p className="font-mono text-[0.52rem] uppercase tracking-[0.13em] text-white/45">
                       How BYBO supports this industry
                     </p>
-                    <ul className="mt-3 space-y-2.5">
+                    <ul className="mt-3.5 space-y-2.5">
                       {active.outcomes.map((outcome) => (
                         <li
                           key={outcome}
-                          className="flex items-start gap-2 text-xs leading-5 text-white/72"
+                          className="flex items-start gap-2.5 text-xs leading-5 text-white/78"
                         >
-                          <Check size={12} className="mt-0.5 shrink-0 text-signal" />
+                          <Check
+                            size={12}
+                            className="mt-0.5 shrink-0 text-signal"
+                          />
                           {outcome}
                         </li>
                       ))}

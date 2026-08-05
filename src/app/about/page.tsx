@@ -11,7 +11,7 @@ import { pageMetadata } from "@/lib/seo";
 export const metadata: Metadata = pageMetadata({
   title: "About BYBO",
   description:
-    "BYBO is an enterprise AI systems partner for growing Indian businesses—focused on practical implementation, governed operations, and measurable business outcomes.",
+    "BYBO is an enterprise AI systems partner for growing Indian businesses - focused on practical implementation, governed operations, and measurable business outcomes.",
   path: "/about",
   keywords: [
     "BYBO",

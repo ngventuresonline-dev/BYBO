@@ -51,8 +51,8 @@ export function AICoreScene() {
     const coreGeometry = new THREE.IcosahedronGeometry(1.28, 5);
     const coreMaterial = new THREE.MeshPhysicalMaterial({
       color: 0x222326,
-      emissive: 0x391006,
-      emissiveIntensity: 0.8,
+      emissive: 0x2a0840,
+      emissiveIntensity: 0.9,
       metalness: 0.25,
       roughness: 0.12,
       transmission: 0.5,
@@ -68,8 +68,8 @@ export function AICoreScene() {
     const innerGeometry = new THREE.IcosahedronGeometry(0.66, 2);
     const innerMaterial = new THREE.MeshStandardMaterial({
       color: 0xb026ff,
-      emissive: 0xff3d00,
-      emissiveIntensity: 2.2,
+      emissive: 0xb026ff,
+      emissiveIntensity: 2.4,
       roughness: 0.3,
     });
     const innerCore = new THREE.Mesh(innerGeometry, innerMaterial);
@@ -157,9 +157,9 @@ export function AICoreScene() {
       new THREE.BufferAttribute(linePositions, 3),
     );
     const lineMaterial = new THREE.LineBasicMaterial({
-      color: 0xff7a4d,
+      color: 0xb026ff,
       transparent: true,
-      opacity: 0.2,
+      opacity: 0.28,
       blending: THREE.AdditiveBlending,
     });
     const connections = new THREE.LineSegments(lineGeometry, lineMaterial);

@@ -25,9 +25,9 @@ const initialData: FormData = {
 };
 
 const volumeLabels: Record<string, string> = {
-  low: "Occasional — a few cases each week",
-  medium: "Regular — cases every working day",
-  high: "High-volume — dozens or hundreds each day",
+  low: "Occasional - a few cases each week",
+  medium: "Regular - cases every working day",
+  high: "High-volume - dozens or hundreds each day",
 };
 
 const readinessLabels: Record<string, string> = {
@@ -114,7 +114,7 @@ export function ApplicationForm() {
     }
     if (!data.website.trim()) {
       nextWarnings.website =
-        "A company website helps us prepare for the call. Add yours if you have one — you can still continue without it.";
+        "A company website helps us prepare for the call. Add yours if you have one - you can still continue without it.";
     }
 
     setErrors(nextErrors);
@@ -161,8 +161,8 @@ export function ApplicationForm() {
   }, [data, sourceContext]);
 
   const emailSubject = sourceContext.interest
-    ? `BYBO Blueprint enquiry — ${data.company || "New application"}`
-    : `BYBO consultation — ${data.company || "New application"}`;
+    ? `BYBO Blueprint enquiry - ${data.company || "New application"}`
+    : `BYBO consultation - ${data.company || "New application"}`;
 
   const emailHref = `mailto:hello@bybo.in?subject=${encodeURIComponent(
     emailSubject,
@@ -312,7 +312,7 @@ export function ApplicationForm() {
 
         <p className="mt-8 text-xs leading-5 text-dim">
           No obligation. We&apos;ll use the first call to qualify the
-          opportunity — not to force a sales process. Nothing is stored here;
+          opportunity - not to force a sales process. Nothing is stored here;
           you send the application by email or WhatsApp.
         </p>
 

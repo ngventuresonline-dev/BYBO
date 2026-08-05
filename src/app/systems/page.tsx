@@ -33,7 +33,7 @@ export default function SystemsPage() {
             What BYBO builds.
           </h1>
           <p className="body-large mt-8 max-w-2xl">
-            Seven coordinated capabilities—not a fixed software package.
+            Seven coordinated capabilities - not a fixed software package.
             We design and deliver the systems your operating problem
             actually needs.
           </p>
@@ -95,7 +95,7 @@ export default function SystemsPage() {
                 </h2>
                 <p className="mt-3 max-w-lg text-sm leading-6 text-fog">
                   Real estate, healthcare, F&B, retail, manufacturing, finance,
-                  and large-scale enterprise—each with its own workflows and
+                  and large-scale enterprise - each with its own workflows and
                   provisions.
                 </p>
               </div>
@@ -115,7 +115,7 @@ export default function SystemsPage() {
               Tell us the workflow. We&apos;ll point to the right system.
             </h2>
             <p className="body-large mt-6 max-w-2xl">
-              Use the finder to identify a sensible starting point—then open
+              Use the finder to identify a sensible starting point - then open
               the system brief that matches your context.
             </p>
           </div>

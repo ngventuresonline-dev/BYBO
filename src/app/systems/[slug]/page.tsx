@@ -183,7 +183,7 @@ export default async function SystemDetailPage({ params }: Props) {
                 </h2>
               </div>
               <p className="max-w-2xl text-lg leading-8 text-surface-muted">
-                These are configurable modules—not a fixed software package. We
+                These are configurable modules - not a fixed software package. We
                 select and connect only what the operating problem requires.
               </p>
             </div>
@@ -283,7 +283,7 @@ export default async function SystemDetailPage({ params }: Props) {
                 </h2>
                 <p className="mt-5 max-w-lg text-sm leading-7 text-surface-muted">
                   We agree a baseline and the few measures that prove whether
-                  the system is improving the workflow—not merely producing
+                  the system is improving the workflow - not merely producing
                   activity.
                 </p>
               </div>

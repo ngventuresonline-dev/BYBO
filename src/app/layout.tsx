@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
   title: {
     default: SITE.defaultTitle,
-    template: "%s — BYBO",
+    template: "%s | BYBO",
   },
   description: SITE.defaultDescription,
   applicationName: SITE.name,
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
     siteName: SITE.name,
     locale: SITE.locale,
     type: "website",
-    images: [{ url: "/icon.svg", alt: "BYBO — Enterprise AI systems" }],
+    images: [{ url: "/icon.svg", alt: "BYBO | Enterprise AI systems" }],
   },
   twitter: {
     card: "summary_large_image",

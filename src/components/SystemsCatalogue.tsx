@@ -61,7 +61,7 @@ function SystemCatalogueDetail({
 
       <Link
         href={`/systems/${active.slug}`}
-        className="mt-6 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-signal px-5 font-mono text-[0.62rem] font-bold uppercase tracking-[0.12em] text-signal-ink transition-transform hover:-translate-y-0.5 sm:w-fit"
+        className="signal-button mt-6 w-full sm:w-fit"
       >
         Explore this system <ArrowUpRight size={14} />
       </Link>

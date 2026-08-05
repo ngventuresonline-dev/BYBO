@@ -143,7 +143,7 @@ export default function HowWeWorkPage() {
                 </h2>
                 <p className="mt-5 max-w-xl text-sm leading-7 text-fog">
                   These are non-negotiable. They are how we keep AI useful in real
-                  operations—not just impressive in a demo.
+                  operations - not just impressive in a demo.
                 </p>
                 <div className="relative mt-8 min-h-[14rem] overflow-hidden rounded-xl border border-line lg:hidden">
                   <Image
@@ -248,7 +248,7 @@ export default function HowWeWorkPage() {
                 <h2 className="section-title mt-6">No theatre.</h2>
                 <p className="mt-5 max-w-xl text-sm leading-7 text-fog">
                   Honest boundaries beat inflated claims. These are the myths we
-                  refuse to sell—and what we build instead.
+                  refuse to sell - and what we build instead.
                 </p>
                 <div className="mt-8 divide-y divide-line border-y border-line">
                   {[

@@ -99,7 +99,7 @@ function IndustryExplorerMobileDetail({
 
         <Link
           href={`/apply?industry=${industry.slug}`}
-          className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-signal px-6 font-mono text-[0.62rem] font-bold uppercase tracking-[0.12em] text-signal-ink transition-transform hover:-translate-y-0.5"
+          className="signal-button w-full"
         >
           Discuss {industry.name} <ArrowRight size={14} />
         </Link>
@@ -289,7 +289,7 @@ export function IndustrySolutionsExplorer() {
                 </div>
                 <Link
                   href={`/apply?industry=${active.slug}`}
-                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-signal px-6 font-mono text-[0.62rem] font-bold uppercase tracking-[0.12em] text-signal-ink transition-transform hover:-translate-y-0.5"
+                  className="signal-button w-full sm:w-auto"
                 >
                   Discuss {active.name} <ArrowRight size={14} />
                 </Link>

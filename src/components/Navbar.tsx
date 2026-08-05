@@ -125,7 +125,7 @@ export function Navbar() {
 
               <Link
                 href="/apply"
-                className="site-nav-cta signal-button ml-1 !min-h-[2.55rem] !rounded-full !px-5 !py-0"
+                className="site-nav-cta signal-button ml-1 !min-h-[2.55rem] !px-5"
               >
                 Apply
                 <ArrowUpRight size={14} aria-hidden="true" />

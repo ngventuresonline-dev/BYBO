@@ -88,7 +88,7 @@ export const insightArticles: InsightArticle[] = [
       {
         type: "prose",
         paragraphs: [
-          "A pilot is designed to show what AI can do on a clean example. Production work lives in the exceptions — the incomplete form, the ambiguous customer message, the policy change nobody told the system about.",
+          "A pilot is designed to show what AI can do on a clean example. Production work lives in the exceptions - the incomplete form, the ambiguous customer message, the policy change nobody told the system about.",
           "When those cases hit an AI layer with no rules, no sources, and no human hand-off, trust collapses quickly. Teams revert to WhatsApp, spreadsheets, and manual review.",
         ],
       },
@@ -99,7 +99,7 @@ export const insightArticles: InsightArticle[] = [
       },
       {
         type: "pullquote",
-        text: "If the workflow cannot support a baseline, a control plan, and an owner, it is not ready for AI — it is ready for a workshop.",
+        text: "If the workflow cannot support a baseline, a control plan, and an owner, it is not ready for AI - it is ready for a workshop.",
       },
       {
         type: "heading",
@@ -109,8 +109,8 @@ export const insightArticles: InsightArticle[] = [
         type: "checklist",
         title: "Before you call it production",
         items: [
-          "Named owner accountable for outcomes — not just the vendor invoice",
-          "Control model: auto-act, approve, or escalate — defined per step",
+          "Named owner accountable for outcomes - not just the vendor invoice",
+          "Control model: auto-act, approve, or escalate - defined per step",
           "Baseline metrics: time, error rate, and cost before automation",
           "Exception map: what happens when data is missing or ambiguous",
           "Evaluation loop: weekly review of failures, not just uptime",
@@ -129,12 +129,12 @@ export const insightArticles: InsightArticle[] = [
       {
         type: "visual",
         visual: "governance-stack",
-        caption: "Layers every production AI workflow should have — even before regulators ask.",
+        caption: "Layers every production AI workflow should have - even before regulators ask.",
       },
       {
         type: "prose",
         paragraphs: [
-          "Human-in-the-loop is often treated as fine print. In a real business it is a product decision. Escalation design — who sees what, when, and with what context — determines whether staff trust the system enough to use it.",
+          "Human-in-the-loop is often treated as fine print. In a real business it is a product decision. Escalation design - who sees what, when, and with what context - determines whether staff trust the system enough to use it.",
         ],
       },
       {
@@ -160,7 +160,7 @@ export const insightArticles: InsightArticle[] = [
           {
             href: "/how-we-work",
             label: "How we work",
-            description: "Diagnose before you automate — our engagement model.",
+            description: "Diagnose before you automate - our engagement model.",
           },
         ],
       },
@@ -171,7 +171,7 @@ export const insightArticles: InsightArticle[] = [
     category: "Framework",
     title: "How to rank AI opportunities by impact, feasibility, and risk",
     excerpt:
-      "A practical scoring model for deciding what to automate first — and what to leave alone.",
+      "A practical scoring model for deciding what to automate first - and what to leave alone.",
     metaDescription:
       "Use this AI opportunity scoring framework to rank automation candidates by business impact, readiness, frequency, and risk. Prioritise enterprise AI projects that actually ship.",
     seoKeywords: [
@@ -193,14 +193,14 @@ export const insightArticles: InsightArticle[] = [
       {
         type: "prose",
         paragraphs: [
-          "Every leadership team has a list of places AI could help. The hard part is not generating ideas — it is choosing the first workflow that deserves budget, attention, and political capital.",
-          "This framework ranks candidates on four axes: impact, frequency, readiness, and risk. It is the same logic BYBO uses inside the AI Opportunity Blueprint — simplified so you can run a first pass internally.",
+          "Every leadership team has a list of places AI could help. The hard part is not generating ideas - it is choosing the first workflow that deserves budget, attention, and political capital.",
+          "This framework ranks candidates on four axes: impact, frequency, readiness, and risk. It is the same logic BYBO uses inside the AI Opportunity Blueprint - simplified so you can run a first pass internally.",
         ],
       },
       {
         type: "visual",
         visual: "opportunity-matrix",
-        caption: "Four quadrants — build first, blueprint next, defer, or do not automate.",
+        caption: "Four quadrants - build first, blueprint next, defer, or do not automate.",
       },
       {
         type: "heading",
@@ -209,13 +209,13 @@ export const insightArticles: InsightArticle[] = [
       {
         type: "prose",
         paragraphs: [
-          "Impact: how much time, revenue, quality, or visibility is lost when this workflow fails or slows down? Frequency: how often does it run — daily fire-fighting beats monthly edge cases. Readiness: do you have process knowledge, data access, and a willing owner? Risk: what happens if the system is wrong — customer harm, compliance exposure, or irreversible decisions?",
+          "Impact: how much time, revenue, quality, or visibility is lost when this workflow fails or slows down? Frequency: how often does it run - daily fire-fighting beats monthly edge cases. Readiness: do you have process knowledge, data access, and a willing owner? Risk: what happens if the system is wrong - customer harm, compliance exposure, or irreversible decisions?",
         ],
       },
       {
         type: "visual",
         visual: "scoring-grid",
-        caption: "Sample scores for three common workflow types — scale 1–10.",
+        caption: "Sample scores for three common workflow types - scale 1–10.",
       },
       {
         type: "callout",
@@ -240,12 +240,12 @@ export const insightArticles: InsightArticle[] = [
       },
       {
         type: "pullquote",
-        text: "The best first project is boring on a slide and expensive in real life — because that is where margin actually leaks.",
+        text: "The best first project is boring on a slide and expensive in real life - because that is where margin actually leaks.",
       },
       {
         type: "prose",
         paragraphs: [
-          "Rank your top five workflows. Pick one. Run a two-week baseline: measure time, touches, and failure modes. Only then decide whether AI is the right tool — or whether a simpler integration would solve eighty percent of the problem.",
+          "Rank your top five workflows. Pick one. Run a two-week baseline: measure time, touches, and failure modes. Only then decide whether AI is the right tool - or whether a simpler integration would solve eighty percent of the problem.",
         ],
       },
       {
@@ -265,7 +265,7 @@ export const insightArticles: InsightArticle[] = [
           {
             href: "/apply?interest=blueprint",
             label: "Apply for a Blueprint",
-            description: "Bring one workflow — we will tell you if it ranks.",
+            description: "Bring one workflow - we will tell you if it ranks.",
           },
         ],
       },
@@ -299,14 +299,14 @@ export const insightArticles: InsightArticle[] = [
       {
         type: "prose",
         paragraphs: [
-          "Terms and conditions bury human-in-the-loop at the bottom. Product teams should put it at the centre — because it defines what the system is allowed to do, what it must ask permission for, and what it must never touch.",
-          "When escalation is an afterthought, staff work around the AI. When it is designed well, the AI becomes the fastest path to a correct decision — not a shortcut around accountability.",
+          "Terms and conditions bury human-in-the-loop at the bottom. Product teams should put it at the centre - because it defines what the system is allowed to do, what it must ask permission for, and what it must never touch.",
+          "When escalation is an afterthought, staff work around the AI. When it is designed well, the AI becomes the fastest path to a correct decision - not a shortcut around accountability.",
         ],
       },
       {
         type: "visual",
         visual: "escalation-flow",
-        caption: "A simple customer-service flow — auto, gate, approve, auto.",
+        caption: "A simple customer-service flow - auto, gate, approve, auto.",
       },
       {
         type: "heading",
@@ -323,8 +323,8 @@ export const insightArticles: InsightArticle[] = [
       {
         type: "prose",
         paragraphs: [
-          "Every step in a workflow should be classified into one of these tiers before a line of code is written. Classification depends on your industry — a low-value refund may be auto in retail; a clinical triage message is never auto in healthcare.",
-          "The mistake most teams make is binary thinking: fully automated or fully manual. Real operations live in the middle — and that middle is where product design earns or loses trust.",
+          "Every step in a workflow should be classified into one of these tiers before a line of code is written. Classification depends on your industry - a low-value refund may be auto in retail; a clinical triage message is never auto in healthcare.",
+          "The mistake most teams make is binary thinking: fully automated or fully manual. Real operations live in the middle - and that middle is where product design earns or loses trust.",
         ],
       },
       {
@@ -335,9 +335,9 @@ export const insightArticles: InsightArticle[] = [
         type: "checklist",
         title: "Design checklist",
         items: [
-          "Reviewer sees the same sources the model used — not just the output",
-          "One-click approve, edit, or reject — no re-keying into another system",
-          "SLA on pending approvals — nothing sits invisible for days",
+          "Reviewer sees the same sources the model used - not just the output",
+          "One-click approve, edit, or reject - no re-keying into another system",
+          "SLA on pending approvals - nothing sits invisible for days",
           "Audit log: who approved what, when, with which model version",
           "Feedback loop: rejections become training data for the next iteration",
         ],
@@ -351,13 +351,13 @@ export const insightArticles: InsightArticle[] = [
       {
         type: "visual",
         visual: "governance-stack",
-        caption: "Governance layers that support escalation — not replace it.",
+        caption: "Governance layers that support escalation - not replace it.",
       },
       {
         type: "prose",
         paragraphs: [
-          "Agentic systems amplify this challenge. When AI can chain multiple steps, each step needs its own gate — not one approval at the end of a black-box sequence.",
-          "BYBO builds escalation into the workflow architecture from day one — visible in the operating layer, not hidden in a model prompt.",
+          "Agentic systems amplify this challenge. When AI can chain multiple steps, each step needs its own gate - not one approval at the end of a black-box sequence.",
+          "BYBO builds escalation into the workflow architecture from day one - visible in the operating layer, not hidden in a model prompt.",
         ],
       },
       {

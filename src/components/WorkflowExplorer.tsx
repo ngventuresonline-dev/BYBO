@@ -55,7 +55,7 @@ function SystemDetailContent({
       <div className={compact ? "mt-6 space-y-3" : "mt-10 space-y-4"}>
         <Link
           href={`/systems/${system.slug}`}
-          className="inline-flex min-h-11 w-full items-center justify-center gap-2 bg-signal px-5 font-mono text-[0.64rem] font-bold uppercase tracking-[0.1em] text-signal-ink transition-colors hover:bg-cream hover:text-signal-ink sm:w-fit sm:justify-start sm:bg-transparent sm:px-0 sm:font-semibold sm:normal-case sm:tracking-[0.12em] sm:text-cream sm:hover:text-signal-text"
+          className="signal-button w-full sm:w-fit"
         >
           Explore this system
           <ArrowRight size={15} />
@@ -193,7 +193,7 @@ export function WorkflowExplorer() {
         </div>
       </div>
 
-      {/* Mobile: inline accordion — detail opens directly under the selected row */}
+      {/* Mobile: inline accordion - detail opens directly under the selected row */}
       <div className="lg:hidden">
         {systems.map((system, index) => {
           const isActive = active === index;

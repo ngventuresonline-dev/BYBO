@@ -24,7 +24,7 @@ export function CaseStudySection() {
                   &ldquo;We&apos;re finally growing without hiring three more
                   people.&rdquo;
                   <footer className="text-sm text-dim mt-2 not-italic">
-                    — Founder, Bangalore
+                    - Founder, Bangalore
                   </footer>
                 </blockquote>
                 <Link

@@ -24,7 +24,7 @@ export function Hero() {
               , not just your ads.
             </h1>
             <p className="mt-6 text-lg text-muted leading-relaxed max-w-md">
-              We build AI systems for marketing, sales, and operations — then
+              We build AI systems for marketing, sales, and operations - then
               run them for you. One partner. One stack. Real outcomes.
             </p>
             <div className="mt-10 flex flex-wrap gap-3">
@@ -74,9 +74,9 @@ export function Hero() {
                 <p className="text-xs text-dim mb-3">Active AI agents</p>
                 <div className="space-y-2">
                   {[
-                    "WhatsApp qualifier — 12 conversations",
-                    "Content engine — 3 posts scheduled",
-                    "Meta ads — optimizing creative B",
+                    "WhatsApp qualifier - 12 conversations",
+                    "Content engine - 3 posts scheduled",
+                    "Meta ads - optimizing creative B",
                   ].map((item) => (
                     <div key={item} className="flex items-center gap-2 text-sm">
                       <span className="w-1 h-1 rounded-full bg-ink shrink-0" />

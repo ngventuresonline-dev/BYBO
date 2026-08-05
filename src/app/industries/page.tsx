@@ -13,7 +13,7 @@ import { pageMetadata } from "@/lib/seo";
 export const metadata: Metadata = pageMetadata({
   title: "Industries",
   description:
-    "Industry-specific AI systems for real estate, healthcare, manufacturing, financial services, retail, F&B, and large-scale enterprise—built around your workflows and controls.",
+    "Industry-specific AI systems for real estate, healthcare, manufacturing, financial services, retail, F&B, and large-scale enterprise - built around your workflows and controls.",
   path: "/industries",
   keywords: [
     "AI for real estate",
@@ -34,8 +34,8 @@ export default function IndustriesPage() {
           </h1>
           <p className="body-large mt-8 max-w-2xl">
             From F&B outlets and retail chains to enterprise units and
-            regulated sectors—we design AI systems around your workflows,
-            data, and governance—not generic promises.
+            regulated sectors - we design AI systems around your workflows,
+            data, and governance - not generic promises.
           </p>
           <p className="mt-4 font-mono text-[0.58rem] uppercase tracking-[0.12em] text-dim">
             {industrySolutions.length} industry environments · mapped to BYBO systems
@@ -48,7 +48,7 @@ export default function IndustriesPage() {
           <div className="mb-10 max-w-2xl">
             <p className="eyebrow">Explore by industry</p>
             <h2 className="section-title mt-5">
-              See how we support your business—not just your sector label.
+              See how we support your business - not just your sector label.
             </h2>
             <p className="mt-4 text-sm leading-6 text-fog">
               Select an industry to see the problems we address, the systems we
@@ -93,7 +93,7 @@ export default function IndustriesPage() {
               </h2>
               <p className="mt-4 text-sm leading-6 text-fog">
                 Whether you run a single outlet, a multi-location brand, or a
-                large business unit—we start with the workflow that costs you
+                large business unit - we start with the workflow that costs you
                 time, margin, or customer trust.
               </p>
             </div>
@@ -111,7 +111,7 @@ export default function IndustriesPage() {
                 We qualify the workflow, not the logo.
               </h2>
               <p className="mt-4 text-sm leading-6 text-fog">
-                We take on work where AI can create measurable value—with clear
+                We take on work where AI can create measurable value - with clear
                 ownership, controls, and a path to production.
               </p>
             </div>
@@ -148,7 +148,7 @@ export default function IndustriesPage() {
                 If the workflow is repeated and valuable, it may still be a fit.
               </p>
               <p className="mt-4 max-w-xl text-sm leading-6 text-fog">
-                Describe the process—not just your sector—and we will tell you
+                Describe the process - not just your sector - and we will tell you
                 honestly whether a BYBO system makes sense.
               </p>
             </div>

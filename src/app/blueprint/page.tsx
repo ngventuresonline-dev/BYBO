@@ -26,7 +26,7 @@ export const metadata: Metadata = pageMetadata({
 const deliverables = [
   {
     title: "Current-state workflow map",
-    text: "How the work actually moves—including exceptions, ownership, and hand-offs.",
+    text: "How the work actually moves - including exceptions, ownership, and hand-offs.",
   },
   {
     title: "Opportunity matrix",
@@ -75,7 +75,7 @@ export default function BlueprintPage() {
                 A decision document, not a sales deck.
               </h2>
               <p className="mt-5 max-w-md text-sm leading-7 text-fog">
-                Six tangible outputs—each with workflow evidence, financial
+                Six tangible outputs - each with workflow evidence, financial
                 assumptions, and a clear recommendation on what to build first.
               </p>
             </div>
@@ -170,19 +170,19 @@ export default function BlueprintPage() {
               <div className="border-b border-line p-7 sm:p-10 lg:border-b-0 lg:border-r">
                 <p className="technical-label text-success">Good fit</p>
                 <ul className="mt-7 space-y-4 text-sm leading-6 text-fog">
-                  <li>— A repeated workflow with meaningful volume</li>
-                  <li>— A process owner who can participate</li>
-                  <li>— Access to representative data and cases</li>
-                  <li>— A measurable reason to improve</li>
+                  <li> -  A repeated workflow with meaningful volume</li>
+                  <li> -  A process owner who can participate</li>
+                  <li> -  Access to representative data and cases</li>
+                  <li> -  A measurable reason to improve</li>
                 </ul>
               </div>
               <div className="p-7 sm:p-10">
                 <p className="technical-label text-signal">Not yet</p>
                 <ul className="mt-7 space-y-4 text-sm leading-6 text-fog">
-                  <li>— AI primarily for publicity</li>
-                  <li>— No accountable owner or baseline</li>
-                  <li>— A low-frequency problem with weak economics</li>
-                  <li>— Expectation of unsupervised, perfect automation</li>
+                  <li> -  AI primarily for publicity</li>
+                  <li> -  No accountable owner or baseline</li>
+                  <li> -  A low-frequency problem with weak economics</li>
+                  <li> -  Expectation of unsupervised, perfect automation</li>
                 </ul>
               </div>
             </div>
@@ -200,7 +200,7 @@ export default function BlueprintPage() {
               </h2>
               <Link
                 href="/apply?interest=blueprint"
-                className="inline-flex min-h-14 shrink-0 items-center justify-center gap-2 bg-void px-6 font-mono text-[0.68rem] font-bold uppercase tracking-[0.12em] text-cream"
+                className="signal-button signal-button--inverse shrink-0"
               >
                 Apply now <ArrowRight size={15} />
               </Link>

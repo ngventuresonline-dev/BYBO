@@ -1,10 +1,10 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
-  ArrowRight,
   Check,
+  ChevronRight,
   Database,
   FileText,
   Play,
@@ -52,7 +52,7 @@ const scenarios: Array<{
     solution: {
       title: "Exception orchestration for your business",
       subtitle:
-        "When work spans ERP, CRM, logistics, and finance, BYBO builds a platform that evaluates options and routes decisions—without replacing your core systems.",
+        "When work spans ERP, CRM, logistics, and finance, BYBO builds a platform that evaluates options and routes decisions - without replacing your core systems.",
       visualSteps: ["Context assembled", "Options evaluated", "Decision routed"],
       howWeBuild: [
         "Map triggers, data sources, approval rules, and accountable owners.",
@@ -164,7 +164,7 @@ const scenarios: Array<{
     solution: {
       title: "Document intelligence without manual drag",
       subtitle:
-        "BYBO builds systems that read invoices, forms, and scans—validate against your rules, post clean cases, and send only exceptions with evidence attached.",
+        "BYBO builds systems that read invoices, forms, and scans - validate against your rules, post clean cases, and send only exceptions with evidence attached.",
       visualSteps: ["Fields extracted", "Rules validated", "Exception isolated"],
       howWeBuild: [
         "Define document types, fields, validation rules, and approval thresholds.",
@@ -286,30 +286,30 @@ export function InteractiveSystemDemo() {
 
   return (
     <>
-      <div className="relative overflow-hidden border border-line bg-panel shadow-2xl shadow-black/30">
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-signal to-transparent" />
+      <div className="workflow-lab">
+        <div className="workflow-lab__glow" aria-hidden="true" />
 
-        <div className="flex items-center justify-between border-b border-line px-5 py-4">
+        <div className="relative flex items-start justify-between gap-3 px-4 pb-4 pt-5 sm:px-5">
           <div className="flex items-center gap-3">
-            <span className="flex h-9 w-9 items-center justify-center border border-line bg-void text-signal">
-              <Sparkles size={16} aria-hidden="true" />
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg border border-line bg-void text-signal">
+              <Sparkles size={15} aria-hidden="true" />
             </span>
             <div>
-              <p className="technical-label text-cream">Workflow lab</p>
-              <p className="mt-1 font-mono text-[0.55rem] uppercase tracking-[0.12em] text-dim">
+              <p className="font-mono text-[0.68rem] font-bold uppercase tracking-[0.16em] text-cream">
+                Workflow lab
+              </p>
+              <p className="mt-1 font-mono text-[0.52rem] uppercase tracking-[0.12em] text-dim">
                 Try an illustrative BYBO system
               </p>
             </div>
           </div>
           <span
-            className={`inline-flex items-center gap-2 font-mono text-[0.58rem] uppercase tracking-[0.12em] ${
-              running
+            className={`inline-flex shrink-0 items-center gap-2 pt-1 font-mono text-[0.55rem] uppercase tracking-[0.14em] ${
+              running || awaitingSolution
                 ? "text-signal"
-                : awaitingSolution
-                  ? "text-signal"
-                  : completed === active.steps.length
-                    ? "text-success"
-                    : "text-dim"
+                : completed === active.steps.length
+                  ? "text-success"
+                  : "text-signal"
             }`}
           >
             <span
@@ -318,28 +318,28 @@ export function InteractiveSystemDemo() {
                   ? "signal-pulse bg-signal"
                   : completed === active.steps.length
                     ? "bg-success"
-                    : "bg-dim"
+                    : "bg-signal"
               }`}
             />
             {running
               ? "Running"
               : awaitingSolution
-                ? "Preparing brief"
+                ? "Preparing"
                 : completed === active.steps.length
                   ? "Complete"
                   : "Ready"}
           </span>
         </div>
 
-        <div className="grid grid-cols-3 border-b border-line">
+        <div className="mx-4 grid grid-cols-3 overflow-hidden rounded-xl border border-line bg-void/55 sm:mx-5">
           {scenarios.map((scenario) => (
             <button
               key={scenario.id}
               onClick={() => selectScenario(scenario.id)}
-              className={`min-h-12 border-r border-line px-2 font-mono text-[0.58rem] font-semibold uppercase tracking-[0.08em] last:border-r-0 sm:px-4 ${
+              className={`min-h-11 border-r border-line px-2 font-mono text-[0.55rem] font-semibold uppercase tracking-[0.1em] transition-colors last:border-r-0 sm:text-[0.58rem] ${
                 scenario.id === activeId
-                  ? "bg-signal text-signal-ink"
-                  : "bg-void/35 text-dim hover:bg-panel-2 hover:text-cream"
+                  ? "bg-gradient-to-r from-signal to-[#c44aff] text-signal-ink"
+                  : "text-dim hover:bg-panel-2 hover:text-cream"
               }`}
               aria-pressed={scenario.id === activeId}
             >
@@ -348,7 +348,7 @@ export function InteractiveSystemDemo() {
           ))}
         </div>
 
-        <div className="p-5 sm:p-6">
+        <div className="p-4 sm:p-5">
           <AnimatePresence mode="wait">
             <motion.div
               key={active.id}
@@ -358,23 +358,23 @@ export function InteractiveSystemDemo() {
               transition={{ duration: 0.2 }}
             >
               <div className="flex items-start gap-3">
-                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center border border-line bg-void text-signal">
+                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-line bg-void text-signal">
                   <ActiveIcon size={16} aria-hidden="true" />
                 </span>
                 <div>
-                  <p className="font-display text-lg font-bold tracking-[-0.03em]">
+                  <p className="font-display text-base font-bold tracking-[-0.03em] sm:text-lg">
                     {active.label}
                   </p>
-                  <p className="mt-1 text-xs text-dim">
+                  <p className="mt-1 text-xs leading-5 text-dim">
                     Run the workflow, read the system response, then see how BYBO
                     would build it.
                   </p>
                 </div>
               </div>
 
-              <div className="mt-5 border border-line bg-void/60 p-4">
+              <div className="mt-5 rounded-xl border border-line bg-void/75 p-4">
                 <p className="technical-label text-dim">Incoming signal</p>
-                <p className="mt-3 text-sm leading-6 text-fog">
+                <p className="mt-3 text-sm leading-6 text-signal-text">
                   &ldquo;{active.input}&rdquo;
                 </p>
               </div>
@@ -386,16 +386,16 @@ export function InteractiveSystemDemo() {
                   return (
                     <div
                       key={step.label}
-                      className={`flex items-start gap-3 border px-4 py-3 transition-colors ${
+                      className={`flex items-start gap-3 rounded-xl border px-3.5 py-3 transition-colors sm:px-4 ${
                         isComplete
                           ? "border-success/30 bg-success/5"
                           : isActive
-                            ? "border-signal/50 bg-signal/5"
-                            : "border-line bg-panel-2/40"
+                            ? "border-signal/45 bg-signal/8"
+                            : "border-line bg-panel-2/35"
                       }`}
                     >
                       <span
-                        className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${
+                        className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border ${
                           isComplete
                             ? "border-success bg-success text-signal-ink"
                             : isActive
@@ -406,17 +406,30 @@ export function InteractiveSystemDemo() {
                         {isComplete ? (
                           <Check size={11} strokeWidth={3} />
                         ) : (
-                          <span className="font-mono text-[0.52rem]">{index + 1}</span>
+                          <span className="font-mono text-[0.52rem]">
+                            {index + 1}
+                          </span>
                         )}
                       </span>
-                      <div>
-                        <p className={`text-xs font-semibold ${isComplete ? "text-cream" : "text-fog"}`}>
+                      <div className="min-w-0 flex-1">
+                        <p
+                          className={`text-xs font-semibold ${
+                            isComplete || isActive ? "text-cream" : "text-fog"
+                          }`}
+                        >
                           {step.label}
                         </p>
                         <p className="mt-1 text-[0.68rem] leading-5 text-dim">
                           {step.detail}
                         </p>
                       </div>
+                      <ChevronRight
+                        size={14}
+                        className={`mt-1 shrink-0 ${
+                          isComplete || isActive ? "text-signal" : "text-dim/70"
+                        }`}
+                        aria-hidden="true"
+                      />
                     </div>
                   );
                 })}
@@ -427,7 +440,7 @@ export function InteractiveSystemDemo() {
                   <motion.div
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="mt-3 border-l-2 border-signal bg-signal/5 px-4 py-3"
+                    className="mt-3 rounded-xl border border-signal/30 bg-signal/8 px-4 py-3"
                   >
                     <p className="technical-label text-signal">System response</p>
                     <p className="mt-2 text-xs leading-5 text-fog">
@@ -435,7 +448,7 @@ export function InteractiveSystemDemo() {
                     </p>
                     {awaitingSolution && (
                       <p className="mt-3 font-mono text-[0.52rem] uppercase tracking-[0.1em] text-dim">
-                        Opening solution brief…
+                        Opening solution brief...
                       </p>
                     )}
                   </motion.div>
@@ -448,12 +461,12 @@ export function InteractiveSystemDemo() {
             <button
               onClick={handlePrimaryAction}
               disabled={running || awaitingSolution}
-              className="inline-flex min-h-12 w-full items-center justify-center gap-3 bg-cream px-5 font-mono text-[0.64rem] font-bold uppercase tracking-[0.1em] text-signal-ink transition-colors hover:bg-signal disabled:cursor-wait disabled:opacity-60"
+              className="signal-button w-full"
             >
               {completed === active.steps.length ? (
                 <RefreshCw size={14} aria-hidden="true" />
               ) : (
-                <Play size={14} fill="currentColor" aria-hidden="true" />
+                <Play size={13} fill="currentColor" aria-hidden="true" />
               )}
               {running
                 ? "System running"
@@ -462,9 +475,6 @@ export function InteractiveSystemDemo() {
                   : completed === active.steps.length
                     ? "Run again"
                     : "Run this workflow"}
-              {!running && !awaitingSolution && (
-                <ArrowRight size={14} aria-hidden="true" />
-              )}
             </button>
 
             {completed === active.steps.length && !awaitingSolution && (

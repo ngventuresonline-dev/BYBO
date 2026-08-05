@@ -875,13 +875,13 @@ export const proofOutcomes = [
     industry: "Retail & consumer brand",
     metric: "40% faster support resolution",
     detail:
-      "Omnichannel customer system across WhatsApp and web — same team, higher throughput on order and return queries.",
+      "Omnichannel customer system across WhatsApp and web - same team, higher throughput on order and return queries.",
   },
   {
     industry: "Manufacturing & logistics",
     metric: "Exception cycles cut from days to hours",
     detail:
-      "Agentic orchestration across ERP, WMS, and sales — mismatches surfaced and routed to the accountable owner automatically.",
+      "Agentic orchestration across ERP, WMS, and sales - mismatches surfaced and routed to the accountable owner automatically.",
   },
 ];
 
@@ -911,14 +911,14 @@ export const industrySolutions: IndustrySolution[] = [
     image: "/images/bybo-industry-real-estate.png",
     tagline: "Speed up high-value deals without losing control.",
     problem:
-      "Enquiries arrive across portals, WhatsApp, and calls—but follow-up, site visits, and documentation still depend on individual brokers and coordinators.",
+      "Enquiries arrive across portals, WhatsApp, and calls - but follow-up, site visits, and documentation still depend on individual brokers and coordinators.",
     conversation:
       "Your team is not losing demand. It is losing time between enquiry, qualification, site scheduling, and the documents needed to close.",
     provisions: [
       {
         title: "Enquiry intelligence platform",
         description:
-          "Capture every lead with source context, budget signals, location intent, and broker assignment—then route high-intent buyers before competitors respond.",
+          "Capture every lead with source context, budget signals, location intent, and broker assignment - then route high-intent buyers before competitors respond.",
         systemSlug: "custom-ai-platforms",
       },
       {
@@ -936,7 +936,7 @@ export const industrySolutions: IndustrySolution[] = [
       {
         title: "Document and agreement processing",
         description:
-          "Extract, validate, and route KYC, booking forms, and vendor invoices—only exceptions reach your operations team.",
+          "Extract, validate, and route KYC, booking forms, and vendor invoices - only exceptions reach your operations team.",
         systemSlug: "document-multimodal-intelligence",
       },
     ],
@@ -955,12 +955,12 @@ export const industrySolutions: IndustrySolution[] = [
     problem:
       "Patient communication, appointment coordination, records, and internal policy questions consume staff time that should stay with care delivery.",
     conversation:
-      "Patients expect immediate answers. Your team needs accuracy, privacy, and clear escalation—not another chatbot that guesses.",
+      "Patients expect immediate answers. Your team needs accuracy, privacy, and clear escalation - not another chatbot that guesses.",
     provisions: [
       {
         title: "Patient and front-desk experience",
         description:
-          "Handle appointment queries, preparation instructions, follow-ups, and routine status checks across WhatsApp and web—with strict escalation for clinical topics.",
+          "Handle appointment queries, preparation instructions, follow-ups, and routine status checks across WhatsApp and web - with strict escalation for clinical topics.",
         systemSlug: "customer-workforce-ai",
       },
       {
@@ -972,7 +972,7 @@ export const industrySolutions: IndustrySolution[] = [
       {
         title: "Document and records intelligence",
         description:
-          "Process referrals, insurance forms, lab reports, and discharge summaries—structured extraction with audit trails and human review on sensitive cases.",
+          "Process referrals, insurance forms, lab reports, and discharge summaries - structured extraction with audit trails and human review on sensitive cases.",
         systemSlug: "document-multimodal-intelligence",
       },
       {
@@ -995,14 +995,14 @@ export const industrySolutions: IndustrySolution[] = [
     image: "/images/bybo-industry-operations.png",
     tagline: "Connect the floor, supply chain, and back office.",
     problem:
-      "Orders, inventory exceptions, vendor documents, and internal requests move through email, spreadsheets, and people—creating delay and rework.",
+      "Orders, inventory exceptions, vendor documents, and internal requests move through email, spreadsheets, and people - creating delay and rework.",
     conversation:
       "When one system changes and nobody tells the other, margin disappears in exceptions, not in the plan.",
     provisions: [
       {
         title: "Exception orchestration platform",
         description:
-          "Detect order, inventory, and fulfilment conflicts across ERP, WMS, and sales systems—then route recovery options to the accountable owner.",
+          "Detect order, inventory, and fulfilment conflicts across ERP, WMS, and sales systems - then route recovery options to the accountable owner.",
         systemSlug: "agentic-operations",
       },
       {
@@ -1014,7 +1014,7 @@ export const industrySolutions: IndustrySolution[] = [
       {
         title: "Operations intelligence",
         description:
-          "Unify production, dispatch, and vendor performance signals into briefs leadership can act on—not reports assembled manually each week.",
+          "Unify production, dispatch, and vendor performance signals into briefs leadership can act on - not reports assembled manually each week.",
         systemSlug: "decision-intelligence",
       },
       {
@@ -1044,7 +1044,7 @@ export const industrySolutions: IndustrySolution[] = [
       {
         title: "Onboarding and KYC intelligence",
         description:
-          "Extract, validate, and reconcile identity and financial documents—routing only mismatches and edge cases for human review.",
+          "Extract, validate, and reconcile identity and financial documents - routing only mismatches and edge cases for human review.",
         systemSlug: "document-multimodal-intelligence",
       },
       {
@@ -1079,7 +1079,7 @@ export const industrySolutions: IndustrySolution[] = [
     image: "/images/bybo-industry-consumer.png",
     tagline: "Turn customer signals into revenue and retention.",
     problem:
-      "Support volume, campaign feedback, inventory questions, and sales follow-up compete for the same team—without a shared intelligence layer.",
+      "Support volume, campaign feedback, inventory questions, and sales follow-up compete for the same team - without a shared intelligence layer.",
     conversation:
       "You already have the demand. The gap is connecting what customers say, buy, and complain about to what your team does next.",
     provisions: [
@@ -1121,14 +1121,14 @@ export const industrySolutions: IndustrySolution[] = [
     image: "/images/bybo-industry-hospitality.png",
     tagline: "Keep service sharp across every outlet and channel.",
     problem:
-      "Reservations, orders, supplier documents, staff queries, and guest feedback multiply with every location—but coordination still runs on WhatsApp and memory.",
+      "Reservations, orders, supplier documents, staff queries, and guest feedback multiply with every location - but coordination still runs on WhatsApp and memory.",
     conversation:
       "Guests expect fast answers. Kitchens and outlets need consistency. HQ needs visibility without drowning in daily firefighting.",
     provisions: [
       {
         title: "Guest and reservation intelligence",
         description:
-          "Handle bookings, waitlists, menu questions, and order status across channels—with escalation for complaints and VIP cases.",
+          "Handle bookings, waitlists, menu questions, and order status across channels - with escalation for complaints and VIP cases.",
         systemSlug: "customer-workforce-ai",
       },
       {
@@ -1146,7 +1146,7 @@ export const industrySolutions: IndustrySolution[] = [
       {
         title: "Invoice and compliance processing",
         description:
-          "Process vendor invoices, delivery challans, and franchise reports—validate against POs and flag only mismatches.",
+          "Process vendor invoices, delivery challans, and franchise reports - validate against POs and flag only mismatches.",
         systemSlug: "document-multimodal-intelligence",
       },
     ],
@@ -1161,7 +1161,7 @@ export const industrySolutions: IndustrySolution[] = [
     slug: "large-scale-enterprise",
     name: "Large-scale enterprise",
     image: "/images/bybo-industry-enterprise.png",
-    tagline: "AI at scale—with governance built in.",
+    tagline: "AI at scale - with governance built in.",
     problem:
       "Multiple business units, legacy systems, and fragmented AI experiments create cost, risk, and duplication without enterprise-wide impact.",
     conversation:
@@ -1176,7 +1176,7 @@ export const industrySolutions: IndustrySolution[] = [
       {
         title: "Cross-function agentic workflows",
         description:
-          "Orchestrate work that spans finance, operations, sales, and HR—with approvals, audit trails, and role-based access.",
+          "Orchestrate work that spans finance, operations, sales, and HR - with approvals, audit trails, and role-based access.",
         systemSlug: "agentic-operations",
       },
       {

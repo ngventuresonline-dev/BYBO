@@ -7,7 +7,7 @@ import { FadeIn } from "../FadeIn";
 const faqs = [
   {
     q: "What does AI-first actually mean?",
-    a: "We don't bolt ChatGPT onto your workflow. We build integrated systems — content engines, WhatsApp bots, ad optimizers — that connect and improve over time.",
+    a: "We don't bolt ChatGPT onto your workflow. We build integrated systems - content engines, WhatsApp bots, ad optimizers - that connect and improve over time.",
   },
   {
     q: "How fast can you go live?",

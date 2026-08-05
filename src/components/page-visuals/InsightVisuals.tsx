@@ -35,7 +35,7 @@ export function PilotVsSystemVisual() {
               "Escalation undefined",
             ].map((item) => (
               <li key={item} className="flex gap-2">
-                <span className="text-signal">—</span>
+                <span className="text-signal"> - </span>
                 {item}
               </li>
             ))}

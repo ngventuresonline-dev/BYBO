@@ -11,7 +11,7 @@ export function ProofOutcomes() {
           <div className="mb-10 max-w-2xl">
             <p className="eyebrow">Operating outcomes</p>
             <h2 className="section-title mt-5">
-              Measured against a baseline — not a demo.
+              Measured against a baseline - not a demo.
             </h2>
             <p className="mt-4 text-sm leading-6 text-fog">
               Anonymised results from real workflow deployments. Outcomes vary by

@@ -11,7 +11,7 @@ import { pageMetadata } from "@/lib/seo";
 export const metadata: Metadata = pageMetadata({
   title: "Insights",
   description:
-    "Practical frameworks and field notes on deploying dependable enterprise AI—implementation, governance, opportunity prioritisation, and human-in-the-loop design.",
+    "Practical frameworks and field notes on deploying dependable enterprise AI - implementation, governance, opportunity prioritisation, and human-in-the-loop design.",
   path: "/insights",
   keywords: [
     "enterprise AI insights",

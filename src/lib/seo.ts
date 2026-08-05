@@ -6,7 +6,7 @@ export const SITE = {
   locale: "en_IN",
   defaultTitle: "BYBO | Enterprise AI Systems Built Around Your Business",
   defaultDescription:
-    "BYBO designs, builds, and operates custom AI platforms, agentic operations, and enterprise knowledge systems for Indian businesses—with human approval, governance, and measurable outcomes.",
+    "BYBO designs, builds, and operates custom AI platforms, agentic operations, and enterprise knowledge systems for Indian businesses - with human approval, governance, and measurable outcomes.",
 } as const;
 
 export function siteUrl(path = ""): string {
@@ -33,13 +33,13 @@ export function pageMetadata({
   keywords,
   ogType = "website",
   ogImage = "/icon.svg",
-  ogImageAlt = "BYBO — Enterprise AI systems",
+  ogImageAlt = "BYBO | Enterprise AI systems",
   noIndex = false,
   publishedTime,
 }: PageMetaOptions): Metadata {
   const url = siteUrl(path);
   const isHome = path === "/";
-  const documentTitle = isHome ? title : `${title} — BYBO`;
+  const documentTitle = isHome ? title : `${title} | BYBO`;
 
   return {
     title: isHome ? { absolute: title } : title,
