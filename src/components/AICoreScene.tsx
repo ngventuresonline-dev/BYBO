@@ -21,17 +21,23 @@ export function AICoreScene() {
     const reducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
+    if (reducedMotion) return;
+
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
+    const isCoarse = window.matchMedia("(pointer: coarse)").matches;
+    const liteScene = isMobile || isCoarse;
+
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
     camera.position.set(0, 0, 8.5);
 
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
-      antialias: true,
+      antialias: !liteScene,
       powerPreference: "high-performance",
     });
     renderer.setClearColor(0x000000, 0);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, liteScene ? 1.25 : 1.5));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.25;
@@ -48,15 +54,15 @@ export function AICoreScene() {
     coolLight.position.set(-3.5, -1.5, 2.5);
     scene.add(ambient, signalLight, coolLight);
 
-    const coreGeometry = new THREE.IcosahedronGeometry(1.28, 5);
+    const coreGeometry = new THREE.IcosahedronGeometry(1.28, liteScene ? 2 : 3);
     const coreMaterial = new THREE.MeshPhysicalMaterial({
       color: 0x222326,
       emissive: 0x2a0840,
       emissiveIntensity: 0.9,
       metalness: 0.25,
       roughness: 0.12,
-      transmission: 0.5,
-      thickness: 1.8,
+      transmission: liteScene ? 0.25 : 0.5,
+      thickness: liteScene ? 1.2 : 1.8,
       transparent: true,
       opacity: 0.92,
       clearcoat: 1,
@@ -75,7 +81,7 @@ export function AICoreScene() {
     const innerCore = new THREE.Mesh(innerGeometry, innerMaterial);
     root.add(innerCore);
 
-    const wireGeometry = new THREE.IcosahedronGeometry(1.58, 2);
+    const wireGeometry = new THREE.IcosahedronGeometry(1.58, liteScene ? 1 : 2);
     const wireMaterial = new THREE.MeshBasicMaterial({
       color: 0xf1f0eb,
       wireframe: true,
@@ -98,7 +104,7 @@ export function AICoreScene() {
       { radius: 3.28, tube: 0.004, x: 0.75, y: -0.4 },
     ].map((config) => {
       const ring = new THREE.Mesh(
-        new THREE.TorusGeometry(config.radius, config.tube, 8, 220),
+        new THREE.TorusGeometry(config.radius, config.tube, 8, liteScene ? 64 : 120),
         ringMaterial.clone(),
       );
       ring.rotation.x = config.x;
@@ -114,7 +120,7 @@ export function AICoreScene() {
       new THREE.Vector3(1.35, -2.15, -0.1),
       new THREE.Vector3(-2.2, -1.65, 0.35),
     ];
-    const nodeGeometry = new THREE.SphereGeometry(0.105, 24, 24);
+    const nodeGeometry = new THREE.SphereGeometry(0.105, liteScene ? 12 : 16, liteScene ? 12 : 16);
     const nodeMaterial = new THREE.MeshStandardMaterial({
       color: 0xf1f0eb,
       emissive: 0xb026ff,
@@ -122,7 +128,7 @@ export function AICoreScene() {
       roughness: 0.18,
       metalness: 0.2,
     });
-    const haloGeometry = new THREE.SphereGeometry(0.2, 20, 20);
+    const haloGeometry = new THREE.SphereGeometry(0.2, liteScene ? 10 : 14, liteScene ? 10 : 14);
     const haloMaterial = new THREE.MeshBasicMaterial({
       color: 0xb026ff,
       transparent: true,
@@ -165,7 +171,7 @@ export function AICoreScene() {
     const connections = new THREE.LineSegments(lineGeometry, lineMaterial);
     root.add(connections);
 
-    const particleCount = 360;
+    const particleCount = liteScene ? 96 : 180;
     const particlePositions = new Float32Array(particleCount * 3);
     for (let index = 0; index < particleCount; index += 1) {
       const radius = 2.2 + Math.random() * 3.4;
@@ -194,13 +200,20 @@ export function AICoreScene() {
 
     const pointer = new THREE.Vector2();
     const targetRotation = new THREE.Vector2();
+    let pointerFrame: number | null = null;
     const onPointerMove = (event: PointerEvent) => {
-      const rect = mount.getBoundingClientRect();
-      pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-      pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-      targetRotation.set(pointer.y * 0.22, pointer.x * 0.32);
+      if (pointerFrame !== null) return;
+      pointerFrame = requestAnimationFrame(() => {
+        pointerFrame = null;
+        const rect = mount.getBoundingClientRect();
+        pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+        pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+        targetRotation.set(pointer.y * 0.22, pointer.x * 0.32);
+      });
     };
-    mount.addEventListener("pointermove", onPointerMove);
+    if (!liteScene) {
+      mount.addEventListener("pointermove", onPointerMove, { passive: true });
+    }
 
     const resize = () => {
       const width = mount.clientWidth;
@@ -216,47 +229,75 @@ export function AICoreScene() {
     const clock = new THREE.Clock();
     let frame = 0;
     let visible = true;
+    let pageVisible = document.visibilityState === "visible";
+
+    const stopLoop = () => {
+      if (frame !== 0) {
+        cancelAnimationFrame(frame);
+        frame = 0;
+      }
+    };
+
+    const render = () => {
+      frame = 0;
+      if (!visible || !pageVisible) return;
+
+      const elapsed = clock.getElapsedTime();
+      root.rotation.x += (targetRotation.x - root.rotation.x) * 0.035;
+      root.rotation.y +=
+        (targetRotation.y + elapsed * 0.035 - root.rotation.y) * 0.028;
+      core.rotation.x = elapsed * 0.12;
+      core.rotation.y = elapsed * 0.16;
+      innerCore.rotation.x = -elapsed * 0.18;
+      innerCore.rotation.z = elapsed * 0.2;
+      wire.rotation.x = -elapsed * 0.06;
+      wire.rotation.y = elapsed * 0.08;
+      particles.rotation.y = elapsed * 0.018;
+      rings.forEach((ring, index) => {
+        ring.rotation.z = elapsed * (0.025 + index * 0.012);
+      });
+      nodes.forEach((node, index) => {
+        const pulse = 1 + Math.sin(elapsed * 1.7 + index) * 0.12;
+        node.scale.setScalar(pulse);
+      });
+      renderer.render(scene, camera);
+      frame = requestAnimationFrame(render);
+    };
+
+    const startLoop = () => {
+      if (frame !== 0 || reducedMotion) return;
+      frame = requestAnimationFrame(render);
+    };
+
     const intersectionObserver = new IntersectionObserver(
       ([entry]) => {
         visible = entry.isIntersecting;
+        if (visible && pageVisible) startLoop();
+        else stopLoop();
       },
       { threshold: 0.02 },
     );
     intersectionObserver.observe(mount);
 
-    const render = () => {
-      if (visible) {
-        const elapsed = clock.getElapsedTime();
-        root.rotation.x += (targetRotation.x - root.rotation.x) * 0.035;
-        root.rotation.y +=
-          (targetRotation.y + elapsed * 0.035 - root.rotation.y) * 0.028;
-        core.rotation.x = elapsed * 0.12;
-        core.rotation.y = elapsed * 0.16;
-        innerCore.rotation.x = -elapsed * 0.18;
-        innerCore.rotation.z = elapsed * 0.2;
-        wire.rotation.x = -elapsed * 0.06;
-        wire.rotation.y = elapsed * 0.08;
-        particles.rotation.y = elapsed * 0.018;
-        rings.forEach((ring, index) => {
-          ring.rotation.z = elapsed * (0.025 + index * 0.012);
-        });
-        nodes.forEach((node, index) => {
-          const pulse = 1 + Math.sin(elapsed * 1.7 + index) * 0.12;
-          node.scale.setScalar(pulse);
-        });
-        renderer.render(scene, camera);
-      }
-      if (!reducedMotion) frame = requestAnimationFrame(render);
+    const onVisibilityChange = () => {
+      pageVisible = document.visibilityState === "visible";
+      if (visible && pageVisible) startLoop();
+      else stopLoop();
     };
+    document.addEventListener("visibilitychange", onVisibilityChange);
 
     renderer.render(scene, camera);
-    if (!reducedMotion) frame = requestAnimationFrame(render);
+    startLoop();
 
     return () => {
-      cancelAnimationFrame(frame);
+      stopLoop();
+      if (pointerFrame !== null) cancelAnimationFrame(pointerFrame);
       resizeObserver.disconnect();
       intersectionObserver.disconnect();
-      mount.removeEventListener("pointermove", onPointerMove);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+      if (!liteScene) {
+        mount.removeEventListener("pointermove", onPointerMove);
+      }
       scene.traverse((object) => {
         if (object instanceof THREE.Mesh || object instanceof THREE.Points) {
           object.geometry.dispose();
@@ -284,7 +325,7 @@ export function AICoreScene() {
         {systemLabels.map((system) => (
           <div
             key={system.label}
-          className={`pointer-events-none absolute ${system.position} rounded-full border border-white/10 bg-black/25 px-2 py-1.5 backdrop-blur-xl sm:px-3 sm:py-2`}
+          className={`ai-core-chip pointer-events-none absolute ${system.position} rounded-full border border-white/10 bg-black/25 px-2 py-1.5 sm:px-3 sm:py-2`}
         >
           <span className="flex items-center gap-1.5 font-mono text-[0.48rem] uppercase tracking-[0.1em] text-white/55 sm:gap-2 sm:text-[0.54rem] sm:tracking-[0.12em]">
               <span className="h-1.5 w-1.5 rounded-full bg-signal shadow-[0_0_12px_#b026ff]" />
@@ -295,7 +336,7 @@ export function AICoreScene() {
       </div>
 
       <div className="pointer-events-none shrink-0 px-4 pb-4 pt-3">
-        <div className="rounded-2xl border border-white/10 bg-black/35 px-4 py-3 backdrop-blur-2xl">
+        <div className="ai-core-status rounded-2xl border border-white/10 bg-black/35 px-4 py-3">
           <div className="flex items-center justify-between gap-4">
             <div>
               <p className="font-mono text-[0.52rem] uppercase tracking-[0.13em] text-white/35">

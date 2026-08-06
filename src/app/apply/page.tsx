@@ -33,12 +33,10 @@ export default function ApplyPage() {
             <div>
               <p className="eyebrow">Apply</p>
               <h1 className="section-title mt-6">
-                Bring us the workflow, not an AI shopping list.
+                Where is the business losing time?
               </h1>
-              <p className="body-large mt-6 max-w-xl">
-                Tell us where time, revenue, quality, or visibility is being
-                lost. We&apos;ll use the first consultation to decide whether
-                there is a credible next step.
+              <p className="body-large mt-6 max-w-md">
+                One form. We tell you honestly if BYBO is the right next step.
               </p>
 
               <div className="mt-9">

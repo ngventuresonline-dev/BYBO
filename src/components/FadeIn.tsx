@@ -1,7 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 
 interface FadeInProps {
   children: ReactNode;
@@ -18,29 +17,48 @@ export function FadeIn({
   direction = "up",
   immediate = false,
 }: FadeInProps) {
-  const directions = {
-    up: { y: 24, x: 0 },
-    down: { y: -24, x: 0 },
-    left: { x: 24, y: 0 },
-    right: { x: -24, y: 0 },
-  };
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(immediate);
 
-  const animationProps = immediate
-    ? {
-        initial: { opacity: 0, ...directions[direction] },
-        animate: { opacity: 1, x: 0, y: 0 },
-        transition: { duration: 0.6, delay, ease: [0.21, 0.47, 0.32, 0.98] as const },
-      }
-    : {
-        initial: { opacity: 0, ...directions[direction] },
-        whileInView: { opacity: 1, x: 0, y: 0 },
-        viewport: { once: true, margin: "-80px" },
-        transition: { duration: 0.6, delay, ease: [0.21, 0.47, 0.32, 0.98] as const },
-      };
+  useEffect(() => {
+    if (immediate) return;
+
+    const node = ref.current;
+    if (!node) return;
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setVisible(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "-40px 0px", threshold: 0.08 },
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [immediate]);
+
+  const directionClass = {
+    up: "fade-in--up",
+    down: "fade-in--down",
+    left: "fade-in--left",
+    right: "fade-in--right",
+  }[direction];
 
   return (
-    <motion.div {...animationProps} className={className}>
+    <div
+      ref={ref}
+      className={`fade-in ${directionClass} ${visible ? "fade-in--visible" : ""} ${className}`}
+      style={{ transitionDelay: `${delay}s` }}
+    >
       {children}
-    </motion.div>
+    </div>
   );
 }

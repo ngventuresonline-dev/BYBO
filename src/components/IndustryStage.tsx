@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -92,8 +92,10 @@ function IndustryStageMobileDetail({
 }
 
 export function IndustryStage() {
+  const rootRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [inViewport, setInViewport] = useState(false);
   const reduceMotion = useReducedMotion();
   const pointerX = useMotionValue(0);
   const pointerY = useMotionValue(0);
@@ -106,16 +108,30 @@ export function IndustryStage() {
   const active = industrySolutions[activeIndex];
 
   useEffect(() => {
-    if (paused || reduceMotion) return;
+    const node = rootRef.current;
+    if (!node) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setInViewport(entry.isIntersecting),
+      { threshold: 0.12, rootMargin: "120px 0px" },
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!inViewport || paused || reduceMotion) return;
     if (window.matchMedia("(max-width: 1023px)").matches) return;
 
     const timer = window.setInterval(() => {
       setActiveIndex((current) => (current + 1) % industrySolutions.length);
     }, 6500);
     return () => window.clearInterval(timer);
-  }, [paused, reduceMotion]);
+  }, [inViewport, paused, reduceMotion]);
 
   const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (!inViewport) return;
     if (window.matchMedia("(max-width: 1023px)").matches) return;
     const rect = event.currentTarget.getBoundingClientRect();
     pointerX.set(((event.clientX - rect.left) / rect.width) * 2 - 1);
@@ -130,6 +146,7 @@ export function IndustryStage() {
 
   return (
     <div
+      ref={rootRef}
       className="industry-stage"
       onPointerMove={handlePointerMove}
       onPointerEnter={() => setPaused(true)}
@@ -248,6 +265,7 @@ export function IndustryStage() {
                   alt={`${active.name} working environment`}
                   fill
                   sizes="68vw"
+                  loading="lazy"
                   className="object-cover"
                 />
               </motion.div>
@@ -265,7 +283,7 @@ export function IndustryStage() {
                 : { x: lensX, y: lensY }
             }
             animate={
-              reduceMotion
+              reduceMotion || !inViewport
                 ? undefined
                 : { scale: [1, 1.04, 1], opacity: [0.55, 0.85, 0.55] }
             }

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Clock3 } from "lucide-react";
+import { PageClosingCta } from "@/components/shared/PageClosingCta";
 import { FadeIn } from "@/components/FadeIn";
 import { PageHero } from "@/components/PageHero";
 import { PageHeroIllustration } from "@/components/page-visuals/HeroIllustrations";
@@ -33,14 +34,13 @@ export default function InsightsPage() {
           <h1 className="display-title mt-7">
             Less AI theatre. More operating reality.
           </h1>
-          <p className="body-large mt-8 max-w-2xl">
-            Field notes, decision frameworks, and implementation lessons for
-            leaders building AI into real workflows.
+          <p className="body-large mt-8 max-w-xl">
+            Short reads on what actually works in production.
           </p>
         </FadeIn>
       </PageHero>
 
-      <section className="section-shell">
+      <section className="section-shell !pt-8">
         <div className="grid gap-6 lg:grid-cols-3">
           {published.map((article, index) => (
             <FadeIn key={article.slug} delay={index * 0.05}>
@@ -90,37 +90,11 @@ export default function InsightsPage() {
         </div>
       </section>
 
-      <section className="border-y border-line bg-panel">
-        <div className="section-shell !py-20">
-          <FadeIn>
-            <div className="grid gap-8 overflow-hidden rounded-[1.4rem] border border-line lg:grid-cols-[1fr_0.55fr] lg:items-stretch">
-              <div className="p-7 sm:p-10 lg:flex lg:flex-col lg:justify-end">
-                <p className="eyebrow">Have a workflow question?</p>
-                <h2 className="section-title mt-6">
-                  Bring us the operating problem.
-                </h2>
-                <p className="body-large mt-5 max-w-2xl">
-                  The most useful insights begin with real constraints, edge
-                  cases, and economics.
-                </p>
-                <Link href="/apply" className="signal-button mt-8 w-fit">
-                  Start a conversation <ArrowRight size={15} />
-                </Link>
-              </div>
-              <div className="relative min-h-[14rem]">
-                <Image
-                  src="/images/bybo-insight-human-in-loop.png"
-                  alt=""
-                  fill
-                  sizes="(min-width: 1024px) 40vw, 100vw"
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-r from-panel via-panel/20 to-transparent" />
-              </div>
-            </div>
-          </FadeIn>
-        </div>
-      </section>
+      <PageClosingCta
+        title="Bring us the operating problem."
+        href="/apply"
+        button="Start a conversation"
+      />
     </>
   );
 }

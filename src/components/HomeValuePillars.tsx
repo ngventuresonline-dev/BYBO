@@ -28,7 +28,7 @@ const pillars = [
 
 export function HomeValuePillars() {
   return (
-    <section className="value-pillars relative overflow-hidden border-b border-line bg-void">
+    <section className="value-pillars home-section relative overflow-hidden border-b border-line bg-void">
       <div className="value-pillars__glow" aria-hidden="true" />
       <div className="value-pillars__rings" aria-hidden="true" />
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { useEffect, useState } from "react";
 
 const toolRows = [
   [
@@ -28,7 +28,14 @@ const toolRows = [
 ];
 
 export function ConnectedToolsRail() {
-  const reduceMotion = useReducedMotion();
+  const [reduceMotion, setReduceMotion] = useState(false);
+
+  useEffect(() => {
+    setReduceMotion(
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+    );
+  }, []);
+
   const tools = toolRows.flat();
 
   if (reduceMotion) {
@@ -53,7 +60,7 @@ export function ConnectedToolsRail() {
 
   return (
     <div
-      className="relative overflow-hidden rounded-2xl border border-surface-line bg-surface"
+      className="relative overflow-hidden rounded-2xl border border-surface-line bg-surface tools-rail"
       style={{
         maskImage:
           "linear-gradient(90deg, transparent, black 5%, black 95%, transparent)",
@@ -64,23 +71,16 @@ export function ConnectedToolsRail() {
           key={rowIndex}
           className={`${rowIndex === 0 ? "border-b border-surface-line" : ""} overflow-hidden`}
         >
-          <motion.div
-            className="flex w-max"
-            initial={{ x: rowIndex === 0 ? "0%" : "-50%" }}
-            animate={{ x: rowIndex === 0 ? "-50%" : "0%" }}
-            transition={{
-              duration: rowIndex === 0 ? 34 : 38,
-              repeat: Infinity,
-              ease: "linear",
-            }}
+          <div
+            className={`tools-rail__track flex w-max ${rowIndex === 1 ? "tools-rail__track--reverse" : ""}`}
           >
             {[...row, ...row].map(([tool, category], index) => (
               <div
                 key={`${tool}-${index}`}
                 aria-hidden={index >= row.length}
-                className="relative flex min-h-20 w-40 shrink-0 flex-col justify-center border-r border-surface-line bg-surface px-4 sm:w-44"
+                className="relative flex min-h-20 w-36 shrink-0 flex-col justify-center border-r border-surface-line bg-surface px-4 last:border-r-0 sm:w-40"
               >
-                <span className="font-display text-sm font-bold tracking-[-0.025em] text-surface-ink">
+                <span className="font-display text-sm font-bold tracking-[-0.025em]">
                   {tool}
                 </span>
                 <span className="mt-1 font-mono text-[0.48rem] uppercase tracking-[0.12em] text-surface-muted">
@@ -89,7 +89,7 @@ export function ConnectedToolsRail() {
                 <span className="absolute bottom-3 right-3 h-1 w-1 rounded-full bg-signal/60" />
               </div>
             ))}
-          </motion.div>
+          </div>
         </div>
       ))}
     </div>
