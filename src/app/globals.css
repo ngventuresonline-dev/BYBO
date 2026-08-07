@@ -1,10 +1,11 @@
 @import "tailwindcss";
+@import "./design-layer.css";
 
 @theme {
-  --color-void: #080808;
+  --color-void: #0a0a0c;
   --color-panel: #0e0e0f;
   --color-panel-2: #141415;
-  --color-cream: #f1f0eb;
+  --color-cream: #eceae4;
   --color-fog: #b8b6af;
   --color-dim: #94938c;
   --color-line: #272728;
@@ -15,12 +16,19 @@
   --color-signal-rgb: 176, 38, 255;
   --color-signal-ink: #0f0618;
   --color-signal-text: #d4a0ff;
-  --color-success: #48d597;
-  --color-surface: #f3f1eb;
-  --color-surface-2: #e8e5dc;
-  --color-surface-ink: #11110f;
+  /* Signal at AA contrast on the cream surface — the light-section accent. */
+  --color-signal-deep: #7a17bf;
+  --color-signal-deep-rgb: 122, 23, 191;
+  --color-success: #4ade80;
+  --color-warn: #facc15;
+  --color-alert: #c2410c;
+  --color-surface: #f1efe9;
+  --color-surface-2: #ebe8e0;
+  --color-surface-ink: #0f0f11;
+  --color-surface-ink-rgb: 15, 15, 17;
   --color-surface-muted: #68665f;
   --color-surface-line: #d4d0c6;
+  --color-cream-rgb: 236, 234, 228;
   --font-sans: var(--font-body);
   --font-display: var(--font-display);
   --font-mono: var(--font-mono);

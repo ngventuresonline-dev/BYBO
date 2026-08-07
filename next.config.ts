@@ -32,8 +32,10 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       {
+        // "Business Operations" is the redesign's name for the document
+        // system, so this legacy path now points there rather than at agentic.
         source: "/systems/business-operations",
-        destination: "/systems/agentic-operations",
+        destination: "/systems/document-multimodal-intelligence",
         permanent: true,
       },
     ];

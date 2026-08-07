@@ -1,0 +1,548 @@
+/* ==========================================================================
+   Design layer — ported from "BYBO Site.dc.html"
+   Sharp-cornered instrumentation: hairline rules, mono labels, notched CTAs.
+   Light and dark sections share one class set; `.dc-light` flips the vars.
+   ========================================================================== */
+
+.dc {
+  --dc-bg: var(--color-void);
+  --dc-ink: var(--color-cream);
+  --dc-ink-rgb: var(--color-cream-rgb);
+  --dc-accent: var(--color-signal);
+  --dc-accent-rgb: var(--color-signal-rgb);
+  --dc-line: rgba(var(--color-cream-rgb), 0.14);
+  --dc-line-soft: rgba(var(--color-cream-rgb), 0.08);
+  --dc-muted: rgba(var(--color-cream-rgb), 0.6);
+  --dc-faint: rgba(var(--color-cream-rgb), 0.45);
+  --dc-ghost: rgba(var(--color-cream-rgb), 0.35);
+  background: var(--dc-bg);
+  color: var(--dc-ink);
+}
+
+.dc-light {
+  --dc-bg: var(--color-surface);
+  --dc-ink: var(--color-surface-ink);
+  --dc-ink-rgb: var(--color-surface-ink-rgb);
+  --dc-accent: var(--color-signal-deep);
+  --dc-accent-rgb: var(--color-signal-deep-rgb);
+  --dc-line: rgba(var(--color-surface-ink-rgb), 0.14);
+  --dc-line-soft: rgba(var(--color-surface-ink-rgb), 0.12);
+  --dc-muted: rgba(var(--color-surface-ink-rgb), 0.62);
+  --dc-faint: rgba(var(--color-surface-ink-rgb), 0.45);
+  --dc-ghost: rgba(var(--color-surface-ink-rgb), 0.42);
+  background: var(--dc-bg);
+  color: var(--dc-ink);
+}
+
+/* ---------- layout ---------- */
+
+.dc-pad {
+  padding-inline: clamp(20px, 4vw, 44px);
+}
+
+.dc-section {
+  padding-block: clamp(52px, 6vw, 76px);
+}
+
+.dc-section-tight {
+  padding-block: clamp(30px, 3.4vw, 44px);
+}
+
+.dc-divide {
+  border-bottom: 1px solid var(--dc-line);
+}
+
+/* Hairline-separated panel grid: the 1px gap shows the parent through. */
+.dc-panels {
+  display: grid;
+  gap: 1px;
+  background: var(--dc-line);
+}
+
+.dc-panels > * {
+  background: var(--dc-bg);
+}
+
+/* ---------- type ---------- */
+
+.dc-label {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  line-height: 1.4;
+  text-transform: uppercase;
+  color: var(--dc-accent);
+}
+
+.dc-label-muted {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  line-height: 1.4;
+  text-transform: uppercase;
+  color: var(--dc-faint);
+}
+
+.dc-mono {
+  font-family: var(--font-mono), ui-monospace, monospace;
+}
+
+.dc-h1 {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: clamp(44px, 6.6vw, 106px);
+  font-weight: 800;
+  letter-spacing: -0.062em;
+  line-height: 0.85;
+  text-wrap: balance;
+}
+
+.dc-h1-hero {
+  font-size: clamp(52px, 8vw, 126px);
+  line-height: 0.82;
+  letter-spacing: -0.065em;
+}
+
+.dc-h2 {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: clamp(34px, 5vw, 76px);
+  font-weight: 800;
+  letter-spacing: -0.055em;
+  line-height: 0.9;
+  text-wrap: balance;
+}
+
+.dc-h2-sm {
+  font-size: clamp(30px, 4vw, 56px);
+  line-height: 0.96;
+  letter-spacing: -0.05em;
+}
+
+.dc-h3 {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: clamp(20px, 1.6vw, 27px);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+}
+
+.dc-lede {
+  font-size: clamp(17px, 1.4vw, 19px);
+  line-height: 1.45;
+  color: var(--dc-muted);
+}
+
+.dc-body {
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--dc-muted);
+}
+
+.dc-stat {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: clamp(30px, 3vw, 40px);
+  font-weight: 800;
+  letter-spacing: -0.055em;
+  line-height: 1;
+}
+
+/* ---------- notched CTA ---------- */
+
+.dc-btn {
+  display: inline-flex;
+  align-items: stretch;
+  border: 1px solid var(--color-signal);
+  background: var(--color-void);
+  color: var(--color-cream);
+  clip-path: polygon(
+    0 0,
+    calc(100% - 13px) 0,
+    100% 13px,
+    100% 100%,
+    13px 100%,
+    0 calc(100% - 13px)
+  );
+  box-shadow: 0 18px 40px -20px rgba(var(--color-signal-rgb), 0.85);
+  transition:
+    transform 200ms var(--ease-out),
+    box-shadow 200ms ease,
+    background 200ms ease,
+    border-color 200ms ease;
+}
+
+.dc-btn:hover {
+  transform: translateY(-2px);
+  background: #150720;
+  box-shadow: 0 30px 60px -20px rgba(var(--color-signal-rgb), 1);
+  color: var(--color-cream);
+}
+
+.dc-btn__pip {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  background: var(--color-signal);
+}
+
+.dc-btn__pip::before {
+  content: "";
+  display: block;
+  width: 8px;
+  height: 8px;
+  background: var(--color-void);
+  animation: dc-blip 1.9s ease-in-out infinite;
+}
+
+.dc-btn__label {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 50px;
+  padding: 0 22px;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.dc-btn__arrow {
+  color: var(--color-signal);
+}
+
+/* Full-width — used in the mobile menu. */
+.dc-btn--block {
+  display: flex;
+  width: 100%;
+}
+
+.dc-btn--block .dc-btn__label {
+  flex: 1;
+  justify-content: center;
+}
+
+/* Ghost — secondary action on dark. */
+.dc-btn--ghost {
+  border-color: rgba(var(--color-cream-rgb), 0.28);
+  background: rgba(var(--color-cream-rgb), 0.04);
+  box-shadow: none;
+}
+
+.dc-btn--ghost:hover {
+  border-color: var(--color-cream);
+  background: rgba(var(--color-cream-rgb), 0.09);
+  box-shadow: none;
+}
+
+.dc-btn--ghost .dc-btn__pip {
+  background: transparent;
+  border-right: 1px solid rgba(var(--color-cream-rgb), 0.2);
+}
+
+.dc-btn--ghost .dc-btn__pip::before {
+  background: transparent;
+  border: 1px solid rgba(var(--color-cream-rgb), 0.6);
+  animation: none;
+}
+
+.dc-btn--ghost .dc-btn__arrow {
+  color: rgba(var(--color-cream-rgb), 0.45);
+}
+
+/* Surface — primary action on a light section. */
+.dc-btn--surface {
+  border-color: var(--color-signal-deep);
+  background: var(--color-surface);
+  color: var(--color-surface-ink);
+  box-shadow: 0 18px 36px -22px rgba(var(--color-signal-deep-rgb), 0.9);
+}
+
+.dc-btn--surface:hover {
+  background: var(--color-surface);
+  color: var(--color-surface-ink);
+  box-shadow: 0 28px 50px -22px rgba(var(--color-signal-deep-rgb), 1);
+}
+
+.dc-btn--surface .dc-btn__pip {
+  background: var(--color-signal-deep);
+}
+
+.dc-btn--surface .dc-btn__pip::before {
+  background: var(--color-surface);
+}
+
+.dc-btn--surface .dc-btn__arrow {
+  color: var(--color-signal-deep);
+}
+
+/* ---------- texture ---------- */
+
+.dc-grid-field::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(var(--dc-ink-rgb), 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(var(--dc-ink-rgb), 0.04) 1px, transparent 1px);
+  background-size: 72px 72px;
+  pointer-events: none;
+}
+
+.dc-sweep::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 90px;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    rgba(var(--color-signal-rgb), 0.12),
+    transparent
+  );
+  animation: dc-sweep 13s linear infinite;
+  pointer-events: none;
+}
+
+/* ---------- scroll reveal ---------- */
+
+.dc-reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 700ms var(--ease-out),
+    transform 700ms var(--ease-out);
+}
+
+.dc-reveal[data-seen="1"] {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- range inputs (leakage calculator) ---------- */
+
+.dc-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  background: transparent;
+  cursor: grab;
+}
+
+.dc-range::-webkit-slider-runnable-track {
+  height: 1px;
+  background: rgba(var(--color-cream-rgb), 0.25);
+}
+
+.dc-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  margin-top: -7px;
+  border: 0;
+  border-radius: 0;
+  background: var(--color-signal);
+}
+
+.dc-range::-moz-range-track {
+  height: 1px;
+  background: rgba(var(--color-cream-rgb), 0.25);
+}
+
+.dc-range::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border: 0;
+  border-radius: 0;
+  background: var(--color-signal);
+}
+
+.dc-range:focus-visible {
+  outline: 2px solid var(--color-signal);
+  outline-offset: 6px;
+}
+
+/* ---------- application form on the cream panel ----------
+   The form component is dark-themed by default. Inside the apply page's light
+   panel we drop its card chrome and re-point its colours at the surface ink,
+   so the fields sit directly on cream as the design shows. */
+
+.dc-form-light .technical-card {
+  border: 0;
+  background: none;
+}
+
+.dc-form-light .technical-card > div {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.dc-form-light .form-field {
+  color: var(--color-surface-ink);
+  border-bottom-color: rgba(var(--color-surface-ink-rgb), 0.22);
+}
+
+.dc-form-light .form-field:focus {
+  border-bottom-color: var(--color-signal-deep);
+}
+
+.dc-form-light .form-field::placeholder {
+  color: rgba(var(--color-surface-ink-rgb), 0.4);
+}
+
+.dc-form-light .technical-label {
+  color: rgba(var(--color-surface-ink-rgb), 0.5);
+}
+
+.dc-form-light .technical-label.text-signal,
+.dc-form-light .text-signal {
+  color: var(--color-signal-deep);
+  text-shadow: none;
+}
+
+.dc-form-light .text-fog {
+  color: rgba(var(--color-surface-ink-rgb), 0.68);
+}
+
+.dc-form-light .text-dim {
+  color: rgba(var(--color-surface-ink-rgb), 0.5);
+}
+
+.dc-form-light .border-line,
+.dc-form-light .border-b,
+.dc-form-light .border-t {
+  border-color: rgba(var(--color-surface-ink-rgb), 0.16);
+}
+
+.dc-form-light .bg-void\/45 {
+  background: rgba(var(--color-surface-ink-rgb), 0.04);
+}
+
+.dc-form-light .signal-button {
+  border-color: var(--color-signal-deep);
+  background: var(--color-signal-deep);
+  color: var(--color-surface);
+}
+
+.dc-form-light .ghost-button {
+  border-color: rgba(var(--color-surface-ink-rgb), 0.25);
+  color: var(--color-surface-ink);
+}
+
+/* ---------- keyframes ---------- */
+
+@keyframes dc-sweep {
+  0% {
+    transform: translateY(-120%);
+  }
+  100% {
+    transform: translateY(2600%);
+  }
+}
+
+@keyframes dc-blip {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes dc-feed {
+  0% {
+    opacity: 0.15;
+  }
+  14%,
+  86% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.15;
+  }
+}
+
+@keyframes dc-march {
+  to {
+    stroke-dashoffset: -80;
+  }
+}
+
+@keyframes dc-draw {
+  from {
+    stroke-dashoffset: 420;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes dc-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(2.8);
+    opacity: 0;
+  }
+}
+
+@keyframes dc-grow {
+  from {
+    transform: scaleY(0.05);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes dc-flicker {
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  45%,
+  55% {
+    opacity: 0.9;
+  }
+}
+
+@keyframes dc-menuin {
+  from {
+    opacity: 0;
+    transform: translateY(26px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes dc-veil {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dc *,
+  .dc-light * {
+    animation: none !important;
+  }
+
+  .dc-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
