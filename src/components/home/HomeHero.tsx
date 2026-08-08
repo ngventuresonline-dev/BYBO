@@ -33,20 +33,19 @@ export function HomeHero() {
           </p>
 
           <h1 className="dc-h1 dc-h1-hero mt-11">
-            Most firms
+            AI systems,
             <br />
-            sell you AI.
+            built around
             <br />
-            <span className="text-signal">We run it.</span>
+            <span className="text-signal">your business.</span>
           </h1>
 
           <p
             className="mt-10 max-w-[46ch] text-[clamp(17px,1.5vw,20px)] leading-[1.42]"
             style={{ color: "var(--dc-muted)" }}
           >
-            Designed, deployed, then operated — with a named owner, a monthly number
-            measured against your own baseline, and human approval reserved for the
-            decisions that genuinely need it. The routine runs itself.
+            Production AI around your real workflows — built, run and measured. Not
+            pilots.
           </p>
 
           <div className="mt-11 flex flex-wrap gap-2.5">

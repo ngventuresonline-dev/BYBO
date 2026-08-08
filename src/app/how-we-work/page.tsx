@@ -24,26 +24,26 @@ const stages = [
     n: "01",
     title: "Diagnose",
     meta: "3–10 days · paid · credited",
-    body: "We map the workflow as it actually runs, quantify what the friction costs in rupees a year, and rank the opportunities on impact, feasibility and risk. You leave with a 90-day plan and a go / no-go — including, sometimes, “fix the process first”.",
+    body: "We follow the work as it really happens, put a rupee figure on what the delays cost you each year, and put the options in order. You get a 90-day plan and a straight yes or no — sometimes that answer is “fix the process first”.",
   },
   {
     n: "02",
     title: "Deploy",
     meta: "4–12 weeks · fixed scope",
-    body: "Build, connect the real tools and the real data, add guardrails and escalation, test against your own historical cases rather than a demo set, train the team, hand over runbooks. Acceptance criteria agreed before we start.",
+    body: "We build it, connect your real tools and data, set the limits, and test it on your own past cases rather than a demo. Then we train your team and hand over the instructions. What counts as “done” is agreed before we start.",
   },
   {
     n: "03",
     title: "Operate",
     meta: "Ongoing · this is the actual business",
-    body: "Monitoring, failure review, knowledge maintenance, evaluation runs, model and cost management. Most firms hand over a build and disappear. The value of an AI system is almost entirely in the months after launch, so that is the part we keep.",
+    body: "We watch it, fix what breaks, keep its knowledge current, check its quality and keep the running costs down. Most firms hand over and disappear. Almost all the value comes in the months after launch, so that is the part we stay for.",
     feature: true,
   },
   {
     n: "04",
     title: "Expand",
     meta: "As patterns repeat",
-    body: "The second workflow is faster and cheaper than the first, because the controls, integrations and evaluation harness already exist. Patterns that repeat across clients become modules, and you benefit from every one we have already shipped.",
+    body: "The second job is faster and cheaper than the first, because the connections and checks already exist. Anything we build twice becomes a ready-made part, and you get the benefit of everything we have built before.",
   },
 ];
 
@@ -210,10 +210,10 @@ export default function HowWeWorkPage() {
             </h2>
           </div>
           <p className="text-[17px] leading-[1.6]" style={{ color: `${INK}0.68)` }}>
-            A development shop is paid to ship a scope and leave. That model is fine for a
-            website and fatal for an AI system, because an AI system degrades: the data
-            drifts, the edge cases arrive, the model changes underneath you, the costs
-            creep. Someone has to watch it, measure it and correct it every month. We
+            A development shop is paid to deliver and leave. That is fine for a website.
+            It does not work for an AI system, because these systems slip over time: your
+            data changes, odd cases turn up, the technology underneath updates, and the
+            running cost creeps. Someone has to watch it and correct it every month. We
             would rather be paid for that than for the build.
           </p>
         </div>

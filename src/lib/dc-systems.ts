@@ -47,7 +47,7 @@ export const STACK: StackEntry[] = [
     name: "Business Operations",
     slug: "document-multimodal-intelligence",
     brief:
-      "Documents read, fields validated, approvals routed. The shortest path to a number your CFO recognises.",
+      "Reads your documents, checks the details, and sends approvals to the right person. The quickest saving to prove.",
     detail:
       "Invoices, PODs, KYC packets, RFQs, claims, contracts. The system reads them, checks them against your rules, posts them into your systems, and sends only the genuine exceptions to a person.",
     payback: "26%",
@@ -76,7 +76,7 @@ export const STACK: StackEntry[] = [
       ],
       aside: {
         title: "“Our data isn’t ready”",
-        body: "It rarely is, and it does not need to be. This system starts on the documents as they exist — smudged scans, inconsistent formats, four naming conventions. What it does need is a written rule for what “correct” means, and one person who can settle a disagreement. The Blueprint establishes both in week one.",
+        body: "It usually is not, and it does not need to be. We start with the documents exactly as they are — poor scans, different formats, four ways of naming the same thing. What we do need is a written rule for what “correct” means and one person who can settle an argument. The Blueprint sorts out both in the first week.",
       },
     },
   },
@@ -95,7 +95,7 @@ export const STACK: StackEntry[] = [
     name: "Enterprise Knowledge",
     slug: "enterprise-knowledge-systems",
     brief:
-      "Policies, contracts and past work made answerable — with citations and an honest “I don’t know”.",
+      "Ask a question, get the answer from your own documents, with the page it came from — or an honest “not found”.",
     detail:
       "Policies, contracts, SOPs and past projects made answerable — with the source line cited, permissions respected, and a refusal when the answer isn’t there.",
     payback: "16%",
@@ -105,7 +105,7 @@ export const STACK: StackEntry[] = [
     name: "Custom AI Platforms",
     slug: "custom-ai-platforms",
     brief:
-      "A product built around your operation — models, your data, interfaces and controls, no vendor lock-in.",
+      "Software built around how your business actually works, using your own data, and not tied to one supplier.",
     detail:
       "When the workflow is your actual advantage, it deserves a product. Models, your proprietary data, role-specific interfaces and enterprise controls — portable across vendors.",
     payback: "13%",
@@ -125,7 +125,7 @@ export const STACK: StackEntry[] = [
     name: "Decision Intelligence",
     slug: "decision-intelligence",
     brief:
-      "One version of the numbers, refreshed without anyone building a deck — and what moved them.",
+      "One set of numbers everyone trusts, updated on its own, with a note on what changed and why.",
     detail:
       "One version of the numbers across outlets, regions or lines — refreshed without anyone building a deck, with a written explanation of what moved and why.",
     payback: "8%",
@@ -135,7 +135,7 @@ export const STACK: StackEntry[] = [
     name: "Infrastructure & Governance",
     slug: "ai-infrastructure-governance",
     brief:
-      "Access, audit trails, evaluation and cost control — the layer that makes procurement say yes.",
+      "Who can use it, what it did, how well it works and what it costs. The part your compliance team asks about.",
     detail:
       "Access control, audit logs, evaluation runs, model and cost management. Not an upsell — it ships with everything above, because procurement will ask.",
     payback: "7%",

@@ -79,8 +79,8 @@ export function HomeLeakage() {
             className="mt-5 max-w-[46ch] text-[18px] leading-[1.45]"
             style={{ color: "var(--dc-muted)" }}
           >
-            Four numbers you already know. Nothing is sent anywhere. Take the result to
-            your own finance team and argue with it — that is the point.
+            Four numbers you already know. Nothing is sent to us. Take the answer to your
+            accounts team and check it — that is the idea.
           </p>
 
           <div className="mt-10 grid max-w-[520px] gap-7">
@@ -203,8 +203,8 @@ export function HomeLeakage() {
           <div className="my-8 h-px" style={{ background: "var(--dc-line)" }} />
 
           <p className="text-[15px] leading-[1.55]" style={{ color: "var(--dc-muted)" }}>
-            An estimate from your inputs, not a promise. The Blueprint replaces it with a
-            measured number from your actual workflow.
+            This is a rough estimate, not a promise. The Blueprint gives you the real
+            number from your own work.
           </p>
 
           <NotchButton href="/blueprint" className="mt-6">

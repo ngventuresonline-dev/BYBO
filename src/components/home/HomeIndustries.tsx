@@ -146,7 +146,7 @@ export function HomeIndustries() {
   return (
     <section className="dc-light dc-divide">
       <div className="dc-pad pt-[clamp(52px,6vw,76px)]">
-        <p className="dc-label">05 / Where we work</p>
+        <p className="dc-label">06 / Where we work</p>
         <div className="mt-6 flex flex-wrap items-end justify-between gap-10">
           <h2 className="dc-h2 max-w-[17ch]">Your industry changes the system.</h2>
           <Link
@@ -186,10 +186,9 @@ export function HomeIndustries() {
           We don’t publish results we can’t attribute.
         </p>
         <p className="text-[17px] leading-[1.6]" style={{ color: `${INK}0.62)` }}>
-          You will not find invented multipliers or a wall of logos we have never worked
-          with on this site. When a client goes on record, their numbers go up with their
-          name attached. Until then we will show you the method, the controls, and a
-          system running on your own scenario.
+          No made-up numbers and no logos of companies we have never worked with. When a
+          client is happy to be named, their results go up with their name on them. Until
+          then we will show you how it works on your own example.
         </p>
       </div>
     </section>

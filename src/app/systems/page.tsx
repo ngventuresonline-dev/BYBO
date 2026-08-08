@@ -39,8 +39,8 @@ export default function SystemsPage() {
           className="mt-6 max-w-[58ch] text-[19px] leading-[1.45]"
           style={{ color: "var(--dc-muted)" }}
         >
-          Most businesses should start at the top. Documents and approvals are where the
-          maths is clearest, the risk lowest, and the competition weakest.
+          Most businesses should start at the top. Paperwork and approvals are where the
+          saving is easiest to prove and the risk is lowest.
         </p>
 
         <div className="mt-11 grid gap-1.5">

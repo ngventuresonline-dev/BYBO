@@ -154,8 +154,8 @@ export function HomeProblem() {
         </Reveal>
         <Reveal as="p" className="mt-6 max-w-[56ch] text-[19px] leading-[1.45]">
           <span style={{ color: "var(--dc-muted)" }}>
-            Not strategy. Not judgement. The re-typing, the chasing, the reading of the
-            same document for the fortieth time.
+            Not the thinking. The typing, the chasing, and reading the same document for
+            the fortieth time.
           </span>
         </Reveal>
       </div>
@@ -168,9 +168,9 @@ export function HomeProblem() {
           <p className="dc-label-muted">Today · seven hand-offs, no record</p>
           <HandoffDiagram />
           <p className="mt-2 text-[17px] leading-[1.5]" style={{ color: `${INK}0.7)` }}>
-            An enquiry arrives at 9pm and is answered at 11am. An invoice is re-keyed
-            into three systems. The policy answer lives in one senior person’s head.
-            Nothing is logged, so nothing can be measured.
+            A customer writes at 9pm and hears back at 11am. The same invoice is typed
+            into three systems. The answer everyone needs sits in one person’s head.
+            Nothing is written down, so nothing can be measured.
           </p>
         </div>
 
@@ -180,9 +180,10 @@ export function HomeProblem() {
           </p>
           <SystemPathDiagram />
           <p className="mt-2 text-[17px] leading-[1.5]" style={{ color: `${INK}0.75)` }}>
-            One path. Fields extracted and checked against your master data, the routine
-            posted straight through, and only the crucial cases held at a named person’s
-            gate — with every action written to a trail your auditor can read.
+            One path instead of seven. The system reads the details, checks them against
+            your records, and files the normal ones straight away. Anything unusual goes
+            to one named person. Every step is saved, so you can see exactly what
+            happened.
           </p>
         </div>
       </div>

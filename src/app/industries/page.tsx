@@ -53,7 +53,7 @@ const buckets: Bucket[] = [
     title: "Operations-led teams",
     note: "Largest whitespace in India",
     intro:
-      "Where documents, approvals and coordination set your speed and your margin. The rules already exist — usually in one person’s head — so the payback is arithmetic rather than faith.",
+      "Businesses where paperwork, approvals and coordination decide how fast you move and how much you keep. The rules already exist, usually in one person’s head, so the saving is easy to work out.",
     light: true,
     cards: [
       {
@@ -138,7 +138,7 @@ const buckets: Bucket[] = [
     title: "High-consideration businesses",
     note: "Guardrails are the product",
     intro:
-      "Long, human, expensive buying journeys. Speed of first response decides the deal, and one careless automated sentence can cost you a licence — so the guardrails, not the cleverness, are the product.",
+      "Long, personal, expensive decisions. Answering first usually wins the deal, and one careless message can cost you a licence, so the limits we set matter more than the cleverness.",
     light: false,
     cards: [
       {
@@ -223,7 +223,7 @@ const buckets: Bucket[] = [
     title: "Consumer brands",
     note: "Volume and thin margin",
     intro:
-      "High volume and thin margin, with thousands of small signals — tickets, returns, reviews, shift reports — that nobody has time to read. The money is in reading all of them, every day, and acting the same week.",
+      "Lots of orders, small margins, and thousands of small signals — tickets, returns, reviews, shift reports — that nobody has time to read. The money is in reading all of them every day and acting in the same week.",
     light: true,
     cards: [
       {
@@ -393,10 +393,10 @@ export default function IndustriesPage() {
           className="mt-6 max-w-[62ch] text-[19px] leading-[1.45]"
           style={{ color: "var(--dc-muted)" }}
         >
-          Three groups, because the shape of the problem repeats even when the industry
-          does not. For each one we show where a system belongs across the whole business
-          — the front office, the operations behind it, and the intelligence your
-          leadership decides on — and the metric your board will ask about.
+          Three groups, because the same problems keep coming up even in very different
+          industries. For each one we show where a system fits across the whole business —
+          dealing with customers, running the work behind it, and the numbers your
+          leadership decides on — plus the one measure your board will ask about.
         </p>
         <ul className="mt-8 flex flex-wrap gap-2.5">
           {lenses.map((lens, i) => (

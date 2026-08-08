@@ -24,6 +24,8 @@
   --color-alert: #c2410c;
   --color-surface: #f1efe9;
   --color-surface-2: #ebe8e0;
+  /* Third paper tone, used by the integrations section. */
+  --color-surface-3: #e9e6dd;
   --color-surface-ink: #0f0f11;
   --color-surface-ink-rgb: 15, 15, 17;
   --color-surface-muted: #68665f;
@@ -52,7 +54,9 @@ html {
 
 body {
   margin: 0;
-  overflow-x: hidden;
+  /* `clip`, not `hidden`: hidden makes body a scroll container, which breaks
+     position: sticky on the nav. */
+  overflow-x: clip;
   background: var(--color-void);
   color: var(--color-cream);
   font-family: var(--font-sans), system-ui, sans-serif;

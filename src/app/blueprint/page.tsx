@@ -6,7 +6,7 @@ import { pageMetadata } from "@/lib/seo";
 export const metadata: Metadata = pageMetadata({
   title: "The AI Opportunity Blueprint",
   description:
-    "A paid diagnostic that ends in a ranked roadmap and a rupee figure — or in an honest recommendation not to build. Credited in full against implementation.",
+    "A short paid study that ends with a clear plan, in order, and a rupee figure — or with an honest recommendation not to build. Credited in full against implementation.",
   path: "/blueprint",
   keywords: [
     "AI opportunity assessment",
@@ -138,10 +138,10 @@ export default function BlueprintPage() {
             className="mt-7 max-w-[52ch] text-[19px] leading-[1.45]"
             style={{ color: "var(--dc-muted)" }}
           >
-            A paid diagnostic that ends in a ranked roadmap and a rupee figure — or in us
-            telling you the problem is a process, a hire, or nothing at all. We charge for
-            it because free audits are sales calls in costume, and because the work is
-            real.
+            A short paid study. It ends with a clear plan, in order, and a rupee figure —
+            or with us telling you the fix is a process change, a hire, or nothing at all.
+            We charge for it because free audits are just sales calls, and this is real
+            work.
           </p>
         </div>
 

@@ -154,7 +154,7 @@ export default async function SystemDetailPage({ params }: Props) {
 
       <ClosingCta
         title="Tell us where the business loses time."
-        blurb="Forty-five minutes, no deck. We will either propose a Blueprint, suggest a cheaper fix you can do without us, or say this is not a problem for AI."
+        blurb="Forty-five minutes, no slides. We will either suggest a Blueprint, point you to a cheaper fix you can do without us, or tell you this is not a job for AI."
         primary={{ href: "/apply", label: "Apply for a consultation" }}
         secondary={{ href: "/systems", label: "All seven systems" }}
       />

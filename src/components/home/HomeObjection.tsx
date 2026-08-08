@@ -115,9 +115,8 @@ export function HomeObjection() {
         className="mt-5 max-w-[56ch] text-[19px] leading-[1.45]"
         style={{ color: "var(--dc-muted)" }}
       >
-        Usually true, and usually for the same four reasons — none of them technical. A
-        pilot is a demonstration. An operating system is something the business depends
-        on by Friday.
+        Usually true, and usually for the same four reasons. A trial is a demo. A working
+        system is something your team relies on every day.
       </p>
 
       <div

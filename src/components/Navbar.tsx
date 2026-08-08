@@ -94,11 +94,12 @@ export function Navbar() {
         className="dc sticky top-0 z-40 flex h-[58px] items-center justify-between gap-4 px-5 sm:px-7"
         style={{
           background:
-            "linear-gradient(180deg, rgba(10,10,12,0.74), rgba(10,10,12,0.5))",
-          backdropFilter: "blur(22px) saturate(170%)",
-          WebkitBackdropFilter: "blur(22px) saturate(170%)",
+            "linear-gradient(180deg, rgba(10,10,12,0.66), rgba(10,10,12,0.38))",
+          backdropFilter: "blur(26px) saturate(180%)",
+          WebkitBackdropFilter: "blur(26px) saturate(180%)",
           boxShadow:
-            "inset 0 1px 0 rgba(236,234,228,0.09), 0 1px 0 rgba(236,234,228,0.13), 0 24px 50px -34px rgba(0,0,0,0.95)",
+            "inset 0 1px 0 rgba(236,234,228,0.1), 0 1px 0 rgba(236,234,228,0.14), 0 30px 60px -40px rgba(0,0,0,1)",
+          animation: "dc-menuin 520ms cubic-bezier(0.16,1,0.3,1) both",
         }}
       >
         <Link href="/" className="flex items-center gap-2.5" aria-label="BYBO home">

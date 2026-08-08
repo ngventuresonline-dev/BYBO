@@ -5,6 +5,7 @@ import { HomeProblem } from "@/components/home/HomeProblem";
 import { HomeLeakage } from "@/components/home/HomeLeakage";
 import { HomeStack } from "@/components/home/HomeStack";
 import { HomeObjection } from "@/components/home/HomeObjection";
+import { HomeConnects } from "@/components/home/HomeConnects";
 import { HomeIndustries } from "@/components/home/HomeIndustries";
 import { ClosingCta } from "@/components/dc/ClosingCta";
 import { pageMetadata, SITE } from "@/lib/seo";
@@ -32,10 +33,11 @@ export default function HomePage() {
       <HomeLeakage />
       <HomeStack />
       <HomeObjection />
+      <HomeConnects />
       <HomeIndustries />
       <ClosingCta
         title="Tell us where the business loses time."
-        blurb="We will decide together whether it deserves an AI system, a simpler process fix, or no project at all. All three answers are fine."
+        blurb="We will work out together whether it needs an AI system, a simpler fix, or nothing at all. All three answers are fine."
         primary={{ href: "/apply", label: "Apply for a consultation" }}
         secondary={{ href: "/how-we-work", label: "How we work" }}
       />

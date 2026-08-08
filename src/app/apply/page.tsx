@@ -7,7 +7,7 @@ import { pageMetadata } from "@/lib/seo";
 export const metadata: Metadata = pageMetadata({
   title: "Apply for Consultation",
   description:
-    "Tell BYBO where your business loses time. Forty-five minutes, no deck — we will propose a Blueprint, suggest a cheaper fix, or say this is not a problem for AI.",
+    "Tell BYBO where your business loses time. Forty-five minutes, no slides — we will suggest a Blueprint, point you to a cheaper fix, or tell you this is not a job for AI.",
   path: "/apply",
   keywords: ["AI consultation", "enterprise AI inquiry", "BYBO apply"],
 });
@@ -28,8 +28,8 @@ export default function ApplyPage() {
             className="mt-6 max-w-[42ch] text-[18px] leading-[1.5]"
             style={{ color: "var(--dc-muted)" }}
           >
-            Forty-five minutes, no deck. We will either propose a Blueprint, suggest a
-            cheaper fix you can do without us, or say this is not a problem for AI.
+            Forty-five minutes, no slides. We will either suggest a Blueprint, point you
+            to a cheaper fix you can do without us, or tell you this is not a job for AI.
           </p>
 
           <div

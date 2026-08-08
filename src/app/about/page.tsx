@@ -20,9 +20,9 @@ const MONO = "IBM Plex Mono, monospace";
 const INK = "rgba(15,15,17,";
 
 const paragraphs = [
-  "There are several hundred firms in this city selling “AI transformation”. Almost all of them sell a build: a chatbot, a content pipeline, a dashboard. A build is a one-time transaction, and its price falls every quarter as the tools get better. That is a fight without a winner, and it is not the one we are in.",
-  "The difficulty with an AI system is not making it work in a demo. It is making it keep working in month seven, when the data has drifted, the odd cases have arrived, the model underneath has changed, and someone has quietly switched a supplier format. Almost nobody in this market is set up to be there in month seven.",
-  "So we structured the firm around that instead. A paid diagnostic, so the thinking is taken seriously. A fixed-scope build with acceptance criteria. Then an operating retainer with a named owner, a monthly review, and a measurement against the baseline we recorded before anything launched.",
+  "There are hundreds of firms in this city selling “AI transformation”. Almost all of them sell a one-off build: a chatbot, a content tool, a dashboard. A build is a single sale, and its price drops every few months as the tools improve. That is a race to the bottom, and we are not in it.",
+  "The hard part is not getting an AI system to work in a demo. It is keeping it working in month seven, when your data has changed, the odd cases have turned up, the technology underneath has updated, and a supplier has quietly changed their format. Very few firms here are set up to still be around in month seven.",
+  "So we built the firm around that instead. A paid study first, so the thinking is taken seriously. Then a build with an agreed scope and an agreed definition of done. Then a monthly arrangement with one named owner, a review every month, and a comparison against the numbers we recorded before anything went live.",
 ];
 
 const closingParagraph =
