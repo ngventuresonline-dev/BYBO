@@ -1,63 +1,8 @@
-import type { Metadata } from "next";
-import { Suspense } from "react";
-import { ApplicationForm } from "@/components/ApplicationForm";
-import { CONTACT } from "@/lib/site";
-import { pageMetadata } from "@/lib/seo";
-
-export const metadata: Metadata = pageMetadata({
-  title: "Apply for Consultation",
-  description:
-    "Tell BYBO where your business loses time. Forty-five minutes, no slides — we will suggest a Blueprint, point you to a cheaper fix, or tell you this is not a job for AI.",
-  path: "/apply",
-  keywords: ["AI consultation", "enterprise AI inquiry", "BYBO apply"],
-});
-
-export default function ApplyPage() {
-  return (
-    <section className="dc dc-divide grid min-[861px]:grid-cols-[1fr_1.15fr]">
-      <div
-        className="dc-pad dc-section min-[861px]:border-r"
-        style={{ borderColor: "var(--dc-line)" }}
-      >
-        <div className="min-[861px]:sticky min-[861px]:top-[100px]">
-          <p className="dc-label">Apply for a consultation</p>
-          <h1 className="dc-h1 mt-7 max-w-[12ch] text-[clamp(38px,5.2vw,76px)] leading-[0.88]">
-            Tell us where the time goes.
-          </h1>
-          <p
-            className="mt-6 max-w-[42ch] text-[18px] leading-[1.5]"
-            style={{ color: "var(--dc-muted)" }}
-          >
-            Forty-five minutes, no slides. We will either suggest a Blueprint, point you
-            to a cheaper fix you can do without us, or tell you this is not a job for AI.
-          </p>
-
-          <div
-            className="dc-mono mt-8 grid gap-2 text-[13px]"
-            style={{ color: "rgba(236,234,228,0.55)" }}
-          >
-            <a href={`mailto:${CONTACT.email}`} className="hover:text-signal">
-              {CONTACT.email}
-            </a>
-            <a href={`tel:${CONTACT.phoneHref}`} className="hover:text-signal">
-              {CONTACT.phone} · WhatsApp
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <div className="dc-light dc-form-light dc-pad dc-section">
-        <Suspense
-          fallback={
-            <div
-              className="min-h-[34rem] animate-pulse"
-              style={{ background: "rgba(15,15,17,0.05)" }}
-            />
-          }
-        >
-          <ApplicationForm />
-        </Suspense>
-      </div>
-    </section>
-  );
-}
+import { ConsultationForm } from '@/components/studio/Interactive';
+import { FAQ, Included, TextLink } from '@/components/studio/Shared';
+import { pageMetadata } from '@/lib/seo';
+export const metadata = pageMetadata({ title: 'Talk to BYBO', description: 'Discuss a business AI workflow, a new website or an AI Opportunity Blueprint with BYBO. Prepare your enquiry and send it by email or WhatsApp.', path: '/apply' });
+type Props = {
+    searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+export default async function Apply({ searchParams }: Props) { const params = await searchParams; const get = (key: string) => typeof params[key] === 'string' ? params[key] as string : ''; return <><section className="consultation-intro container"><p className="eyebrow">Talk to BYBO</p><h1>Start with what<br />you want to change.</h1><p className="lede">You do not need a technical brief. A clear problem—or an ambition for your next website—is a good beginning.</p></section><section className="section light"><div className="container consultation-layout"><ConsultationForm initialSystem={get('system')} initialIndustry={get('industry')} initialInterest={get('interest')}/><aside className="contact-aside"><p className="eyebrow">What happens next</p><h2>A conversation about the work.</h2><Included items={['We review the context you send.', 'We clarify your goals and the current process.', 'Together, we identify a useful next step.']}/><div className="direct-contact"><p className="eyebrow">Prefer to reach us directly?</p><a href="mailto:hello@bybo.in">hello@bybo.in</a><a href="tel:+916360079756">+91 63600 79756</a><p>Bengaluru, India</p></div><TextLink href="/blueprint">Understand the Blueprint</TextLink></aside></div></section><FAQ items={[["Do I need to know which service I want?", "No. Describe what you are trying to achieve. We can help you work out whether you need an AI system, a website or a simpler change."], ["Is the first conversation a paid diagnostic?", "No. The AI Opportunity Blueprint is a separate, scoped paid engagement. We explain the scope and fee before you decide to proceed."], ["Does this form send my enquiry automatically?", "No. It prepares a message for you to review. You then choose email or WhatsApp and send it through that app."]]}/></>; }

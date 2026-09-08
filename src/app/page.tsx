@@ -1,46 +1,6 @@
-import type { Metadata } from "next";
-import { HomeHero } from "@/components/home/HomeHero";
-import { HomeStats } from "@/components/home/HomeStats";
-import { HomeProblem } from "@/components/home/HomeProblem";
-import { HomeLeakage } from "@/components/home/HomeLeakage";
-import { HomeStack } from "@/components/home/HomeStack";
-import { HomeObjection } from "@/components/home/HomeObjection";
-import { HomeConnects } from "@/components/home/HomeConnects";
-import { HomeIndustries } from "@/components/home/HomeIndustries";
-import { ClosingCta } from "@/components/dc/ClosingCta";
-import { pageMetadata, SITE } from "@/lib/seo";
-
-export const metadata: Metadata = pageMetadata({
-  title: SITE.defaultTitle,
-  description: SITE.defaultDescription,
-  path: "/",
-  keywords: [
-    "enterprise AI systems India",
-    "custom AI platforms",
-    "agentic AI operations",
-    "enterprise knowledge systems",
-    "AI systems partner",
-    "BYBO",
-  ],
-});
-
-export default function HomePage() {
-  return (
-    <>
-      <HomeHero />
-      <HomeStats />
-      <HomeProblem />
-      <HomeLeakage />
-      <HomeStack />
-      <HomeObjection />
-      <HomeConnects />
-      <HomeIndustries />
-      <ClosingCta
-        title="Tell us where the business loses time."
-        blurb="We will work out together whether it needs an AI system, a simpler fix, or nothing at all. All three answers are fine."
-        primary={{ href: "/apply", label: "Apply for a consultation" }}
-        secondary={{ href: "/how-we-work", label: "How we work" }}
-      />
-    </>
-  );
-}
+import { Hero, Section, Heading, Closing, Button, Cards, Flow, ServiceList } from '@/components/studio/Shared';
+import { ProblemExplorer, CapacityCalculator } from '@/components/studio/Interactive';
+import { Database, MessagesSquare, BriefcaseBusiness, Network } from 'lucide-react';
+import { pageMetadata, SITE } from '@/lib/seo';
+export const metadata = pageMetadata({ title: SITE.defaultTitle, description: 'BYBO builds AI systems and distinctive websites around your business. Connect recurring work, your tools and the people who make the decisions.', path: '/' });
+export default function Home() { return <><Hero label="AI systems & websites for your business" title="Your team has better things to do." body="We build systems that handle recurring work, connect your tools and bring the right decisions back to your people." primary="Find your starting point" href="#starting-point" secondary={{ href: '#workflow', label: 'See a workflow' }}/><Section light id="starting-point"><Heading label="Start with the work" title="Where does the work get stuck?"/><ProblemExplorer /></Section><Section id="workflow"><Heading label="Less busywork. More progress." title="Give recurring work a clear path."/><div className="before-after"><div className="before-panel"><p className="eyebrow">Before</p><h3>Inbox. Spreadsheet.<br />Reminder. Repeat.</h3><p>The same request moves between tools. Context gets lost, and the next step depends on someone remembering.</p><ul><li>Find the request</li><li>Copy the details</li><li>Chase the next person</li><li>Check again tomorrow</li></ul></div><div className="after-panel"><p className="eyebrow">After</p><h3>One workflow.<br />Clear ownership.</h3><p>The right information follows the work. Routine steps move forward; your team handles the decisions.</p><ul><li>Enquiry captured</li><li>Response prepared</li><li>Sensitive cases reviewed</li><li>Follow-up recorded</li></ul></div></div><Flow steps={[["Capture", "The enquiry and its context"], ["Prepare", "A source-backed response"], ["Review", "Apply your rules"], ["Approve", "A person handles exceptions"], ["Follow up", "The next step has an owner"]]} note="Illustrative enquiry workflow. Actions and approvals are scoped to your business."/></Section><Section light><Heading label="A quick sense of the opportunity" title="What could your team get back?"/><CapacityCalculator /></Section><Section light className="border-top"><Heading title="Built around the tools you already use." body="We agree what the system may read, change and escalate. Integrations are scoped to the access your tools support."/><div className="integration-grid">{[[Database, 'Accounts & ERP'], [MessagesSquare, 'Communication'], [BriefcaseBusiness, 'Sales & service'], [Network, 'Operations & data']].map(([Icon, title]) => { const I = Icon as typeof Database; return <div key={String(title)}><I size={30}/><h3>{String(title)}</h3></div>; })}</div></Section><Section><Heading label="Our services" title="Useful systems. Exceptional websites." body="From the work behind your business to the way the world meets your brand."/><ServiceList compact/></Section><Section light><Heading label="Website design & development" title="A website worthy of what you do." body="For brands, businesses and creators. A clear story, a distinctive design and a considered experience on every screen."/><div className="website-feature"><div className="browser-example" aria-label="Illustrative website structure"><div className="browser-toolbar"><span>YOUR BRAND</span><span>Work · About · Contact</span></div><div className="browser-content"><p className="eyebrow">Your story. Your space.</p><h3>Make yourself<br /><em>unmistakable.</em></h3><span className="sample-cta">Discover the work ↗</span></div><div className="browser-footer">Clear message <span>Considered experience</span></div></div><div><Cards items={[["Your brand, expressed clearly", "Strategy, structure and copy that help the right people understand you."], ["Designed for every screen", "Responsive development, accessible interactions and a practical handover."]]}/><Button href="/systems/website-design-development">Explore websites</Button></div></div></Section><Section><Heading title="Understand the work. Build the system. Keep it working."/><Cards items={[["Blueprint", "Map the process, assess the opportunity and agree the first useful step."], ["Build", "Connect the tools, shape the experience and test it with your team."], ["Operate", "Monitor the work, resolve problems and improve with evidence."]]}/><div className="actions"><Button href="/how-we-work" secondary>How we work</Button></div></Section><Closing /></>; }
