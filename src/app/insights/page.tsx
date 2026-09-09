@@ -1,5 +1,4 @@
-import { Hero, Section, Heading, Cards, Closing } from '@/components/studio/Shared';
-import { InsightFilter } from '@/components/studio/Interactive';
+import { ReferenceInsights } from '@/components/studio/FinalReferencePages';
 import { pageMetadata } from '@/lib/seo';
-export const metadata = pageMetadata({ title: 'Insights', description: 'Practical notes on choosing AI workflows, designing human decisions and moving from a demo to dependable business operations.', path: '/insights' });
-export default function Insights() { return <><Hero label="Notes from the work" title="A clearer head for the next AI decision." body="Practical thinking about what to build, where people belong and what it takes to keep a system useful." primary="Explore the notes" href="#notes" art="none"/><Section light id="notes"><InsightFilter /></Section><Section><Heading label="Read for the decision in front of you" title="Where are you in the work?"/><Cards items={[["Choosing a starting point", "Start with the opportunity framework. Compare the work, not the excitement around the technology."], ["Designing the workflow", "Read about human decisions. Make each approval useful and each escalation accountable."], ["Preparing for launch", "Read beyond the demo. Agree ownership, quality, costs and recovery."]]}/></Section><Closing title="Put the thinking to work." body="Bring one real workflow. We will help turn the questions into a useful next step."/></>; }
+export const metadata = pageMetadata({ title: 'Insights', description: 'Practical reading for the people deciding what to build, who should approve it and how to tell if it works.', path: '/insights' });
+export default function Insights(){return <ReferenceInsights/>}
