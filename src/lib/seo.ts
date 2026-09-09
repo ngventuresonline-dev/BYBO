@@ -22,7 +22,7 @@ type PageMetaOptions = {
     noIndex?: boolean;
     publishedTime?: string;
 };
-export function pageMetadata({ title, description, path, keywords, ogType = "website", ogImage = "/icon.svg", ogImageAlt = "BYBO | Enterprise AI systems", noIndex = false, publishedTime, }: PageMetaOptions): Metadata {
+export function pageMetadata({ title, description, path, keywords, ogType = "website", ogImage, ogImageAlt, noIndex = false, publishedTime, }: PageMetaOptions): Metadata {
     const url = siteUrl(path);
     const isHome = path === "/";
     const documentTitle = isHome ? title : `${title} | BYBO`;
@@ -52,16 +52,18 @@ export function pageMetadata({ title, description, path, keywords, ogType = "web
             siteName: SITE.name,
             locale: SITE.locale,
             type: ogType,
-            images: [{ url: ogImage, alt: ogImageAlt }],
             ...(publishedTime && ogType === "article"
                 ? { publishedTime, modifiedTime: publishedTime }
                 : {}),
+            ...(ogImage
+                ? { images: [{ url: ogImage, alt: ogImageAlt ?? title }] }
+                : {}),
         },
         twitter: {
-            card: "summary_large_image",
+            card: ogImage ? "summary_large_image" : "summary",
             title: documentTitle,
             description,
-            images: [ogImage],
+            ...(ogImage ? { images: [ogImage] } : {}),
         },
     };
 }

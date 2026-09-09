@@ -28,13 +28,11 @@ export const metadata: Metadata = {
         siteName: SITE.name,
         locale: SITE.locale,
         type: "website",
-        images: [{ url: "/icon.svg", alt: "BYBO | Enterprise AI systems" }],
     },
     twitter: {
-        card: "summary_large_image",
+        card: "summary",
         title: SITE.defaultTitle,
         description: SITE.defaultDescription,
-        images: ["/icon.svg"],
     },
     robots: {
         index: true,
@@ -53,7 +51,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children, }: {
     children: React.ReactNode;
 }) {
-    return (<html lang="en">
+    return (<html lang="en-IN">
       <body className="antialiased">
         <MarketingPixels />
         <SeoJsonLd />
