@@ -1,3 +1,12 @@
 import Link from 'next/link';
-import { services } from '@/lib/redesign';
-export function Footer() { return <footer className="footer"><div className="container"><div className="footer-top"><div><Link className="wordmark" href="/">BYBO<span className="brand-dot">.</span></Link><p>Built around your business.<br />Made for the people in it.</p><a href="mailto:hello@bybo.in">hello@bybo.in</a><br /><a href="tel:+916360079756">+91 63600 79756</a></div><div><h2>Explore</h2>{[['/solutions', 'Solutions'], ['/systems', 'All services'], ['/blueprint', 'AI Opportunity Blueprint'], ['/industries', 'Industries'], ['/how-we-work', 'How we work'], ['/about', 'About BYBO'], ['/insights', 'Insights']].map(([url, text]) => <Link href={url} key={url}>{text}</Link>)}</div><div><h2>What we build</h2>{services.map(s => <Link key={s.slug} href={`/systems/${s.slug}`}>{s.name}</Link>)}</div></div><div className="footer-bottom"><span>© {new Date().getFullYear()} BYBO · N&G Ventures · Bengaluru</span><Link href="/privacy">Privacy information</Link><a href="#main-content">Back to top ↑</a></div></div></footer>; }
+
+export function Footer() {
+  return <footer className="reference-footer">
+    <div className="container">
+      <div className="reference-footer-brand"><Link className="wordmark" href="/">BYBO</Link><span>Built around your business.</span></div>
+      <nav aria-label="Footer navigation"><Link href="/about">About</Link><Link href="/blueprint">Blueprint</Link><Link href="/systems/website-design-development">Websites</Link><Link href="/insights">Insights</Link><Link href="/privacy">Privacy</Link></nav>
+      <a href="mailto:hello@bybo.in">hello@bybo.in</a>
+      <Link href="/">bybo.in</Link>
+    </div>
+  </footer>;
+}

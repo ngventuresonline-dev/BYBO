@@ -1,6 +1,88 @@
-import { Hero, Section, Heading, Closing, Button, Cards, Flow, ServiceList } from '@/components/studio/Shared';
+import Image from 'next/image';
+import Link from 'next/link';
+import { ArrowRight, PlayCircle, FileText, Box, Settings, Database, MessageCircle, Users, LayoutGrid, CheckSquare } from 'lucide-react';
+import { Button } from '@/components/studio/Shared';
 import { ProblemExplorer, CapacityCalculator } from '@/components/studio/Interactive';
-import { Database, MessagesSquare, BriefcaseBusiness, Network } from 'lucide-react';
 import { pageMetadata, SITE } from '@/lib/seo';
-export const metadata = pageMetadata({ title: SITE.defaultTitle, description: 'BYBO builds AI systems and distinctive websites around your business. Connect recurring work, your tools and the people who make the decisions.', path: '/' });
-export default function Home() { return <><Hero label="AI systems & websites for your business" title="Your team has better things to do." body="We build systems that handle recurring work, connect your tools and bring the right decisions back to your people." primary="Find your starting point" href="#starting-point" secondary={{ href: '#workflow', label: 'See a workflow' }}/><Section light id="starting-point"><Heading label="Start with the work" title="Where does the work get stuck?"/><ProblemExplorer /></Section><Section id="workflow"><Heading label="Less busywork. More progress." title="Give recurring work a clear path."/><div className="before-after"><div className="before-panel"><p className="eyebrow">Before</p><h3>Inbox. Spreadsheet.<br />Reminder. Repeat.</h3><p>The same request moves between tools. Context gets lost, and the next step depends on someone remembering.</p><ul><li>Find the request</li><li>Copy the details</li><li>Chase the next person</li><li>Check again tomorrow</li></ul></div><div className="after-panel"><p className="eyebrow">After</p><h3>One workflow.<br />Clear ownership.</h3><p>The right information follows the work. Routine steps move forward; your team handles the decisions.</p><ul><li>Enquiry captured</li><li>Response prepared</li><li>Sensitive cases reviewed</li><li>Follow-up recorded</li></ul></div></div><Flow steps={[["Capture", "The enquiry and its context"], ["Prepare", "A source-backed response"], ["Review", "Apply your rules"], ["Approve", "A person handles exceptions"], ["Follow up", "The next step has an owner"]]} note="Illustrative enquiry workflow. Actions and approvals are scoped to your business."/></Section><Section light><Heading label="A quick sense of the opportunity" title="What could your team get back?"/><CapacityCalculator /></Section><Section light className="border-top"><Heading title="Built around the tools you already use." body="We agree what the system may read, change and escalate. Integrations are scoped to the access your tools support."/><div className="integration-grid">{[[Database, 'Accounts & ERP'], [MessagesSquare, 'Communication'], [BriefcaseBusiness, 'Sales & service'], [Network, 'Operations & data']].map(([Icon, title]) => { const I = Icon as typeof Database; return <div key={String(title)}><I size={30}/><h3>{String(title)}</h3></div>; })}</div></Section><Section><Heading label="Our services" title="Useful systems. Exceptional websites." body="From the work behind your business to the way the world meets your brand."/><ServiceList compact/></Section><Section light><Heading label="Website design & development" title="A website worthy of what you do." body="For brands, businesses and creators. A clear story, a distinctive design and a considered experience on every screen."/><div className="website-feature"><div className="browser-example" aria-label="Illustrative website structure"><div className="browser-toolbar"><span>YOUR BRAND</span><span>Work · About · Contact</span></div><div className="browser-content"><p className="eyebrow">Your story. Your space.</p><h3>Make yourself<br /><em>unmistakable.</em></h3><span className="sample-cta">Discover the work ↗</span></div><div className="browser-footer">Clear message <span>Considered experience</span></div></div><div><Cards items={[["Your brand, expressed clearly", "Strategy, structure and copy that help the right people understand you."], ["Designed for every screen", "Responsive development, accessible interactions and a practical handover."]]}/><Button href="/systems/website-design-development">Explore websites</Button></div></div></Section><Section><Heading title="Understand the work. Build the system. Keep it working."/><Cards items={[["Blueprint", "Map the process, assess the opportunity and agree the first useful step."], ["Build", "Connect the tools, shape the experience and test it with your team."], ["Operate", "Monitor the work, resolve problems and improve with evidence."]]}/><div className="actions"><Button href="/how-we-work" secondary>How we work</Button></div></Section><Closing /></>; }
+import './reference-home.css';
+
+export const metadata = pageMetadata({
+  title: SITE.defaultTitle,
+  description: 'BYBO builds systems that handle recurring work, connect your tools and bring the right decisions back to people. AI systems and websites built around your business.',
+  path: '/',
+});
+
+export default function Home() {
+  return (
+    <div className="reference-home">
+      <section className="reference-hero">
+        <Image className="reference-hero-scene" src="/images/reference-hero.webp" alt="A pile of paperwork becoming a clear violet workflow, with an amber human review step" fill sizes="100vw" priority />
+        <div className="container reference-hero-content">
+          <p className="eyebrow">AI systems for your business</p>
+          <h1>Your team has<br />better things to do.</h1>
+          <p className="lede">We build systems that handle recurring work, connect your tools and bring the right decisions back to your people.</p>
+          <div className="actions">
+            <Button href="#starting-point">Find your starting point</Button>
+            <Link className="button button-secondary" href="#workflow"><PlayCircle size={22} />See a workflow</Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="reference-problems light" id="starting-point">
+        <div className="container">
+          <p className="home-crumb">Home /</p>
+          <h2>Where does the work get stuck?</h2>
+          <ProblemExplorer reference />
+        </div>
+      </section>
+
+      <section className="reference-comparison" id="workflow">
+        <div className="container">
+          <h2>Give recurring work a clear path.</h2>
+          <div className="reference-comparison-grid">
+            <article className="comparison-photo">
+              <Image src="/images/reference-before.webp" alt="A crowded desk with paperwork, a repeated to-do list and a mug" fill sizes="(max-width: 760px) 100vw, 45vw" />
+              <div className="comparison-copy"><p>Before</p><h3>Inbox. Spreadsheet.<br />Reminder. Repeat.</h3></div>
+            </article>
+            <div className="comparison-arrow" aria-hidden="true"><ArrowRight size={25} /></div>
+            <article className="comparison-photo">
+              <Image src="/images/reference-after.webp" alt="A tidy desk with a clear workflow and room to focus" fill sizes="(max-width: 760px) 100vw, 45vw" />
+              <div className="comparison-copy"><p>After</p><h3>One workflow.<br />Clear ownership.<br />A record of what happened.</h3></div>
+              <ul className="photo-checklist">
+                {['Enquiry captured', 'Response drafted', 'Follow-up scheduled', 'Recorded in your system'].map(item => <li key={item}><CheckSquare size={20} />{item}</li>)}
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section className="reference-calculator light">
+        <div className="container"><h2>What could your team get back?</h2><CapacityCalculator /></div>
+      </section>
+
+      <section className="reference-integrations light">
+        <div className="container">
+          <h2>Built around the tools you already use.</h2>
+          <p className="lede">We agree what the system may read, change and escalate.</p>
+          <div className="integration-grid">
+            {[{ Icon: Database, title: 'Accounts & ERP' }, { Icon: MessageCircle, title: 'Communication' }, { Icon: Users, title: 'Sales & service' }, { Icon: LayoutGrid, title: 'Operations & data' }].map(({ Icon, title }) => <div key={title}><Icon size={38} strokeWidth={1.6} /><h3>{title}</h3></div>)}
+          </div>
+        </div>
+      </section>
+
+      <section className="reference-method">
+        <div className="container">
+          <div className="reference-method-heading"><h2>Understand the work. Build the system. Keep it working.</h2><Link className="text-link" href="/how-we-work">How we work <ArrowRight size={16} /></Link></div>
+          <div className="reference-method-grid">
+            {[{ Icon: FileText, title: 'Blueprint', image: 'blueprint', href: '/blueprint', alt: 'A notebook with the steps Map, Prioritise and Plan' }, { Icon: Box, title: 'Build', image: 'build', href: '/systems', alt: 'Connected violet glass blocks representing tools, logic and data' }, { Icon: Settings, title: 'Operate', image: 'operate', href: '/how-we-work', alt: 'An operating notebook with Running, Monitored and Improving checked off' }].map(({ Icon, title, image, href, alt }) => <Link href={href} className="reference-method-card" key={title}><h3><Icon size={30} strokeWidth={1.5} />{title}</h3><Image src={`/images/reference-${image}.webp`} alt={alt} width={1000} height={700} sizes="(max-width: 600px) 100vw, 30vw" /></Link>)}
+          </div>
+        </div>
+      </section>
+
+      <section className="reference-closing">
+        <Image src="/images/reference-closing.webp" alt="A violet glass sphere on a stack of books" fill sizes="100vw" />
+        <div className="container"><div><h2>Bring us one recurring problem.</h2><p>We will help you decide whether it needs a system.</p></div><Button href="/apply">Talk to BYBO</Button></div>
+      </section>
+    </div>
+  );
+}

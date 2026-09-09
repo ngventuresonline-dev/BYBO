@@ -1,11 +1,31 @@
 'use client';
 import { useState, type FormEvent } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ArrowRight, Check, ShieldCheck, MessageSquare, FileText, Workflow, BookOpen, BarChart3, Sparkles, Globe, Mail } from 'lucide-react';
 import { solutions, industries, articles, services } from '@/lib/redesign';
 import { trackLead } from '@/lib/analytics';
 const icons = [MessageSquare, FileText, Workflow, BookOpen, BarChart3, Sparkles, Globe];
-export function ProblemExplorer() { const [active, setActive] = useState(0); const s = solutions[active]; return <div className="problem-explorer"><div className="filter-row" aria-label="Choose a workflow">{solutions.map((item, i) => { const Icon = icons[i]; return <button key={item.id} type="button" aria-pressed={active === i} onClick={() => setActive(i)}><Icon size={18}/>{item.label}</button>; })}</div><div className="problem-panel" aria-live="polite"><div><p className="eyebrow">{s.label}</p><h3>{s.title}</h3><p className="lede">{s.body}</p><div className="mini-flow">{s.steps.map((step, i) => <span key={step}>{step}{i < s.steps.length - 1 && <ArrowRight size={13}/>}</span>)}</div><p className="human-note"><ShieldCheck size={18}/>{s.gate}</p><Link href={`/systems/${s.service}`} className="text-link">Explore this service <ArrowRight size={17}/></Link></div><div className="work-preview"><div className="figure-label"><span>One clear path</span><span>Illustrative example</span></div>{s.steps.map((step, i) => <div className={`work-item ${i === 3 ? 'work-review' : ''}`} key={step}><span className="work-icon">{i === 3 ? <ShieldCheck size={18}/> : <Check size={18}/>}</span><div><strong>{step}</strong><p>{i === 3 ? 'Your rules. A named owner.' : i === 0 ? 'The work starts here.' : i === s.steps.length - 1 ? 'The next step is recorded.' : 'Context carried forward.'}</p></div><span className="index">0{i + 1}</span></div>)}</div></div></div>; }
+export function ProblemExplorer({ reference = false }: { reference?: boolean }) {
+  const [active, setActive] = useState(0);
+  const s = solutions[active];
+  const options = reference ? solutions.slice(0, 6) : solutions;
+  return <div className={`problem-explorer ${reference ? 'reference-explorer' : ''}`}>
+    <div className="filter-row" aria-label="Choose a workflow">
+      {options.map((item, i) => { const Icon = icons[i]; return <button key={item.id} type="button" aria-pressed={active === i} onClick={() => setActive(i)}><Icon size={22} />{item.label}</button>; })}
+    </div>
+    <div className="problem-panel" aria-live="polite">
+      <div className="problem-copy">
+        {!reference && <p className="eyebrow">{s.label}</p>}
+        <h3>{s.title}</h3><p className="lede">{s.body}</p>
+        <div className="mini-flow">{s.steps.map((step, i) => <span key={step}><b>{step}</b>{i < s.steps.length - 1 && <ArrowRight size={14} />}</span>)}</div>
+        <p className="human-note"><ShieldCheck size={19} />{s.gate}</p>
+        <Link href={reference ? `/solutions#${s.id}` : `/systems/${s.service}`} className="text-link">{reference ? 'Explore solutions' : 'Explore this service'} <ArrowRight size={17} /></Link>
+      </div>
+      {reference && active === 0 ? <div className="reference-enquiry-art"><Image src="/images/reference-enquiry.webp" alt="Illustrative enquiry cards: a new question is captured and ready for follow-up" width={1200} height={900} sizes="(max-width: 760px) 100vw, 50vw" /></div> : <div className="work-preview"><div className="figure-label"><span>One clear path</span><span>Illustrative example</span></div>{s.steps.map((step, i) => <div className={`work-item ${i === 3 ? 'work-review' : ''}`} key={step}><span className="work-icon">{i === 3 ? <ShieldCheck size={18} /> : <Check size={18} />}</span><div><strong>{step}</strong><p>{i === 3 ? 'Your rules. A named owner.' : i === 0 ? 'The work starts here.' : i === s.steps.length - 1 ? 'The next step is recorded.' : 'Context carried forward.'}</p></div><span className="index">0{i + 1}</span></div>)}</div>}
+    </div>
+  </div>;
+}
 export function CapacityCalculator() { const [result, setResult] = useState<{
     hours: number;
     value: number;

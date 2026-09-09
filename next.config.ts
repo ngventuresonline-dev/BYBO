@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  allowedDevOrigins: ["terminal.local"],
   experimental: {
     optimizePackageImports: ["lucide-react", "framer-motion"],
   },
