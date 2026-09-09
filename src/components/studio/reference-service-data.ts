@@ -1,0 +1,36 @@
+export type ReferenceServiceKey = 'enterprise-knowledge-systems' | 'agentic-operations' | 'custom-ai-platforms';
+export const referenceServices = {
+  'enterprise-knowledge-systems': {
+    name:'Enterprise Knowledge', art:'knowledge', title:'The answer exists. Make it easy to find.',
+    body:'Give your team answers grounded in the documents they are allowed to use, with the source attached.',
+    tabs:['Policies','Operating procedures','Project records','Product knowledge'],
+    workflowTitle:'From question to a verifiable answer.',
+    steps:['Ask a question','Find permitted sources','Check the evidence','Answer with a citation','Flag what is missing'],
+    gate:'If the evidence is missing or unclear, the system says so.',
+    outcomes:['Less searching','Inspectable answers','Permissions respected'],
+    measures:['Time to answer','Source validity','Useful answers','Unanswered questions'],
+    closing:'Bring us the questions your team keeps repeating.',
+  },
+  'agentic-operations': {
+    name:'Agentic Operations', art:'agentic', title:'Stop chasing. Keep work moving.',
+    body:'Connect the steps of a recurring process across your teams and tools, with defined limits at every stage.',
+    tabs:['Onboarding','Order coordination','Reconciliation','Recurring requests'],
+    workflowTitle:'One request. A clear route.',
+    steps:['Capture the request','Plan the permitted steps','Use the agreed tools','Ask when required','Record completion'],
+    gate:'Actions involving commitments or sensitive changes pause for the person you name.',
+    outcomes:['Clear handoffs','Visible exceptions','A record of each action'],
+    measures:['Completion time','Manual touches','Success rate','Escalations'],
+    closing:'Show us the process everyone keeps chasing.',
+  },
+  'custom-ai-platforms': {
+    name:'Custom AI Platforms', art:'platform', title:'Your business. Your way of working.',
+    body:'Build a platform around a validated workflow, your data and the people who use it.',
+    tabs:['Internal workspaces','Customer portals','Specialist tools','Operational platforms'],
+    workflowTitle:'Designed around the job.',
+    steps:['Define the use case','Design the experience','Connect the data','Test real scenarios','Launch and operate'],
+    gate:'Release criteria, access rules and rollback steps are agreed before launch.',
+    outcomes:['A usable product','Connected workflows','An operating plan'],
+    measures:['Task success','Quality checks','Availability','Response time'],
+    closing:'Tell us what your existing software cannot do.',
+  },
+};

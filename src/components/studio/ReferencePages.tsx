@@ -7,7 +7,7 @@ import './reference-pages.css';
 
 const documentHref = '/apply?system=document-multimodal-intelligence';
 
-function ReferenceHero({ page, title, body, art, label, href, cta, secondary }: { page: string; title: string; body: string; art: string; label?: string; href: string; cta: string; secondary?: boolean }) {
+export function ReferenceHero({ page, title, body, art, label, href, cta, secondary }: { page: string; title: string; body: string; art: string; label?: string; href: string; cta: string; secondary?: boolean }) {
   return <section className="rp-hero">
     <Image src={`/images/${art}.webp`} alt="" fill priority sizes="100vw" className="rp-hero-image" />
     <div className="container">
