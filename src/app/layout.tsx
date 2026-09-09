@@ -5,6 +5,7 @@ import { SeoJsonLd } from "@/components/SeoJsonLd";
 import { MarketingPixels } from "@/components/MarketingPixels";
 import { SITE } from "@/lib/seo";
 import "./globals.css";
+import "./desktop-heroes.css";
 export const metadata: Metadata = {
     metadataBase: new URL(SITE.url),
     title: {

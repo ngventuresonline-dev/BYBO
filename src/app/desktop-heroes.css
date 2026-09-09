@@ -1,0 +1,21 @@
+/* Keep the complete hero artwork inside its frame on desktop. */
+@media (min-width: 761px) {
+  .rp-hero .rp-hero-image,
+  .reference-hero .reference-hero-scene {
+    object-fit: contain;
+    object-position: right center;
+  }
+
+  .hero .hero-art > img {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    margin-left: 0;
+    object-fit: contain;
+  }
+
+  .fr-apply .fr-contact-copy > img {
+    height: auto;
+    object-fit: contain;
+  }
+}
