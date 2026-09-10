@@ -30,7 +30,6 @@ export default function Home() {
 
       <section className="reference-problems light" id="starting-point">
         <div className="container">
-          <p className="home-crumb">Home /</p>
           <h2>Where does the work get stuck?</h2>
           <ProblemExplorer reference />
         </div>

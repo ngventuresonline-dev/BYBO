@@ -7,8 +7,10 @@
 .reference-page .button{background:linear-gradient(110deg,#7c3cfa,#7134f6);border-radius:4px;min-height:48px;padding:13px 23px;font-size:15px;color:#fff}
 .reference-page .eyebrow{font-size:12px;letter-spacing:.13em;color:#ae89ff;margin-bottom:17px}
 .reference-page .lede{font-size:clamp(1rem,1.7vw,1.2rem);line-height:1.55;color:inherit;max-width:39ch;margin-top:22px}
-.rp-light{background:#f5f4f1;color:#15131b}
+.rp-light{background:#f5f4f1;color:#15131b;--muted:#5b5862;--violet-light:#6532c7;color-scheme:light}
 .rp-light .eyebrow{color:#7942dd}
+.reference-page .rp-light .button-secondary{color:#15131b;border-color:#8a8495}
+.rp-light .fr-featured .eyebrow{color:#b794ff}
 .rp-section{padding:52px 0}
 .rp-hero{position:relative;isolation:isolate;min-height:590px;overflow:hidden}
 .rp-hero-image{object-fit:cover;z-index:-2;object-position:center}
@@ -27,7 +29,7 @@
 .rp-pattern h3{font-size:27px;margin-bottom:8px}
 .rp-pattern-copy>p{font-size:15px;line-height:1.45;color:#57515d;max-width:41ch}
 .rp-pattern-copy .rp-path{font-size:14px;margin-top:7px;max-width:none}
-.rp-pattern-copy .rp-gate{display:flex;gap:8px;align-items:center;margin-top:12px;font-size:13px;color:#a76c00}
+.rp-pattern-copy .rp-gate{display:flex;gap:8px;align-items:center;margin-top:12px;font-size:13px;color:#8f5e00}
 .rp-pattern-link{font-size:14px;font-weight:500;color:#7842d6;display:flex;align-items:center;justify-content:space-between;gap:12px;border-left:1px solid #d7d2d9;padding:24px 0 24px 25px}
 .rp-pattern-link svg{flex-shrink:0}
 .rp-website-line{border-top:1px solid #d7d2d9;padding-top:22px;font-size:14px;color:#625b6d;display:flex;gap:12px;flex-wrap:wrap}
