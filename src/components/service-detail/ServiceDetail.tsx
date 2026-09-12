@@ -1,36 +1,37 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import {
-  ArrowRight, BookOpen, Boxes, ClipboardCheck, Clock, Coins, Database, FileSearch, FileText,
-  Gauge, KeyRound, LayoutGrid, LineChart, ListChecks, type LucideIcon, MessageCircle, Plug,
-  Route, ScrollText, Settings, ShieldCheck, Sparkles, Target, UserRound, Users, Workflow,
-} from 'lucide-react';
+import { ArrowRight, ShieldCheck } from 'lucide-react';
 import { RichText } from '@/components/insights/RichText';
 import { InsightCardView } from '@/components/insights/GuideArticle';
+import { Button } from '@/components/studio/Shared';
 import { cardFor, type InsightCard } from '@/lib/insights';
 import { serviceDetails } from '@/lib/service-details';
 import { services } from '@/lib/redesign';
 import { SITE, siteUrl } from '@/lib/seo';
+import { uniqueIconPicker } from './icons';
 import './service-detail.css';
 
-/** Icons cycle through each list, so every item is marked without icons living in the copy. */
-const DELIVERABLE_ICONS: LucideIcon[] = [Workflow, ClipboardCheck, ShieldCheck, LineChart, BookOpen, Users];
-const STEP_ICONS: LucideIcon[] = [FileSearch, Route, Boxes, Users, Gauge];
-const CONNECT_ICONS: LucideIcon[] = [Database, MessageCircle, LayoutGrid, FileText, Settings, Plug];
-const BRING_ICONS: LucideIcon[] = [ScrollText, KeyRound, UserRound, ListChecks, Target];
-const MEASURE_ICONS: LucideIcon[] = [Clock, Gauge, ListChecks, LineChart, Target, Coins];
+/** First sentence, for headline-style lead-ins. */
+const lead = (text: string) => {
+  const m = text.match(/^.*?[.?!](\s|$)/);
+  return { head: (m ? m[0] : text).trim(), rest: m ? text.slice(m[0].length).trim() : '' };
+};
 
 /**
- * The long-form part of a service page: what the service is, who it suits, what BYBO
- * delivers, how the work runs, what it costs and how it is judged. Written for a visitor
- * arriving cold, so it sits above the page's closing call to action.
+ * The landing-page body of a service page: the promise, the fit, what the client gets,
+ * how the work runs, what it costs, how it is judged, and a route to an enquiry at every
+ * scroll depth. Sits above the page's own closing call to action.
  */
 export function ServiceDetail({ slug }: { slug: string }) {
   const d = serviceDetails[slug];
   if (!d) return null;
   const reading = d.reading.map(cardFor).filter((x): x is InsightCard => Boolean(x));
   const service = services.find(x => x.slug === d.slug);
+  const enquiry = service ? `/apply?system=${service.slug}` : '/apply';
   const plain = (t: string) => t.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
+  const pick = uniqueIconPicker();
+  const intro = lead(d.overview.paragraphs[0]);
+
   const schema = [
     {
       '@context': 'https://schema.org',
@@ -53,38 +54,65 @@ export function ServiceDetail({ slug }: { slug: string }) {
     <div className="sd">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema).replace(/</g, '\\u003c') }} />
 
-      <section className="sd-open rp-light">
-        <div className="container sd-open-grid">
-          <div className="sd-copy">
-            <p className="eyebrow">In detail</p>
-            <h2>{d.overview.heading}</h2>
-            {d.overview.paragraphs.map(p => <p key={p}><RichText text={p} /></p>)}
+      {/* Sound familiar? — the fit test, as a scannable strip */}
+      <section className="sd-fit rp-light">
+        <div className="container">
+          <div className="sd-fit-head">
+            <h2>{d.audience.heading}</h2>
+            {d.audience.intro && <p><RichText text={d.audience.intro} /></p>}
           </div>
-          <div className="sd-open-side">
-            <figure className="sd-art">
-              <Image src={`/images/services/${d.slug}.webp`} alt="" width={1400} height={933} sizes="(max-width: 900px) 100vw, 40vw" />
-            </figure>
-            <aside className="sd-audience">
-              <h3><Sparkles size={15} aria-hidden />{d.audience.heading}</h3>
-              {d.audience.intro && <p><RichText text={d.audience.intro} /></p>}
-              <ul>{d.audience.items.map(i => <li key={i}><RichText text={i} /></li>)}</ul>
-            </aside>
+          <div className="sd-fit-grid">
+            {d.audience.items.map((i, n) => {
+              const Icon = pick(i, n);
+              return (
+                <div key={i}>
+                  <Icon size={20} strokeWidth={1.6} aria-hidden />
+                  <span><RichText text={i} /></span>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
 
+      {/* The promise, with the illustration */}
+      <section className="sd-open rp-light">
+        <div className="container sd-open-grid">
+          <div className="sd-copy">
+            <p className="eyebrow">{d.overview.heading}</p>
+            <p className="sd-lead"><RichText text={intro.head} /></p>
+            {intro.rest && <p><RichText text={intro.rest} /></p>}
+            <div className="sd-open-cols">
+              {d.overview.paragraphs.slice(1).map(p => <p key={p}><RichText text={p} /></p>)}
+            </div>
+            <div className="actions sd-actions">
+              <Button href={enquiry}>{service ? 'Discuss this system' : 'Talk to BYBO'}</Button>
+              <Link className="sd-all" href="/blueprint">Start with a Blueprint <ArrowRight size={16} aria-hidden /></Link>
+            </div>
+          </div>
+          <figure className="sd-art">
+            <Image src={`/images/services/${d.slug}.webp`} alt="" width={1400} height={933} sizes="(max-width: 900px) 100vw, 42vw" />
+          </figure>
+        </div>
+      </section>
+
+      {/* What you get */}
       <section className="sd-deliverables rp-light">
         <div className="container">
-          <h2>{d.deliverables.heading}</h2>
-          {d.deliverables.intro && <p className="sd-lede"><RichText text={d.deliverables.intro} /></p>}
+          <div className="sd-band-head">
+            <h2>{d.deliverables.heading}</h2>
+            {d.deliverables.intro && <p><RichText text={d.deliverables.intro} /></p>}
+          </div>
           <div className="sd-cards">
             {d.deliverables.items.map((i, n) => {
-              const Icon = DELIVERABLE_ICONS[n % DELIVERABLE_ICONS.length];
+              const Icon = pick(`${i.title} ${i.body}`, n);
               return (
                 <article key={i.title}>
-                  <span className="sd-badge"><Icon size={21} strokeWidth={1.6} aria-hidden /></span>
-                  <h3>{i.title}</h3>
-                  <p><RichText text={i.body} /></p>
+                  <span className="sd-badge"><Icon size={20} strokeWidth={1.6} aria-hidden /></span>
+                  <div>
+                    <h3>{i.title}</h3>
+                    <p><RichText text={i.body} /></p>
+                  </div>
                 </article>
               );
             })}
@@ -92,99 +120,103 @@ export function ServiceDetail({ slug }: { slug: string }) {
         </div>
       </section>
 
+      {/* How the work runs */}
       <section className="sd-process">
         <div className="container">
-          <h2>{d.process.heading}</h2>
-          {d.process.intro && <p className="sd-lede"><RichText text={d.process.intro} /></p>}
+          <div className="sd-band-head is-dark">
+            <h2>{d.process.heading}</h2>
+            {d.process.intro && <p><RichText text={d.process.intro} /></p>}
+          </div>
           <ol className="sd-steps">
             {d.process.items.map((i, n) => {
-              const Icon = STEP_ICONS[n % STEP_ICONS.length];
               const last = n === d.process.items.length - 1;
+              const { head, rest } = lead(i.body);
               return (
                 <li key={i.title} className={last ? 'is-gate' : undefined}>
-                  <span className="sd-step-top">
-                    <span className="sd-step-icon"><Icon size={19} strokeWidth={1.6} aria-hidden /></span>
-                    <span className="sd-step-no">{`0${n + 1}`}</span>
-                  </span>
-                  <h3>{i.title}</h3>
-                  <p><RichText text={i.body} /></p>
+                  <span className="sd-step-no">{`0${n + 1}`}</span>
+                  <h3>{i.title.replace(/^\d+[.)]\s*/, '')}</h3>
+                  <p>{head}</p>
+                  {rest && <p className="sd-step-more">{rest}</p>}
                 </li>
               );
             })}
           </ol>
+          <div className="sd-cta">
+            <p>Bring one workflow. We will tell you whether it is worth building.</p>
+            <Button href={enquiry}>Talk to BYBO</Button>
+          </div>
         </div>
       </section>
 
+      {/* Connects / what you provide, as chips */}
       <section className="sd-two rp-light">
         <div className="container sd-two-grid">
           <div className="sd-panel">
-            <h2><span className="sd-badge"><Plug size={20} strokeWidth={1.6} aria-hidden /></span>{d.connects.heading}</h2>
+            <h2>{d.connects.heading}</h2>
             <p><RichText text={d.connects.body} /></p>
-            <ul className="sd-ticks">
+            <ul className="sd-chips">
               {d.connects.items.map((i, n) => {
-                const Icon = CONNECT_ICONS[n % CONNECT_ICONS.length];
-                return <li key={i}><Icon size={18} strokeWidth={1.7} aria-hidden /><span><RichText text={i} /></span></li>;
+                const Icon = pick(i, n);
+                return <li key={i}><Icon size={17} strokeWidth={1.7} aria-hidden /><span><RichText text={i} /></span></li>;
               })}
             </ul>
           </div>
-          <div className="sd-panel">
-            <h2><span className="sd-badge"><ClipboardCheck size={20} strokeWidth={1.6} aria-hidden /></span>{d.bring.heading}</h2>
+          <div className="sd-panel is-quiet">
+            <h2>{d.bring.heading}</h2>
             {d.bring.intro && <p><RichText text={d.bring.intro} /></p>}
-            <ul className="sd-ticks">
+            <ul className="sd-chips">
               {d.bring.items.map((i, n) => {
-                const Icon = BRING_ICONS[n % BRING_ICONS.length];
-                return <li key={i}><Icon size={18} strokeWidth={1.7} aria-hidden /><span><RichText text={i} /></span></li>;
+                const Icon = pick(i, n);
+                return <li key={i}><Icon size={17} strokeWidth={1.7} aria-hidden /><span><RichText text={i} /></span></li>;
               })}
             </ul>
           </div>
         </div>
       </section>
 
-      <section className="sd-cost rp-light">
-        <div className="container sd-cost-grid">
-          <div className="sd-copy">
-            <p className="eyebrow"><Coins size={14} aria-hidden />Investment</p>
+      {/* Cost and measures side by side */}
+      <section className="sd-money rp-light">
+        <div className="container sd-money-grid">
+          <div className="sd-cost-card">
+            <p className="eyebrow">Investment</p>
             <h2>{d.cost.heading}</h2>
             {d.cost.paragraphs.map(p => <p key={p}><RichText text={p} /></p>)}
-          </div>
-          <aside>
             <h3>What moves the cost</h3>
             <ul>{d.cost.drivers.map(i => <li key={i}><RichText text={i} /></li>)}</ul>
-          </aside>
-        </div>
-      </section>
-
-      <section className="sd-measure">
-        <div className="container">
-          <h2>{d.measure.heading}</h2>
-          <p className="sd-lede"><RichText text={d.measure.body} /></p>
-          <div className="sd-measures">
-            {d.measure.items.map((i, n) => {
-              const Icon = MEASURE_ICONS[n % MEASURE_ICONS.length];
-              return <div key={i}><Icon size={20} strokeWidth={1.6} aria-hidden /><span><RichText text={i} /></span></div>;
-            })}
           </div>
-          <div className="sd-control">
-            <ShieldCheck size={22} strokeWidth={1.6} aria-hidden />
-            <div>
-              <h3>{d.control.heading}</h3>
-              <p><RichText text={d.control.body} /></p>
+          <div className="sd-measure-card">
+            <p className="eyebrow">Measured against your baseline</p>
+            <h2>{d.measure.heading}</h2>
+            <p><RichText text={d.measure.body} /></p>
+            <ul className="sd-measures">
+              {d.measure.items.map((i, n) => {
+                const Icon = pick(i, n);
+                return <li key={i}><Icon size={18} strokeWidth={1.6} aria-hidden /><span><RichText text={i} /></span></li>;
+              })}
+            </ul>
+            <div className="sd-control">
+              <ShieldCheck size={20} strokeWidth={1.6} aria-hidden />
+              <div>
+                <h3>{d.control.heading}</h3>
+                <p><RichText text={d.control.body} /></p>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
+      {/* Questions */}
       <section className="sd-faqs rp-light">
         <div className="container sd-faq-grid">
           <div className="sd-faq-head">
             <p className="eyebrow">Questions</p>
             <h2>Before you enquire</h2>
             <p>If yours is not here, ask us. The first conversation is free.</p>
-            <Link className="sd-all" href="/apply">Talk to BYBO <ArrowRight size={16} aria-hidden /></Link>
+            <Button href={enquiry}>Talk to BYBO</Button>
           </div>
           <div className="sd-faq-list">
-            {d.faqs.map((f, i) => (
-              <details key={f.q} open={i === 0}>
+            {d.faqs.map(f => (
+              <details key={f.q}>
                 <summary><h3>{f.q}</h3><span aria-hidden>+</span></summary>
                 <p><RichText text={f.a} /></p>
               </details>
