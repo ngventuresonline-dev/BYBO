@@ -12,7 +12,7 @@ type Connection = { effectiveType?: string; saveData?: boolean };
  * data-saver and reduce-motion never download it, so the page's loading speed — which the
  * still image sets — is untouched.
  */
-export function HeroFilm({ src }: { src: string }) {
+export function HeroFilm({ src, poster }: { src: string; poster: string }) {
   const [show, setShow] = useState(false);
   const [ready, setReady] = useState(false);
 
@@ -23,15 +23,10 @@ export function HeroFilm({ src }: { src: string }) {
     const slow = net ? net.saveData === true || ['slow-2g', '2g', '3g'].includes(net.effectiveType || '') : false;
     if (!wide || still || slow) return;
 
-    // Wait for the first scroll or tap. The browser stops measuring loading speed at that
-    // moment, so the film can never be counted as the page's largest paint.
-    const events = ['scroll', 'pointerdown', 'keydown', 'touchstart', 'wheel'] as const;
-    const start = () => {
-      for (const e of events) window.removeEventListener(e, start);
-      window.setTimeout(() => setShow(true), 300);
-    };
-    for (const e of events) window.addEventListener(e, start, { once: true, passive: true });
-    return () => { for (const e of events) window.removeEventListener(e, start); };
+    const start = () => window.setTimeout(() => setShow(true), 600);
+    if (document.readyState === 'complete') start();
+    else window.addEventListener('load', start, { once: true });
+    return () => window.removeEventListener('load', start);
   }, []);
 
   if (!show) return null;
@@ -39,6 +34,7 @@ export function HeroFilm({ src }: { src: string }) {
     <video
       className={ready ? 'hero-film is-ready' : 'hero-film'}
       src={src}
+      poster={poster}
       autoPlay
       muted
       loop
