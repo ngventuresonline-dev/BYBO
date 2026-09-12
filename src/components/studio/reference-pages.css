@@ -116,3 +116,24 @@
 }
 @media(prefers-reduced-motion:reduce){.rp-offer{transition:none}}
 .tab-workflow-detail{font-size:14px;line-height:1.55;color:#554860;margin:12px 0 22px}.fr-workflow-demo>div>p.tab-workflow-detail{font-size:14px;color:#554860}.rp-stage-list>div{overflow-wrap:anywhere;align-items:flex-start}.xr-agent-progress small{white-space:normal}
+
+/* Mobile: let grid tracks shrink so demo panels are not clipped by the page. */
+@media (max-width:760px){
+  .xr-demo-layout,.fr-workflow-layout,.fr-vertical,.fr-workflow-demo{grid-template-columns:minmax(0,1fr)}
+  .xr-demo-layout>*,.fr-workflow-layout>*,.fr-vertical>*,.xr-example,.fr-workflow-demo,.rp-steps,.xr-horizontal-steps{min-width:0;max-width:100%}
+  .xr-horizontal-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px 8px;padding-top:18px}
+  .xr-horizontal-steps li{min-width:0}
+  .xr-horizontal-steps li:after{display:none}
+  .xr-horizontal-steps button{gap:10px;font-size:12px}
+  .xr-horizontal-steps button>span{width:46px;height:46px}
+  .rp-steps{scroll-snap-type:x proximity;padding-right:14px}
+  .rp-steps li{scroll-snap-align:start}
+  .rp-steps button{align-items:flex-start;gap:13px;font-size:14.5px}
+  .xr-example,.fr-workflow-demo>div{overflow-x:auto}
+  .fr-workflow-demo aside{display:none}
+}
+
+/* Mobile: the sample file table stays legible. */
+@media (max-width:620px){
+  .rp-file-table{font-size:10.5px;gap:7px}
+}

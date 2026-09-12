@@ -39,3 +39,11 @@
 .fr-enquiry .fr-draft .text-link{color:#b794ff}
 @container (min-width:430px){.fr-enquiry form{display:grid;grid-template-columns:1fr 1fr;column-gap:16px}.fr-enquiry form>*{grid-column:1/-1}.fr-enquiry form>label:nth-child(-n+4){grid-column:auto}}
 @media(max-width:760px){.fr-enquiry{padding:26px 20px;border-radius:14px}}
+
+/* Mobile: the three next-step items stack instead of squeezing into 100px columns. */
+@media (max-width:760px){
+  .fr-next .rp-three{grid-template-columns:minmax(0,1fr);gap:22px;margin-top:30px}
+  .fr-next .rp-three>div{gap:16px}
+  .fr-next h3{font-size:21px;max-width:none}
+  .fr-next .rp-three span{width:44px;height:44px;font-size:19px}
+}

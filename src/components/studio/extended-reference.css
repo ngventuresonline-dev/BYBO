@@ -18,3 +18,27 @@
 .xr-filter-heading h2{white-space:normal}.xr-filter-heading>div{gap:8px}.xr-filter-heading button{font-size:12px;padding:10px 13px}.xr-industry-group{margin-bottom:32px}.xr-industry-group>h3{font-size:25px}.xr-industry-group article{grid-template-columns:54px 1fr 29px;gap:7px 12px;padding:17px 0}.xr-industry-group h4{font-size:15px}.xr-industry-object{height:54px;grid-row:span 2}.xr-industry-group article>div:not(.xr-industry-object){grid-column:2}.xr-industry-group article>a{grid-column:3;grid-row:1/3;width:28px;height:28px}.xr-industry-group article p{font-size:13px}.xr-industry-group article p.xr-industry-measure{grid-column:2;color:#806a99;font-size:12px}.xr-industry-group article p.xr-industry-gate{font-size:12px;align-items:flex-start}.xr-industry-pattern,.xr-industry-close{min-height:320px;align-items:flex-start}.xr-industry-pattern>.container,.xr-industry-close>.container{padding:33px 0 150px}.xr-industry-pattern h2,.xr-industry-close h2{font-size:2rem;max-width:19ch}.xr-industry-pattern>img{object-position:60%;opacity:.4}.xr-industry-close>img{object-position:60%;opacity:.65}
 .xr-tuesday{grid-template-columns:1fr;gap:0;padding:33px 0 0}.xr-tuesday>div{padding:0 18px}.xr-tuesday h2{font-size:2.5rem}.xr-tuesday p{font-size:16px;padding-bottom:30px}.xr-tuesday>img{min-height:0;height:auto}.xr-principles li{gap:18px;padding:20px 0}.xr-principles li>span{font-size:34px;width:60px;padding-right:18px;flex-shrink:0}.xr-principles h2{font-size:1.7rem}.xr-identity .rp-three{grid-template-columns:1fr;gap:22px;margin-top:26px}.xr-identity .rp-three>div{padding:0;border:0}.xr-identity h3{font-size:24px}.xr-identity p{font-size:15px}.xr-continuity{grid-template-columns:1fr;gap:25px;padding-top:28px;margin-top:30px}.xr-continuity h2{font-size:2rem}.xr-continuity img{height:230px}.xr-about-final{grid-template-columns:1fr;gap:0}.xr-about-final img{height:200px}.xr-about-final>div{padding:30px 18px}.xr-about-final h2{font-size:2rem}
 }
+
+/* Mobile: let grid tracks shrink so demo panels are not clipped by the page. */
+@media (max-width:760px){
+  .xr-demo-layout,.fr-workflow-layout,.fr-vertical,.fr-workflow-demo{grid-template-columns:minmax(0,1fr)}
+  .xr-demo-layout>*,.fr-workflow-layout>*,.fr-vertical>*,.xr-example,.fr-workflow-demo,.rp-steps,.xr-horizontal-steps{min-width:0;max-width:100%}
+  .xr-horizontal-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px 8px;padding-top:18px}
+  .xr-horizontal-steps li{min-width:0}
+  .xr-horizontal-steps li:after{display:none}
+  .xr-horizontal-steps button{gap:10px;font-size:12px}
+  .xr-horizontal-steps button>span{width:46px;height:46px}
+  .rp-steps{scroll-snap-type:x proximity;padding-right:14px}
+  .rp-steps li{scroll-snap-align:start}
+  .rp-steps button{align-items:flex-start;gap:13px;font-size:14.5px}
+  .xr-example,.fr-workflow-demo>div{overflow-x:auto}
+  .fr-workflow-demo aside{display:none}
+}
+
+/* Mobile: two-column demo bodies stack rather than squeeze. */
+@media (max-width:620px){
+  .xr-knowledge-body{grid-template-columns:minmax(0,1fr)}
+  .xr-platform{grid-template-columns:minmax(0,1fr);min-height:0}
+  .xr-platform aside{flex-direction:row;flex-wrap:wrap;align-items:center;gap:10px;font-size:11px;padding:12px 14px}
+  .xr-platform aside strong{margin:0 8px 0 0;font-size:15px}
+}
