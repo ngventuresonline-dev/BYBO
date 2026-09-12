@@ -19,7 +19,7 @@ export default function Home() {
     <div className="reference-home">
       <section className="reference-hero">
         <Image className="reference-hero-scene" src="/images/reference-hero.webp" alt="A pile of paperwork becoming a clear violet workflow, with an amber human review step" fill sizes="100vw" priority />
-        <HeroFilm src="/video/home-hero.mp4" poster="/images/reference-hero.webp" />
+        <HeroFilm src="/video/home-hero.mp4" />
         <span className="hm-sheen" aria-hidden="true" /><span className="hm-charge" aria-hidden="true" /><span className="hm-gate" aria-hidden="true" />
         <div className="container reference-hero-content">
           <p className="eyebrow">AI systems for your business</p>
