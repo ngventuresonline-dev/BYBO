@@ -93,9 +93,9 @@
 .rp-stage-list{font-size:12px;border-right:1px solid #ddd6e5;padding-right:8px}
 .rp-stage-list>div{display:flex;gap:9px;align-items:center;padding:12px 7px;margin-bottom:3px}.rp-stage-list .active{background:#e6ddfb;border-radius:4px;color:#6533ac}
 .rp-example-file{background:white;border:1px solid #ded9e3;padding:20px 13px;min-height:250px;box-shadow:0 3px 14px #00000005}
-.rp-example-file strong{font-size:12px}.rp-example-file small{display:block;font-size:10px;color:#8e8794;margin-top:15px}
+.rp-example-file strong{font-size:12px}.rp-example-file small{display:block;font-size:10px;color:#645d6d;margin-top:15px}
 .rp-file-rule{height:1px;background:#e6e1ea;margin:25px 0 18px}
-.rp-file-table{display:grid;grid-template-columns:2fr .5fr 1fr;gap:8px;font-size:8px;color:#96929b}
+.rp-file-table{display:grid;grid-template-columns:2fr .5fr 1fr;gap:8px;font-size:8px;color:#67626f}
 .rp-file-table>div{display:contents}
 .rp-extracted{margin:0}.rp-extracted>div{margin-bottom:14px}.rp-extracted dt{font-size:12px;margin-bottom:6px}.rp-extracted dd{background:#faf9fb;border:1px solid #e3dfea;padding:9px 10px;font-size:12px;margin:0;border-radius:4px}.rp-extracted dd.rp-status{background:#e6ddfa}.rp-extracted dd.rp-review-status{background:#ffebc1;color:#855311}
 .rp-review-note{display:flex;align-items:center;gap:14px;padding:17px 20px;border:1px solid #e9d4ab;border-radius:6px;margin-top:20px;background:#fcebc8;font-size:14px;line-height:1.5;color:#604a29}.rp-review-note svg{color:#b67b26;flex-shrink:0}

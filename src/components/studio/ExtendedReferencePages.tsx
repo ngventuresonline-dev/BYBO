@@ -22,7 +22,7 @@ const faqs={
   ],
 };
 
-export function ExtendedReferenceService({serviceKey}:{serviceKey:ReferenceServiceKey}){
+export function ExtendedReferenceService({serviceKey,children}:{serviceKey:ReferenceServiceKey;children?:React.ReactNode}){
   const data=referenceServices[serviceKey];
   const isKnowledge=serviceKey==='enterprise-knowledge-systems';
   const href=`/apply?system=${serviceKey}`;
@@ -33,7 +33,7 @@ export function ExtendedReferenceService({serviceKey}:{serviceKey:ReferenceServi
     <section className="rp-section rp-outcomes"><div className="container"><h2>What changes for your team</h2><div className="rp-three">{data.outcomes.map((title,i)=><div key={title}><div role="img" aria-label={title} className={`xr-outcome-art xr-outcome-${i}`} style={{backgroundImage:`url('/images/${data.art}-outcomes.webp')`}}/><h3>{title}</h3></div>)}</div></div></section>
     <section className="rp-light rp-section rp-measures"><div className="container"><h2>Measure it against your current process.</h2><div className="rp-four">{data.measures.map((title,i)=>{const Icon=icons[i];return <div key={title}><span className="rp-icon"><Icon size={30} strokeWidth={1.5}/></span><h3>{title}</h3></div>;})}</div><p>Baseline first. Review after launch.</p></div></section>
     {!isKnowledge&&<section className="rp-section xr-faq"><div className="container"><h2>A question<br/>worth asking.</h2><div>{faqs[serviceKey].map(([q,a],i)=><details key={q} open={i===0}><summary>{q}<span aria-hidden="true">+</span></summary><p>{a}</p></details>)}</div></div></section>}
-    <section className={`rp-final xr-service-final ${data.art==='platform'?'xr-purple-final':''}`}><div className="container"><div><h2>{data.closing}</h2><div className="actions"><Button href={href}>Talk to BYBO</Button><Link href="/blueprint" className="rp-secondary">Explore the Blueprint <span aria-hidden="true">→</span></Link></div></div>{data.art!=='platform'&&<div role="img" aria-label={isKnowledge?'Knowledge organised for your team':'A clear operating plan'} className="xr-final-art" style={{backgroundImage:`url('/images/${data.art}-outcomes.webp')`}}/>}</div></section>
+    {children}<section className={`rp-final xr-service-final ${data.art==='platform'?'xr-purple-final':''}`}><div className="container"><div><h2>{data.closing}</h2><div className="actions"><Button href={href}>Talk to BYBO</Button><Link href="/blueprint" className="rp-secondary">Explore the Blueprint <span aria-hidden="true">→</span></Link></div></div>{data.art!=='platform'&&<div role="img" aria-label={isKnowledge?'Knowledge organised for your team':'A clear operating plan'} className="xr-final-art" style={{backgroundImage:`url('/images/${data.art}-outcomes.webp')`}}/>}</div></section>
   </div>;
 }
 

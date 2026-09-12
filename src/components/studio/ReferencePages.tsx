@@ -26,7 +26,7 @@ const patterns = [
   { id: 'specific', title: 'A path for your work', body: 'Bring the process that does not fit a category.', path: 'We map it with your team before deciding what to build.', gate: '', service: 'Custom AI Platforms', slug: 'custom-ai-platforms' },
 ];
 
-export function ReferenceSolutions() {
+export function ReferenceSolutions({ children }: { children?: React.ReactNode }) {
   return <div className="reference-page rp-solutions">
     <ReferenceHero page="Solutions" title="Start with the work you want off your plate." body="Explore practical starting points. We shape each system around your rules, records and team." art="solutions-hero" href="/apply" cta="Discuss your workflow" />
     <section className="rp-light rp-patterns"><div className="container"><h2>Which problem sounds familiar?</h2><div className="rp-pattern-list">{patterns.map((p, i) => <article className="rp-pattern" key={p.id} id={p.id}>
@@ -36,7 +36,7 @@ export function ReferenceSolutions() {
     </article>)}</div><p className="rp-website-line" id="websites">Building your brand’s digital home? <Link href="/systems/website-design-development">Explore Website Design & Development <ArrowRight size={17} /></Link></p></div></section>
     <section className="rp-lands"><div className="container"><h2>What lands with your team</h2><div className="rp-three">{[{Icon: FileText, text:'A working system'}, {Icon:SlidersHorizontal,text:'Clear operating rules'}, {Icon:UserRound,text:'A named owner'}].map(({Icon,text}) => <div key={text}><Icon size={53} strokeWidth={1.3}/><h3>{text}</h3></div>)}</div></div></section>
     <section className="rp-underneath rp-light"><div className="rp-book-scene"><Image src="/images/reference-closing.webp" alt="Books and a violet glass sphere" fill sizes="50vw" /></div><div><h2>Want to understand<br />what sits underneath?</h2><Button href="/systems">Explore all seven systems</Button></div></section>
-    <section className="rp-final"><div className="container"><h2>Tell us what keeps<br />coming back.</h2><Button href="/apply">Talk to BYBO</Button></div></section>
+    {children}<section className="rp-final"><div className="container"><h2>Tell us what keeps<br />coming back.</h2><Button href="/apply">Talk to BYBO</Button></div></section>
   </div>;
 }
 
@@ -70,13 +70,13 @@ const questions = [
   ['Who reviews the exceptions?', 'A person you nominate. The reviewer sees the original file, the mismatch and the proposed next step before deciding what happens next.'],
 ];
 
-export function ReferenceDocuments() {
+export function ReferenceDocuments({ children }: { children?: React.ReactNode }) {
   return <div className="reference-page rp-documents">
     <ReferenceHero page="Business Operations › Document Multimodal Intelligence" label="Business operations" title="Let documents move. Let people decide." body="We turn incoming documents into checked records, with clear review steps for the exceptions." art="document-hero" href={documentHref} cta="Discuss this system" secondary />
     <DocumentDemo />
     <section className="rp-section rp-outcomes"><div className="container"><h2>What changes for your team</h2><div className="rp-three">{['Less repeated entry','Fewer avoidable corrections','A traceable document trail'].map((text,i)=><div key={text}><div className={`rp-outcome-art rp-outcome-${i}`} role="img" aria-label={text}/><h3>{text}</h3></div>)}</div></div></section>
     <section className="rp-light rp-section rp-measures"><div className="container"><h2>Measure it against your current process.</h2><div className="rp-four">{[{Icon:Clock,text:'Processing time'},{Icon:FileText,text:'Review rate'},{Icon:RefreshCw,text:'Rework'},{Icon:Coins,text:'Cost per document'}].map(({Icon,text})=><div key={text}><span className="rp-icon"><Icon size={31} strokeWidth={1.5}/></span><h3>{text}</h3></div>)}</div><p>Baseline first. Review after launch.</p></div></section>
     <section className="rp-light rp-section rp-questions"><div className="container"><h2>A question worth asking.</h2>{questions.map(([q,a],i)=><details key={q} open={i===0}><summary>{q}<span aria-hidden="true">⌄</span></summary><p>{a}</p></details>)}</div></section>
-    <section className="rp-final rp-document-final"><div className="container"><div><h2>Bring us the document<br />your team keeps retyping.</h2><div className="actions"><Button href={documentHref}>Talk to BYBO</Button><Link href="/blueprint" className="rp-secondary">Explore the Blueprint</Link></div></div><Image src="/images/reference-before.webp" alt="Paperwork ready for a simpler process" width={600} height={500}/></div></section>
+    {children}<section className="rp-final rp-document-final"><div className="container"><div><h2>Bring us the document<br />your team keeps retyping.</h2><div className="actions"><Button href={documentHref}>Talk to BYBO</Button><Link href="/blueprint" className="rp-secondary">Explore the Blueprint</Link></div></div><Image src="/images/reference-before.webp" alt="Paperwork ready for a simpler process" width={600} height={500}/></div></section>
   </div>;
 }
