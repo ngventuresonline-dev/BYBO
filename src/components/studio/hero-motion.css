@@ -1,0 +1,96 @@
+/*
+ * Hero motion. Nothing here downloads: the artwork is the one already on the page and
+ * every effect is a transform or an opacity, so it runs on the graphics card and does
+ * not change how fast the page loads.
+ *
+ * Per-hero coordinates live in the [data-art] blocks: --hm-x1/--hm-x2 are where the
+ * charge of light starts and stops along the workflow in that photograph, --hm-y is its
+ * line, and --hm-gx/--hm-gy mark the point a person owns (usually the amber detail).
+ */
+
+.rp-hero,.reference-hero{
+  --hm-y:46%;--hm-x1:44%;--hm-x2:82%;--hm-gx:82%;--hm-gy:44%;
+  --hm-run:7.5s;--hm-rest:5s;--hm-sheen:62% 44%;
+}
+
+/* The artwork itself breathes. Slow enough to read as depth, not as animation. */
+.rp-hero-image,.reference-hero-scene{
+  animation:hm-drift 34s ease-in-out infinite alternate;
+  will-change:transform;
+}
+@keyframes hm-drift{from{transform:scale(1.03)}to{transform:scale(1.085) translate3d(-1.2%,-.8%,0)}}
+
+@property --hm-angle{syntax:"<angle>";initial-value:205deg;inherits:false}
+
+/* Living glass: a slow refraction turning inside the violet. */
+.hm-sheen{
+  position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.42;
+  mix-blend-mode:color-dodge;filter:blur(16px);
+  background:conic-gradient(from var(--hm-angle) at var(--hm-sheen),#793cff00,#7b4bff3d 13%,#4ad6ff21 25%,#f3b95029 37%,#793cff00 52%,#793cff00 100%);
+  animation:hm-spin 26s linear infinite;
+}
+@keyframes hm-spin{to{--hm-angle:565deg}}
+
+/* A charge of light travels the workflow and lands where a person decides. */
+.hm-charge{
+  position:absolute;z-index:-1;pointer-events:none;
+  top:var(--hm-y);left:var(--hm-x1);width:13px;height:13px;margin:-6px 0 0 -6px;border-radius:50%;
+  background:#e6d8ff;box-shadow:0 0 20px 8px #793cffc4;opacity:0;
+  animation:hm-run calc(var(--hm-run) + var(--hm-rest)) cubic-bezier(.45,0,.3,1) infinite;
+}
+@keyframes hm-run{
+  0%{left:var(--hm-x1);opacity:0;transform:scale(.7)}
+  6%{opacity:.95;transform:scale(1)}
+  46%{left:var(--hm-x2);opacity:1;background:#e6d8ff;box-shadow:0 0 20px 8px #793cffc4}
+  54%{left:var(--hm-x2);background:#ffd89a;box-shadow:0 0 34px 15px #f3b950b8;transform:scale(1.25)}
+  70%{left:var(--hm-x2);opacity:.35;transform:scale(.9)}
+  78%,100%{left:var(--hm-x2);opacity:0;box-shadow:0 0 8px 2px #f3b95000}
+}
+
+/* The decision point answers the charge. */
+.hm-gate{
+  position:absolute;z-index:-1;pointer-events:none;
+  top:var(--hm-gy);left:var(--hm-gx);width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:12px;
+  border:1.4px solid #f3b95000;
+  animation:hm-gate calc(var(--hm-run) + var(--hm-rest)) ease-out infinite;
+}
+@keyframes hm-gate{
+  0%,44%{border-color:#f3b95000;box-shadow:none;transform:scale(.92)}
+  56%{border-color:#f3b950b0;box-shadow:0 0 30px #f3b95055;transform:scale(1)}
+  76%,100%{border-color:#f3b95000;box-shadow:none;transform:scale(1.06)}
+}
+
+/* Per-hero tuning, read off each photograph. */
+.rp-hero[data-art='document-hero']{--hm-y:47%;--hm-x1:54%;--hm-x2:83%;--hm-gx:86%;--hm-gy:58%;--hm-sheen:66% 46%}
+.rp-hero[data-art='agentic-hero']{--hm-y:50%;--hm-x1:44%;--hm-x2:62%;--hm-gx:62%;--hm-gy:50%;--hm-sheen:60% 50%}
+.rp-hero[data-art='knowledge-hero']{--hm-y:42%;--hm-x1:56%;--hm-x2:90%;--hm-gx:90%;--hm-gy:42%;--hm-sheen:70% 40%}
+.rp-hero[data-art='platform-hero']{--hm-y:52%;--hm-x1:46%;--hm-x2:82%;--hm-gx:82%;--hm-gy:52%;--hm-sheen:64% 52%}
+.rp-hero[data-art='customer-hero']{--hm-y:62%;--hm-x1:56%;--hm-x2:88%;--hm-gx:90%;--hm-gy:32%;--hm-sheen:72% 50%}
+.rp-hero[data-art='decision-hero']{--hm-y:46%;--hm-x1:52%;--hm-x2:86%;--hm-gx:56%;--hm-gy:60%;--hm-sheen:64% 46%}
+.rp-hero[data-art='governance-hero']{--hm-y:44%;--hm-x1:56%;--hm-x2:80%;--hm-gx:82%;--hm-gy:26%;--hm-sheen:70% 36%}
+.rp-hero[data-art='solutions-hero']{--hm-y:50%;--hm-x1:58%;--hm-x2:86%;--hm-gx:86%;--hm-gy:50%;--hm-sheen:70% 48%}
+.rp-hero[data-art='industries-hero']{--hm-y:62%;--hm-x1:42%;--hm-x2:80%;--hm-gx:78%;--hm-gy:54%;--hm-sheen:64% 56%}
+.rp-hero[data-art='blueprint-hero']{--hm-y:55%;--hm-x1:48%;--hm-x2:82%;--hm-gx:82%;--hm-gy:22%;--hm-sheen:62% 46%}
+.rp-hero[data-art='method-hero']{--hm-y:55%;--hm-x1:57%;--hm-x2:90%;--hm-gx:76%;--hm-gy:50%;--hm-sheen:72% 48%}
+.rp-hero[data-art='about-hero']{--hm-y:58%;--hm-x1:46%;--hm-x2:70%;--hm-gx:86%;--hm-gy:32%;--hm-sheen:60% 50%}
+.rp-hero[data-art='insights-hero']{--hm-y:60%;--hm-x1:50%;--hm-x2:70%;--hm-gx:62%;--hm-gy:78%;--hm-sheen:64% 52%}
+.reference-hero{--hm-y:42%;--hm-x1:44%;--hm-x2:76%;--hm-gx:80%;--hm-gy:30%;--hm-sheen:60% 40%}
+
+/* Article heroes keep the sheen and drift, without the workflow charge. */
+.fr-editorial-hero .hm-charge,.fr-editorial-hero .hm-gate{display:none}
+
+/* Phones: keep the drift and the sheen, drop the travelling light. */
+@media (max-width:760px){
+  .hm-charge,.hm-gate{display:none}
+  .hm-sheen{opacity:.3}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .rp-hero-image,.reference-hero-scene,.hm-sheen,.hm-charge,.hm-gate{animation:none}
+  .hm-charge,.hm-gate{display:none}
+}
+
+/* The homepage film sits over the still and fades in only once it can play. */
+.hero-film{position:absolute;inset:0;z-index:-2;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.2s ease}
+.hero-film.is-ready{opacity:1}
+@media (prefers-reduced-motion:reduce){.hero-film{display:none}}

@@ -4,12 +4,14 @@ import { ArrowRight, AlertCircle, FileText, SlidersHorizontal, UserRound, GitBra
 import { Button } from './Shared';
 import { DocumentDemo } from './DocumentDemo';
 import './reference-pages.css';
+import './hero-motion.css';
 
 const documentHref = '/apply?system=document-multimodal-intelligence';
 
 export function ReferenceHero({ page, title, body, art, label, href, cta, secondary }: { page: string; title: string; body: string; art: string; label?: string; href: string; cta: string; secondary?: boolean }) {
-  return <section className="rp-hero">
+  return <section className="rp-hero" data-art={art}>
     <Image src={`/images/${art}.webp`} alt="" fill priority sizes="100vw" className="rp-hero-image" />
+    <span className="hm-sheen" aria-hidden="true" /><span className="hm-charge" aria-hidden="true" /><span className="hm-gate" aria-hidden="true" />
     <div className="container">
       <nav className="rp-crumb" aria-label="Breadcrumb"><Link href="/">Home</Link><span aria-hidden="true">›</span><span>{page}</span></nav>
       <div className="rp-hero-copy">{label && <p className="eyebrow">{label}</p>}<h1>{title}</h1><p className="lede">{body}</p><div className="actions"><Button href={href}>{cta}</Button>{secondary && <Link href="#workflow" className="rp-secondary">See how it works</Link>}</div></div>

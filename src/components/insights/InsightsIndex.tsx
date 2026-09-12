@@ -5,6 +5,7 @@ import { Button } from '@/components/studio/Shared';
 import { cardsIn, collectionById, collections, type CollectionId } from '@/lib/insights';
 import { InsightCardView } from './GuideArticle';
 import '@/components/studio/reference-pages.css';
+import '@/components/studio/hero-motion.css';
 import '@/components/studio/final-reference.css';
 import './insights.css';
 
@@ -26,8 +27,9 @@ function CollectionNav({ current }: { current?: CollectionId }) {
 export function InsightsIndex() {
   return (
     <div className="reference-page fr-insights ii">
-      <header className="rp-hero fr-editorial-hero">
+      <header className="rp-hero fr-editorial-hero" data-art="insights-hero">
         <Image src="/images/insights-hero.webp" alt="" fill priority sizes="100vw" className="rp-hero-image" />
+        <span className="hm-sheen" aria-hidden="true" />
         <div className="container">
           <nav className="rp-crumb" aria-label="Breadcrumb"><Link href="/">Home</Link><span>›</span><span>Insights</span></nav>
           <div className="rp-hero-copy">

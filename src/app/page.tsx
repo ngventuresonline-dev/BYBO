@@ -2,8 +2,10 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, PlayCircle, FileText, Box, Settings, Database, MessageCircle, Users, LayoutGrid, CheckSquare } from 'lucide-react';
 import { Button } from '@/components/studio/Shared';
+import { HeroFilm } from '@/components/studio/HeroFilm';
 import { ProblemExplorer, CapacityCalculator } from '@/components/studio/Interactive';
 import { pageMetadata, SITE } from '@/lib/seo';
+import '@/components/studio/hero-motion.css';
 import './reference-home.css';
 
 export const metadata = pageMetadata({
@@ -17,6 +19,8 @@ export default function Home() {
     <div className="reference-home">
       <section className="reference-hero">
         <Image className="reference-hero-scene" src="/images/reference-hero.webp" alt="A pile of paperwork becoming a clear violet workflow, with an amber human review step" fill sizes="100vw" priority />
+        <HeroFilm src="/video/home-hero.mp4" poster="/images/reference-hero.webp" />
+        <span className="hm-sheen" aria-hidden="true" /><span className="hm-charge" aria-hidden="true" /><span className="hm-gate" aria-hidden="true" />
         <div className="container reference-hero-content">
           <p className="eyebrow">AI systems for your business</p>
           <h1>Your team has<br />better things to do.</h1>
