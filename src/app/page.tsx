@@ -55,7 +55,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="reference-calculator light">
+      <section className="reference-calculator light" id="team-capacity">
         <div className="container"><h2>What could your team get back?</h2><CapacityCalculator /></div>
       </section>
 

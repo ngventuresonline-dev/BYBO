@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowUpRight, ArrowRight, Monitor, Smartphone, ShoppingBag, Check, Plus, ChevronRight, ArrowDown, X, Sparkles, MousePointer2 } from 'lucide-react';
@@ -57,6 +57,7 @@ function ConceptDemo({id}:{id:ConceptId}){switch(id){case 'shop':return <Commerc
 export function WebsiteCinema(){
   const [selected,setSelected]=useState<ConceptId>('shop');const [device,setDevice]=useState('desktop');const [audience,setAudience]=useState('Brand / online store');const [goal,setGoal]=useState('Sell products');const [features,setFeatures]=useState(['Brand & visual direction','Copy & page structure']);
   const concept=concepts.find(c=>c.id===selected)!;
+  useEffect(()=>{function fromHash(){const match=concepts.find(c=>window.location.hash===`#concept-${c.id}`);if(!match)return;setSelected(match.id);setAudience(match.audience);document.getElementById('website-showcase')?.scrollIntoView({block:'start'})}fromHash();window.addEventListener('hashchange',fromHash);return()=>window.removeEventListener('hashchange',fromHash)},[]);
   const brief=`I would like a website for: ${audience}.\nPrimary goal: ${goal}.\nInterested in: ${features.length?features.join(', '):'Help defining the scope'}.\nDesign direction I explored: ${concept.brand} (${concept.label}).`;
   function toggleFeature(f:string){setFeatures(v=>v.includes(f)?v.filter(x=>x!==f):[...v,f])}
   return <div className="wc-page">
