@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { ArrowRight, PlayCircle, FileText, Box, Settings, Database, MessageCircle, Users, LayoutGrid, CheckSquare } from 'lucide-react';
 import { Button } from '@/components/studio/Shared';
 import { ProblemExplorer, CapacityCalculator } from '@/components/studio/Interactive';
+import { HomeServices, HomeMidCta, HomeIndustries, HomeFaq, HomeInsights } from '@/components/studio/HomeSections';
 import { pageMetadata, SITE } from '@/lib/seo';
 import './reference-home.css';
 
@@ -35,6 +36,8 @@ export default function Home() {
         </div>
       </section>
 
+      <HomeServices />
+
       <section className="reference-comparison" id="workflow">
         <div className="container">
           <h2>Give recurring work a clear path.</h2>
@@ -59,6 +62,8 @@ export default function Home() {
         <div className="container"><h2>What could your team get back?</h2><CapacityCalculator /></div>
       </section>
 
+      <HomeMidCta />
+
       <section className="reference-integrations light">
         <div className="container">
           <h2>Built around the tools you already use.</h2>
@@ -69,6 +74,8 @@ export default function Home() {
         </div>
       </section>
 
+      <HomeIndustries />
+
       <section className="reference-method">
         <div className="container">
           <div className="reference-method-heading"><h2>Understand the work. Build the system. Keep it working.</h2><Link className="text-link" href="/how-we-work">How we work <ArrowRight size={16} /></Link></div>
@@ -77,6 +84,10 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <HomeFaq />
+
+      <HomeInsights />
 
       <section className="reference-closing">
         <Image src="/images/reference-closing.webp" alt="A violet glass sphere on a stack of books" fill sizes="100vw" />

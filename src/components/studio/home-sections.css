@@ -1,0 +1,73 @@
+/* Homepage sections added for paid traffic: what we build, who it is for,
+   a call to action mid-page, the questions people ask, and the thinking. */
+
+.hs-services,.hs-industries,.hs-faq,.hs-insights{background:#f5f4f0;color:#15131b}
+.hs-head{display:flex;justify-content:space-between;align-items:flex-end;gap:44px;margin-bottom:34px}
+.hs-head .eyebrow{color:#6532c7;margin-bottom:12px}
+.hs-head h2{font-family:var(--font-display);font-weight:400;font-size:clamp(1.9rem,2.9vw,2.7rem);line-height:1.08;letter-spacing:-.03em;max-width:20ch;margin:0}
+.hs-head>p{font-size:16.5px;line-height:1.6;color:#5b5862;max-width:40ch}
+.hs-link{display:inline-flex;align-items:center;gap:8px;flex-shrink:0;font-size:14.5px;font-weight:500;color:#6532c7}
+.hs-link:hover{color:#4d1fb0}
+.hs-link svg{transition:transform .18s}
+.hs-link:hover svg{transform:translateX(3px)}
+
+/* What we build */
+.hs-services{padding:74px 0}
+.hs-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.hs-card{display:flex;flex-direction:column;gap:9px;padding:24px 24px 22px;border-radius:16px;background:#fff;border:1px solid #e4dfea;transition:border-color .18s,transform .18s,box-shadow .18s}
+.hs-card:hover{border-color:#b9a3e6;transform:translateY(-3px);box-shadow:0 24px 46px -34px #3b1a7a73}
+.hs-card h3{font-size:17px;font-weight:600;letter-spacing:-.01em;color:#15131b}
+.hs-card p{flex:1;font-size:15.5px;line-height:1.55;color:#4a4553}
+.hs-card span{display:inline-flex;align-items:center;gap:7px;font-size:14px;font-weight:500;color:#6532c7}
+.hs-card:hover span svg{transform:translateX(3px)}
+.hs-card span svg{transition:transform .18s}
+
+/* Mid-page call to action */
+.hs-cta{padding:66px 0;color:#f5f4f0;background:radial-gradient(60% 90% at 82% 10%,#793cff3d,#0000 60%),radial-gradient(45% 70% at 0 100%,#f3b95016,#0000 60%),#111116}
+.hs-cta>.container{display:flex;justify-content:space-between;align-items:center;gap:44px}
+.hs-cta h2{font-family:var(--font-display);font-weight:400;font-size:clamp(1.8rem,2.8vw,2.6rem);line-height:1.1;letter-spacing:-.03em;color:#fff;margin:0}
+.hs-cta p{margin-top:14px;font-size:16.5px;line-height:1.6;color:#cfc6dc;max-width:46ch}
+.hs-cta .actions{display:flex;align-items:center;gap:22px;flex-shrink:0}
+.hs-cta .hs-link{color:#c7aeff}
+.hs-cta .hs-link:hover{color:#e0d2ff}
+
+/* Who it is for */
+.hs-industries{padding:0 0 74px}
+.hs-chips{display:flex;flex-wrap:wrap;gap:10px}
+.hs-chips li{padding:11px 18px;border-radius:999px;background:#fff;border:1px solid #e0d8ea;font-size:15px;color:#3a3542}
+
+/* Questions */
+.hs-faq{padding:74px 0}
+.hs-faq-grid{display:grid;grid-template-columns:minmax(0,.68fr) minmax(0,1.32fr);gap:54px;align-items:start}
+.hs-faq-head{position:sticky;top:104px}
+.hs-faq-head .eyebrow{color:#6532c7;margin-bottom:12px}
+.hs-faq-head h2{font-family:var(--font-display);font-weight:400;font-size:clamp(1.9rem,2.9vw,2.7rem);line-height:1.08;letter-spacing:-.03em;margin:0 0 12px}
+.hs-faq-head>p{font-size:16px;line-height:1.6;color:#5b5862;max-width:32ch;margin-bottom:24px}
+.hs-faq-list details{margin-bottom:8px;border-radius:14px;border:1px solid #ddd4e6;background:#fff}
+.hs-faq-list details[open]{border-color:#c7b3ec}
+.hs-faq-list summary{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:18px 22px;cursor:pointer;list-style:none}
+.hs-faq-list summary::-webkit-details-marker{display:none}
+.hs-faq-list summary h3{font-size:16.5px;font-weight:600;line-height:1.4;color:#15131b}
+.hs-faq-list summary>span{flex-shrink:0;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:18px;line-height:1;color:#6532c7;background:#f0e9fc;transition:transform .2s}
+.hs-faq-list details[open] summary>span{transform:rotate(45deg)}
+.hs-faq-list details>p{padding:0 22px 20px;font-size:16px;line-height:1.65;color:#3a3542}
+
+/* How we think */
+.hs-insights{padding:0 0 78px}
+
+@media (max-width:1100px){
+  .hs-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .hs-faq-grid{grid-template-columns:1fr;gap:26px}
+  .hs-faq-head{position:static}
+}
+@media (max-width:900px){
+  .hs-head{flex-direction:column;align-items:flex-start;gap:14px}
+  .hs-cta>.container{flex-direction:column;align-items:flex-start;gap:26px}
+}
+@media (max-width:760px){
+  .hs-services,.hs-faq{padding:52px 0}
+  .hs-industries,.hs-insights{padding:0 0 52px}
+  .hs-cta{padding:48px 0}
+  .hs-grid{grid-template-columns:1fr}
+  .hs-cta .actions{flex-wrap:wrap;gap:16px}
+}
