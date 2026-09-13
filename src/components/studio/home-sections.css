@@ -14,13 +14,17 @@
 /* What we build */
 .hs-services{padding:74px 0}
 .hs-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
-.hs-card{display:flex;flex-direction:column;gap:9px;padding:24px 24px 22px;border-radius:16px;background:#fff;border:1px solid #e4dfea;transition:border-color .18s,transform .18s,box-shadow .18s}
+.hs-card{display:flex;flex-direction:column;overflow:hidden;border-radius:16px;background:#fff;border:1px solid #e4dfea;transition:border-color .18s,transform .18s,box-shadow .18s}
 .hs-card:hover{border-color:#b9a3e6;transform:translateY(-3px);box-shadow:0 24px 46px -34px #3b1a7a73}
+.hs-shot{display:block;position:relative;aspect-ratio:3/2;overflow:hidden;background:#efeaf6;border-bottom:1px solid #ece6f2}
+.hs-shot img{width:100%;height:100%;object-fit:cover;transition:transform .5s cubic-bezier(.2,.7,.3,1)}
+.hs-card:hover .hs-shot img{transform:scale(1.04)}
+.hs-body{display:flex;flex-direction:column;gap:9px;flex:1;padding:20px 22px 20px}
 .hs-card h3{font-size:17px;font-weight:600;letter-spacing:-.01em;color:#15131b}
 .hs-card p{flex:1;font-size:15.5px;line-height:1.55;color:#4a4553}
-.hs-card span{display:inline-flex;align-items:center;gap:7px;font-size:14px;font-weight:500;color:#6532c7}
-.hs-card:hover span svg{transform:translateX(3px)}
-.hs-card span svg{transition:transform .18s}
+.hs-go{display:inline-flex;align-items:center;gap:7px;font-size:14px;font-weight:500;color:#6532c7}
+.hs-card:hover .hs-go svg{transform:translateX(3px)}
+.hs-go svg{transition:transform .18s}
 
 /* Mid-page call to action */
 .hs-cta{padding:66px 0;color:#f5f4f0;background:radial-gradient(60% 90% at 82% 10%,#793cff3d,#0000 60%),radial-gradient(45% 70% at 0 100%,#f3b95016,#0000 60%),#111116}
@@ -68,6 +72,9 @@
   .hs-services,.hs-faq{padding:52px 0}
   .hs-industries,.hs-insights{padding:0 0 52px}
   .hs-cta{padding:48px 0}
-  .hs-grid{grid-template-columns:1fr}
+  .hs-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .hs-body{padding:16px 16px 18px}
+  .hs-card h3{font-size:15.5px}
+  .hs-card p{font-size:14px}
   .hs-cta .actions{flex-wrap:wrap;gap:16px}
 }

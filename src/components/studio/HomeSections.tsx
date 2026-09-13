@@ -22,9 +22,14 @@ export function HomeServices() {
         <div className="hs-grid">
           {services.map(s => (
             <Link key={s.slug} href={`/systems/${s.slug}`} className="hs-card">
-              <h3>{s.name}</h3>
-              <p>{s.short}</p>
-              <span>Explore <ArrowRight size={15} aria-hidden /></span>
+              <span className="hs-shot">
+                <Image src={`/images/services/${s.slug}.webp`} alt="" width={700} height={466} sizes="(max-width:760px) 100vw, (max-width:1100px) 46vw, 23vw" />
+              </span>
+              <span className="hs-body">
+                <h3>{s.name}</h3>
+                <p>{s.short}</p>
+                <span className="hs-go">Explore <ArrowRight size={15} aria-hidden /></span>
+              </span>
             </Link>
           ))}
         </div>
