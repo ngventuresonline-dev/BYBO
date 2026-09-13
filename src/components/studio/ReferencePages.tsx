@@ -24,16 +24,17 @@ const patterns = [
   { id: 'knowledge', title: 'Internal answers', body: 'Find the answer without waiting for one person.', path: 'Ask → Retrieve → Check → Cite → Answer', gate: 'Missing evidence stays visible.', service: 'Enterprise Knowledge', slug: 'enterprise-knowledge-systems' },
   { id: 'reports', title: 'Numbers pack', body: 'Give the team a shared basis for decisions.', path: 'Collect → Reconcile → Refresh → Explain → Review', gate: 'People own the decision.', service: 'Decision Intelligence', slug: 'decision-intelligence' },
   { id: 'specific', title: 'A path for your work', body: 'Bring the process that does not fit a category.', path: 'We map it with your team before deciding what to build.', gate: '', service: 'Custom AI Platforms', slug: 'custom-ai-platforms' },
+  { id: 'websites', title: 'Your digital home', body: 'Give your brand a website worthy of what you do.', path: 'Discover → Shape → Design → Review → Build & launch', gate: 'You approve the design and copy before launch.', service: 'Website Design & Development', slug: 'website-design-development' },
 ];
 
 export function ReferenceSolutions({ children }: { children?: React.ReactNode }) {
   return <div className="reference-page rp-solutions">
     <ReferenceHero page="Solutions" title="Start with the work you want off your plate." body="Explore practical starting points. We shape each system around your rules, records and team." art="solutions-hero" href="/apply" cta="Discuss your workflow" />
     <section className="rp-light rp-patterns"><div className="container"><h2>Which problem sounds familiar?</h2><div className="rp-pattern-list">{patterns.map((p, i) => <article className="rp-pattern" key={p.id} id={p.id}>
-      <span className="rp-number">0{i + 1}</span><div role="img" aria-label={p.title} className={`rp-object rp-object-${i}`} />
+      <span className="rp-number">{String(i + 1).padStart(2, '0')}</span><div role="img" aria-label={p.title} className={`rp-object rp-object-${i}`} />
       <div className="rp-pattern-copy"><h3>{p.title}</h3><p>{p.body}</p><p className="rp-path">{p.path}</p>{p.gate && <p className="rp-gate"><AlertCircle size={16} />{p.gate}</p>}</div>
       <Link className="rp-pattern-link" href={`/systems/${p.slug}`}>{p.service}<ArrowRight size={20} /></Link>
-    </article>)}</div><p className="rp-website-line" id="websites">Building your brand’s digital home? <Link href="/systems/website-design-development">Explore Website Design & Development <ArrowRight size={17} /></Link></p></div></section>
+    </article>)}</div></div></section>
     <section className="rp-lands"><div className="container"><h2>What lands with your team</h2><div className="rp-three">{[{Icon: FileText, text:'A working system'}, {Icon:SlidersHorizontal,text:'Clear operating rules'}, {Icon:UserRound,text:'A named owner'}].map(({Icon,text}) => <div key={text}><Icon size={53} strokeWidth={1.3}/><h3>{text}</h3></div>)}</div></div></section>
     <section className="rp-underneath rp-light"><div className="rp-book-scene"><Image src="/images/reference-closing.webp" alt="Books and a violet glass sphere" fill sizes="50vw" /></div><div><p className="eyebrow">The systems</p><h2>Want to understand<br />what sits underneath?</h2><p className="rp-underneath-lede">Every solution on this page is built from the same seven systems. Each one takes on a different shape of recurring work — documents, multi-step workflows, knowledge, decisions, conversations, custom platforms and the governance that keeps them running.</p><div className="actions"><Button href="/systems">Explore all seven systems</Button><Link className="rp-underneath-link" href="/apply">Or tell us your workflow <ArrowRight size={16} aria-hidden /></Link></div></div></section>
     {children}<section className="rp-final"><div className="container"><h2>Tell us what keeps<br />coming back.</h2><Button href="/apply">Talk to BYBO</Button></div></section>
