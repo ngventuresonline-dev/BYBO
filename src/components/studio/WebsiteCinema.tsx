@@ -33,38 +33,10 @@ function RestaurantDemo(){
 
 function CreatorDemo(){
   const [category,setCategory]=useState('Travel');const [story,setStory]=useState(false);const [subscribed,setSubscribed]=useState(false);
-  const stories:Record<string,{title:string;body:string;read:string}>={Travel:{title:'A weekend beyond the city.',body:'A drive into the Western Ghats. Coffee before the trail. Notes on travelling slowly, close to home, and finding stories beyond the obvious stops.',read:'6 min'},Design:{title:'Finding a quieter kind of beautiful.',body:'Independent studios, thoughtful spaces and objects made with a point of view. A personal edit of contemporary design across India.',read:'4 min'},Life:{title:'Notes from an ordinary Sunday.',body:'Coffee before the inbox. A long walk without a destination. Small rituals are often the ones that stay with us.',read:'3 min'}};
-  const ticker=['FIELD NOTES','TRAVEL','DESIGN','LIFE','BENGALURU','NEW EVERY FRIDAY'];
-  return <div className="wc-creator">
-    <nav className="wc-demo-nav"><strong>MIRA</strong><span className="wc-cr-live"><i/>2,417 readers</span><span className="wc-cr-sub">Subscribe</span></nav>
-    <div className="wc-cr-ticker" aria-hidden><div>{[...ticker,...ticker].map((t,i)=><span key={i}>{t}</span>)}</div></div>
-    <div className="wc-creator-grid">
-      <div className="wc-cr-hero">
-        <h3>A LIFE<br/>LESS <mark>ORDINARY</mark></h3>
-        <p>Bengaluru. Places, independent design and stories from across India — written by one person, not a team.</p>
-        <div className="wc-journal-tabs" role="group" aria-label="Journal category">{Object.keys(stories).map(k=><button aria-pressed={category===k} key={k} onClick={()=>{setCategory(k);setStory(false)}}>{k}</button>)}</div>
-      </div>
-      <figure className="wc-cr-shot"><Image src={photo('creator')} alt="An Indian landscape from a travel journal" width={1100} height={825} sizes="(max-width: 760px) 100vw, 46vw"/><figcaption>№ 048</figcaption></figure>
-    </div>
-    <div className="wc-cr-bento">
-      <button className="wc-story-link" onClick={()=>setStory(!story)} aria-expanded={story}>
-        <span className="wc-cr-meta">{category.toUpperCase()} · {stories[category].read}</span>
-        <span className="wc-cr-title">{stories[category].title}</span>
-        {story&&<span className="wc-story-text">{stories[category].body}</span>}
-        <span className="wc-cr-open">{story?'Close':'Read it'} <ArrowUpRight size={18}/></span>
-      </button>
-      <div className="wc-cr-side">
-        <div className="wc-cr-stat"><strong>48</strong><span>letters sent</span></div>
-        <div className="wc-cr-stat"><strong>3</strong><span>years, no sponsor</span></div>
-      </div>
-    </div>
-    <form className="wc-newsletter" onSubmit={e=>{e.preventDefault();setSubscribed(true)}}>
-      <label htmlFor="wc-creator-email">One letter. Every other Friday.</label>
-      <div><input id="wc-creator-email" type="email" placeholder="you@email.com" required onChange={()=>setSubscribed(false)}/><button aria-label="Try newsletter signup">Get it <ArrowRight size={18}/></button></div>
-      <small role="status">{subscribed?'Signup preview complete. Your email has not been saved.':'Demo newsletter · no email is collected'}</small>
-    </form>
-  </div>
+  const stories:Record<string,{title:string;body:string}>={Travel:{title:'A weekend beyond the city.',body:'A drive into the Western Ghats. Coffee before the trail. Notes on travelling slowly, close to home, and finding stories beyond the obvious stops.'},Design:{title:'Finding a quieter kind of beautiful.',body:'Independent studios, thoughtful spaces and objects made with a point of view. A personal edit of contemporary design across India.'},Life:{title:'Notes from an ordinary Sunday.',body:'Coffee before the inbox. A long walk without a destination. Small rituals are often the ones that stay with us.'}};
+  return <div className="wc-creator"><nav className="wc-demo-nav"><strong>MIRA / FIELD NOTES</strong><span>Stories. Places. A point of view.</span></nav><div className="wc-creator-grid"><div><small>INDIA, THROUGH A PERSONAL LENS</small><h3>A life<br/>less <em>ordinary.</em></h3><p>Based in Bengaluru. Collecting places, independent design and stories from across India.</p><div className="wc-journal-tabs" role="group" aria-label="Journal category">{Object.keys(stories).map(k=><button aria-pressed={category===k} key={k} onClick={()=>{setCategory(k);setStory(false)}}>{k}</button>)}</div><button className="wc-story-link" onClick={()=>setStory(!story)} aria-expanded={story}>{stories[category].title}<ArrowUpRight size={22}/></button>{story&&<p className="wc-story-text">{stories[category].body}</p>}</div><figure><Image src={photo('creator')} alt="An Indian landscape from a travel journal" width={1100} height={825} sizes="(max-width: 760px) 100vw, 50vw"/><figcaption>FIELD NOTES / A SLOWER PERSPECTIVE</figcaption></figure></div><form className="wc-newsletter" onSubmit={e=>{e.preventDefault();setSubscribed(true)}}><label htmlFor="wc-creator-email">A letter, once in a while.</label><div><input id="wc-creator-email" type="email" placeholder="Your email address" required onChange={()=>setSubscribed(false)}/><button aria-label="Try newsletter signup"><ArrowRight size={20}/></button></div><small role="status">{subscribed?'Signup preview complete. Your email has not been saved.':'Demo newsletter · no email is collected'}</small></form></div>
 }
+
 function PropertyDemo(){
   const [view,setView]=useState('The residence');const [visit,setVisit]=useState(false);
   return <div className="wc-property"><nav className="wc-demo-nav"><strong>STILL HOUSE</strong><span>Architecture for living.</span><button onClick={()=>setVisit(!visit)}>Arrange a visit <ArrowUpRight size={16}/></button></nav><div className={`wc-property-image ${view==='The details'?'wc-property-detail':''}`}><Image src={photo('property')} alt="Contemporary villa courtyard and pool in Goa" width={1100} height={734} sizes="(max-width: 760px) 100vw, 80vw"/><div><small>GOA / A RESIDENCE CONCEPT</small><h3>Space to<br/><em>be yourself.</em></h3></div><span>01 / PRIVATE RESIDENCES</span></div><div className="wc-property-bottom"><div className="wc-journal-tabs" role="group" aria-label="Explore the residence">{['The residence','The details'].map(k=><button key={k} aria-pressed={view===k} onClick={()=>{setView(k);setVisit(false)}}>{k}</button>)}</div><p>{view==='The residence'?'3 bedrooms · Pool courtyard · Goa concept':'Natural stone · Floor-to-ceiling glazing · Open-plan living'}</p></div>{visit&&<div className="wc-demo-reveal" role="status"><span>A guided viewing, at your pace. In a finished site, this connects to your sales team’s availability.</span><button aria-label="Close viewing details" onClick={()=>setVisit(false)}><X size={18}/></button></div>}</div>
