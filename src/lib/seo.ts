@@ -25,10 +25,25 @@ type PageMetaOptions = {
 export function pageMetadata({ title, description, path, keywords, ogType = "website", ogImage, ogImageAlt, noIndex = false, publishedTime, }: PageMetaOptions): Metadata {
     const url = siteUrl(path);
     const isHome = path === "/";
-    const documentTitle = isHome ? title : `${title} | BYBO`;
+    // The suffix is dropped when it would push the title past what a search
+    // result shows; a truncated brand name helps nobody.
+    const suffixed = `${title} | BYBO`;
+    const documentTitle = isHome || suffixed.length > 60 ? title : suffixed;
+    // Trim a long description at a sentence, so the search result ends on a
+    // full stop rather than mid-word.
+    const trimmed = description.length <= 160
+        ? description
+        : (() => {
+            const cut = description.slice(0, 160);
+            const stop = Math.max(cut.lastIndexOf(". "), cut.lastIndexOf("? "), cut.lastIndexOf("! "));
+            if (stop > 90)
+                return description.slice(0, stop + 1);
+            const space = cut.lastIndexOf(" ");
+            return `${description.slice(0, space > 0 ? space : 157)}…`;
+        })();
     return {
-        title: isHome ? { absolute: title } : title,
-        description,
+        title: isHome || suffixed.length > 60 ? { absolute: documentTitle } : title,
+        description: trimmed,
         keywords,
         alternates: {
             canonical: url,
@@ -47,7 +62,7 @@ export function pageMetadata({ title, description, path, keywords, ogType = "web
             },
         openGraph: {
             title: documentTitle,
-            description,
+            description: trimmed,
             url,
             siteName: SITE.name,
             locale: SITE.locale,
@@ -62,7 +77,7 @@ export function pageMetadata({ title, description, path, keywords, ogType = "web
         twitter: {
             card: ogImage ? "summary_large_image" : "summary",
             title: documentTitle,
-            description,
+            description: trimmed,
             ...(ogImage ? { images: [ogImage] } : {}),
         },
     };

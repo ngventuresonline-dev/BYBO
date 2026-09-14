@@ -14,7 +14,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: Props) {
   const { collection } = await params;
   const c = collectionById[collection as CollectionId];
-  return c ? pageMetadata({ title: `${c.name} — Insights`, description: c.intro, path: `/insights/topics/${c.id}` }) : {};
+  return c ? pageMetadata({ title: `${c.name} — Insights`, description: c.short, path: `/insights/topics/${c.id}`, ogImage: `/og/insights/topic-${c.id}`, ogImageAlt: c.name }) : {};
 }
 
 export default async function Topic({ params }: Props) {
