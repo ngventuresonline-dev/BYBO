@@ -14,7 +14,17 @@ export const metadata: Metadata = {
     },
     description: SITE.defaultDescription,
     applicationName: SITE.name,
-    icons: { icon: "/icon.svg" },
+    icons: {
+        // .ico first: Google's favicon fetcher and older tools ask for it before
+        // anything else, and an absent one is why a stale icon lingers in search.
+        icon: [
+            { url: "/favicon.ico", sizes: "48x48", type: "image/x-icon" },
+            { url: "/icon.svg", type: "image/svg+xml" },
+            { url: "/brand/icon-192.png", sizes: "192x192", type: "image/png" },
+        ],
+        apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }],
+        shortcut: ["/favicon.ico"],
+    },
     category: "technology",
     formatDetection: {
         email: false,

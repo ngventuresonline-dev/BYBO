@@ -1,6 +1,6 @@
 /* Generates every BYBO logo file from one set of numbers, so the mark in the
    favicon and the mark in the print lockup are the same shape. */
-import { writeFileSync, mkdirSync } from 'node:fs';
+import { writeFileSync, mkdirSync, readFileSync } from 'node:fs';
 
 const OUT = process.argv[2];
 mkdirSync(OUT, { recursive: true });
@@ -78,3 +78,40 @@ writeFileSync(`${OUT}/icon.svg`,
   + `  <title>BYBO</title>\n  <rect width="32" height="32" rx="7" fill="${INK}"/>\n  ${iconMark}\n</svg>\n`);
 
 console.log(`lockup ${LOCK_W}×${LOCK_H} · stacked ${STACK_W}×${STACK_H} · ${Object.keys(files).length + 1} files`);
+
+/* ── Raster icons ──────────────────────────────────────────────────────
+   Browsers and crawlers ask for several shapes: /favicon.ico first of all
+   (Google's favicon fetcher still starts there), a 180px apple-touch icon,
+   and 192/512 PNGs for an installed app. All are drawn from the same mark. */
+if (process.argv.includes('--raster')) {
+  const sharp = (await import('sharp')).default;
+  const { writeFileSync: write } = await import('node:fs');
+  const APP = process.argv[process.argv.indexOf('--raster') + 1];
+  const svg = Buffer.from(readFileSync(`${OUT}/icon.svg`));
+  const png = (size) => sharp(svg, { density: 900 }).resize(size, size).png({ compressionLevel: 9 }).toBuffer();
+
+  await Promise.all([
+    png(180).then(b => write(`${APP}/apple-icon.png`, b)),
+    png(192).then(b => write(`${OUT}/icon-192.png`, b)),
+    png(512).then(b => write(`${OUT}/icon-512.png`, b)),
+  ]);
+
+  /* An .ico is a tiny directory of images; PNG payloads are valid in it and
+     every browser in use reads them, so no BMP encoding is needed. */
+  const sizes = [16, 32, 48];
+  const images = await Promise.all(sizes.map(png));
+  const header = Buffer.alloc(6);
+  header.writeUInt16LE(0, 0); header.writeUInt16LE(1, 2); header.writeUInt16LE(sizes.length, 4);
+  let offset = 6 + sizes.length * 16;
+  const entries = images.map((img, i) => {
+    const e = Buffer.alloc(16);
+    e.writeUInt8(sizes[i] % 256, 0); e.writeUInt8(sizes[i] % 256, 1);
+    e.writeUInt8(0, 2); e.writeUInt8(0, 3);
+    e.writeUInt16LE(1, 4); e.writeUInt16LE(32, 6);
+    e.writeUInt32LE(img.length, 8); e.writeUInt32LE(offset, 12);
+    offset += img.length;
+    return e;
+  });
+  write(`${APP}/favicon.ico`, Buffer.concat([header, ...entries, ...images]));
+  console.log(`raster: favicon.ico (${sizes.join('/')}), apple-icon 180, icon 192 + 512`);
+}
