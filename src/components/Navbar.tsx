@@ -24,6 +24,17 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const menuButton = useRef<HTMLButtonElement>(null);
   const systemsWrap = useRef<HTMLDivElement>(null);
+  const closeTimer = useRef<number | undefined>(undefined);
+
+  /* Scrolling moves elements under a stationary cursor, which fires mouseleave
+     even though the pointer never left the panel. Closing on a short delay
+     that any re-entry cancels keeps the panel up while you scroll it. */
+  const holdMega = useCallback(() => { window.clearTimeout(closeTimer.current); setMega(true); }, []);
+  const releaseMega = useCallback(() => {
+    window.clearTimeout(closeTimer.current);
+    closeTimer.current = window.setTimeout(() => setMega(false), 260);
+  }, []);
+  useEffect(() => () => window.clearTimeout(closeTimer.current), []);
 
   const close = useCallback(() => { setOpen(false); setMega(false); }, []);
 
@@ -86,10 +97,10 @@ export function Navbar() {
           <Link href="/solutions" aria-current={pathname === '/solutions' ? 'page' : undefined} onClick={close} data-n="01">Solutions</Link>
 
           {/* Systems: a preview panel on a desktop, an inline grid on a phone */}
-          <div className="nav-systems" ref={systemsWrap} onMouseLeave={() => setMega(false)}>
+          <div className="nav-systems" ref={systemsWrap} onMouseEnter={holdMega} onMouseLeave={releaseMega}>
             <button
               type="button" data-n="02" aria-expanded={mega} aria-controls="systems-panel"
-              onClick={() => setMega(!mega)} onMouseEnter={() => setMega(true)}
+              onClick={() => setMega(!mega)} onMouseEnter={holdMega}
             >
               Systems <ChevronDown size={14} aria-hidden />
             </button>

@@ -47,3 +47,35 @@
   .fr-next h3{font-size:21px;max-width:none}
   .fr-next .rp-three span{width:44px;height:44px;font-size:19px}
 }
+
+/* ── Enquiry form: one submit, many services ────────────────────────────
+   The old flow asked people to prepare a draft, open it somewhere else and
+   copy it. This is a single form that posts and confirms. */
+.fr-enquiry .fr-picks{border:0;padding:0;margin:0 0 20px}
+.fr-enquiry .fr-picks legend{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px;padding:0;margin-bottom:12px;color:#c9c3d4;font-size:13px;font-weight:500}
+.fr-enquiry .fr-picks legend span{font-size:11.5px;font-weight:400;color:#8f88a3}
+.fr-enquiry .fr-picks>div{display:flex;flex-wrap:wrap;gap:8px}
+.fr-enquiry .fr-picks label{position:relative;margin:0;padding:10px 15px;border-radius:999px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.04);
+  color:#ded7ea;font-size:13.5px;font-weight:500;cursor:pointer;transition:background .16s,border-color .16s,color .16s}
+.fr-enquiry .fr-picks label:hover{border-color:rgba(183,148,255,.55);background:rgba(255,255,255,.08)}
+.fr-enquiry .fr-picks label.is-on{background:#793cff;border-color:#793cff;color:#fff}
+.fr-enquiry .fr-picks input{position:absolute;opacity:0;width:1px;height:1px;margin:0;min-height:0;padding:0}
+.fr-enquiry .fr-picks label:has(:focus-visible){outline:2px solid #b794ff;outline-offset:2px}
+
+/* the honeypot: present for a bot, gone for everyone else */
+.fr-enquiry .fr-trap{position:absolute;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none}
+
+.fr-enquiry .fr-form-error{margin-top:14px;padding:13px 15px;border-radius:10px;border:1px solid rgba(243,185,80,.5);background:rgba(243,185,80,.1);color:#f3d9a4;font-size:14px;line-height:1.55}
+.fr-enquiry .fr-form-error a{color:#f3b950;text-decoration:underline;text-underline-offset:3px}
+.fr-enquiry button[type=submit][disabled]{opacity:.65;cursor:progress}
+
+.fr-sent{display:flex;flex-direction:column;align-items:flex-start;gap:14px;padding:22px 0 8px}
+.fr-sent svg{color:#7ee0a8}
+.fr-sent h2{margin:0}
+.fr-sent p{font-size:15.5px;line-height:1.65;color:#c9c3d4;max-width:46ch}
+.fr-sent a{color:#b794ff;text-decoration:underline;text-underline-offset:3px}
+.fr-sent .text-link{margin-top:4px;color:#b794ff}
+
+@container (max-width:520px){
+  .fr-enquiry .fr-picks label{font-size:12.5px;padding:9px 13px}
+}
