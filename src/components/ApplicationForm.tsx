@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useMemo, useState } from "react";
+import { CONTACT } from '@/lib/site';
 import { useSearchParams } from "next/navigation";
 import { ArrowRight, Check, Mail, MessageCircle } from "lucide-react";
 import { industrySolutions, systems } from "@/lib/content";
@@ -164,11 +165,11 @@ export function ApplicationForm() {
     ? `BYBO Blueprint enquiry - ${data.company || "New application"}`
     : `BYBO consultation - ${data.company || "New application"}`;
 
-  const emailHref = `mailto:hello@bybo.in?subject=${encodeURIComponent(
+  const emailHref = `mailto:${CONTACT.email}?subject=${encodeURIComponent(
     emailSubject,
   )}&body=${encodeURIComponent(summary)}`;
 
-  const whatsappHref = `https://wa.me/916360079756?text=${encodeURIComponent(
+  const whatsappHref = `https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent(
     `Hi BYBO, I'd like to discuss an AI opportunity.\n\n${summary}`,
   )}`;
 

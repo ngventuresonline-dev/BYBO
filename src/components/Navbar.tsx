@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { CONTACT } from '@/lib/site';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -167,7 +168,7 @@ export function Navbar() {
           <Link href="/apply" className="nav-cta" onClick={close}>Talk to BYBO <ArrowUpRight size={16} aria-hidden /></Link>
 
           <div className="nav-sheet-foot">
-            <a href="mailto:hello@bybo.in">hello@bybo.in</a>
+            <a href={CONTACT.emailHref}>{CONTACT.email}</a>
             <span>Built around your business.</span>
           </div>
         </nav>
