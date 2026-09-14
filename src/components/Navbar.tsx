@@ -11,8 +11,20 @@ export function Navbar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [servicesOpen, setServicesOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const menuButton = useRef<HTMLButtonElement>(null);
   const serviceWrap = useRef<HTMLDivElement>(null);
+
+  // The header glass thickens once the page moves, so it reads as glass over the
+  // hero and stays legible over the cream sections below it.
+  useEffect(() => {
+    let frame = 0;
+    const read = () => { frame = 0; setScrolled(window.scrollY > 24); };
+    const onScroll = () => { if (!frame) frame = requestAnimationFrame(read); };
+    read();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => { window.removeEventListener('scroll', onScroll); if (frame) cancelAnimationFrame(frame); };
+  }, []);
 
   useEffect(() => {
     function closeOnEscape(event: KeyboardEvent) {
@@ -39,7 +51,8 @@ export function Navbar() {
   };
 
   return (
-    <header className="site-header">
+    <header className="site-header" data-scrolled={scrolled ? '' : undefined} data-open={open ? '' : undefined}>
+      <span className="sh-glass" aria-hidden />
       <div className="container nav-inner">
         <Link href="/" className="wordmark" aria-label="BYBO home" onClick={close}>
           <Wordmark />

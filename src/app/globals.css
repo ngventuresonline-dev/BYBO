@@ -45,3 +45,80 @@
 .site-header .wordmark:hover{color:#fff}
 .reference-footer-brand .wordmark{--wm-size:26px;--wm-accent:#b794ff}
 @media(max-width:760px){.site-header .wordmark{--wm-size:25px}}
+
+/* ── Glass header ───────────────────────────────────────────────────────
+   The bar is a pane of glass, not a dark strip: a genuinely translucent
+   ground so the blur has something to do, a lit top edge, and a sheen that
+   catches the light from the left. It thickens past 24px of scroll so it
+   stays legible once cream sections pass underneath. */
+
+.site-header{position:sticky;top:0;z-index:50;isolation:isolate;background:none;border-bottom:0;backdrop-filter:none;transition:background .35s ease}
+.sh-glass{position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:linear-gradient(180deg,#1b17268c,#100e1799);
+  backdrop-filter:blur(22px) saturate(175%);
+  -webkit-backdrop-filter:blur(22px) saturate(175%);
+  box-shadow:inset 0 1px 0 #ffffff1f,inset 0 -1px 0 #ffffff12,0 1px 0 #00000038;
+  transition:background .35s ease,backdrop-filter .35s ease,box-shadow .35s ease}
+
+/* the sheen: a soft highlight running off the top-left corner */
+.sh-glass::after{content:'';position:absolute;left:0;right:0;bottom:0;height:1px;pointer-events:none;
+  background:linear-gradient(90deg,#0000,#b794ff59 22%,#b794ff8c 50%,#b794ff59 78%,#0000);opacity:.55;transition:opacity .35s ease}
+.site-header[data-scrolled] .sh-glass::after{opacity:.9}
+.sh-glass::before{content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(120% 340% at 4% -60%,#ffffff1c,#ffffff08 34%,#0000 62%),
+             radial-gradient(80% 260% at 78% -110%,#b794ff1a,#0000 60%);
+  opacity:.95;transition:opacity .35s ease}
+
+/* once the page moves */
+.site-header[data-scrolled] .sh-glass{
+  background:linear-gradient(180deg,#171422c7,#0f0d15d4);
+  backdrop-filter:blur(34px) saturate(200%);
+  -webkit-backdrop-filter:blur(34px) saturate(200%);
+  box-shadow:inset 0 1px 0 #ffffff26,inset 0 -1px 0 #ffffff0d,0 14px 34px -18px #000000b8,0 1px 0 #00000047}
+.site-header[data-scrolled] .sh-glass::before{opacity:.5}
+
+/* the nav sits above the pane */
+.site-header>.container{position:relative;z-index:1}
+
+/* controls, matched to the glass */
+.site-header .nav-cta{position:relative;overflow:hidden;background:#793cffe0;box-shadow:inset 0 1px 0 #ffffff40,0 8px 20px -10px #793cffb8;backdrop-filter:blur(6px);transition:background .2s,box-shadow .2s,transform .2s}
+.site-header .nav-cta:hover{background:#8a52ff;box-shadow:inset 0 1px 0 #ffffff59,0 12px 26px -10px #793cffd6;transform:translateY(-1px)}
+.site-header .nav-services>button{border-radius:6px;padding-inline:10px;margin-inline:-10px;transition:color .18s,background .18s}
+.site-header .nav-services>button:hover,.site-header .nav-services>button[aria-expanded=true]{color:var(--violet-light);background:#ffffff0f}
+.site-header .nav-links>a:not(.nav-cta){position:relative;padding-block:6px}
+.site-header .nav-links>a:not(.nav-cta)::after{content:'';position:absolute;left:0;right:0;bottom:-1px;height:1px;background:linear-gradient(90deg,#0000,var(--violet-light),#0000);opacity:0;transform:scaleX(.5);transition:opacity .22s,transform .22s}
+.site-header .nav-links>a:not(.nav-cta):hover::after,.site-header .nav-links [aria-current=page]::after{opacity:1;transform:none}
+.menu-toggle{border-color:#ffffff33;background:#ffffff0f;backdrop-filter:blur(8px);transition:background .18s,border-color .18s}
+.menu-toggle:hover{background:#ffffff1c;border-color:#ffffff4d}
+
+/* the dropdown is a smaller pane of the same glass */
+.services-menu{background:#191525f2;border-color:#ffffff26;
+  backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);
+  box-shadow:inset 0 1px 0 #ffffff21,0 28px 56px -22px #000000c4;
+  animation:sh-drop .18s cubic-bezier(.2,.7,.3,1)}
+@keyframes sh-drop{from{opacity:0;transform:translateY(-7px)}}
+.services-menu a:hover{background:#ffffff17}
+
+@media(max-width:760px){
+  .nav-links{background:#131020fa;backdrop-filter:blur(28px) saturate(180%);-webkit-backdrop-filter:blur(28px) saturate(180%);border-bottom-color:#ffffff2b;box-shadow:0 26px 44px -20px #000000b8}
+  .services-menu{background:#ffffff0f;backdrop-filter:none;-webkit-backdrop-filter:none;box-shadow:none;animation:none}
+  .site-header[data-open] .sh-glass{background:linear-gradient(180deg,#171422e6,#0f0d15ed)}
+}
+
+/* Fall back to the solid bar wherever glass would not render, or where the
+   reader has asked for less of it. */
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .sh-glass,.site-header[data-scrolled] .sh-glass{background:#111116f5}
+  .services-menu{background:#1d1b24}
+  .nav-links{background:#17141e}
+}
+@media (prefers-reduced-transparency:reduce){
+  .sh-glass,.site-header[data-scrolled] .sh-glass{background:#111116f7;backdrop-filter:none;-webkit-backdrop-filter:none}
+  .sh-glass::before{display:none}
+  .services-menu{background:#1d1b24;backdrop-filter:none;-webkit-backdrop-filter:none}
+  .nav-links{background:#17141e;backdrop-filter:none;-webkit-backdrop-filter:none}
+}
+@media (prefers-reduced-motion:reduce){
+  .site-header .sh-glass,.site-header .nav-cta,.site-header .nav-links>a::after{transition:none}
+  .services-menu{animation:none}
+}
