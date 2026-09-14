@@ -1,4 +1,5 @@
 import { notFound, redirect } from 'next/navigation';
+import { ogFor, ogPageByPath } from '@/lib/og-pages';
 import { WebsiteCinema } from '@/components/studio/WebsiteCinema';
 import { WebsiteSchema } from '@/components/studio/WebsiteSchema';
 import { SystemLanding } from '@/components/system-landing/SystemLanding';
@@ -22,7 +23,8 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params;
   const s = services.find(x => x.slug === (legacy[slug] || slug));
-  return s ? pageMetadata({ title: s.name, description: s.description, path: `/systems/${s.slug}` }) : {};
+  const meta = ogPageByPath[`/systems/${s?.slug}`];
+  return s ? pageMetadata({ title: s.name, description: meta?.desc ?? s.short, path: `/systems/${s.slug}`, ogImage: ogFor(`/systems/${s.slug}`), ogImageAlt: s.headline }) : {};
 }
 
 export default async function Service({ params }: Props) {

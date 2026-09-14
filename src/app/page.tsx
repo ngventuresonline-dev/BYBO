@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { ogFor } from '@/lib/og-pages';
 import Link from 'next/link';
 import { ArrowRight, PlayCircle, FileText, Box, Settings, Database, MessageCircle, Users, LayoutGrid, CheckSquare } from 'lucide-react';
 import { Button } from '@/components/studio/Shared';
@@ -11,6 +12,7 @@ export const metadata = pageMetadata({
   title: SITE.defaultTitle,
   description: 'BYBO builds systems that handle recurring work, connect your tools and bring the right decisions back to people. AI systems and websites built around your business.',
   path: '/',
+  ogImage: ogFor('/'),
 });
 
 export default function Home() {
