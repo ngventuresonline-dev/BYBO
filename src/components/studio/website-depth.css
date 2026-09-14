@@ -1,0 +1,66 @@
+/* The substance sections on the studio page, in the studio's own dark language. */
+
+.wd-give,.wd-two,.wd-measure,.wd-reading{padding:86px 0;background:#100f16;color:#f8f6fb}
+.wd-give h2,.wd-two h2,.wd-measure h2,.wd-reading h2,.wd-control h2{font-family:var(--font-display);font-weight:400;letter-spacing:-.03em;line-height:1.08;margin:12px 0 0}
+.wd-give em,.wd-two em,.wd-measure em,.wd-reading em,.wd-control em{font-family:var(--font-display);font-weight:400;font-style:normal;color:#b78bff}
+.wd-give .eyebrow,.wd-two .eyebrow,.wd-measure .eyebrow,.wd-reading .eyebrow{font-size:12px;letter-spacing:.17em;color:#b78bff}
+.wd-give .wc-section-top>p,.wd-measure .wc-section-top>p,.wd-reading .wc-section-top>p{max-width:38ch;font-size:16px;line-height:1.62;color:#b3aac4;margin:0}
+.wd-give h2,.wd-measure h2,.wd-reading h2{font-size:clamp(1.9rem,3.1vw,2.7rem)}
+
+/* what you receive */
+.wd-give{background:#141220}
+.wd-give-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.wd-give-card{background:#191622;border:1px solid #ffffff24;border-radius:4px;padding:28px 26px 30px;transition:border-color .25s}
+.wd-give-card:hover{border-color:#8646ff8c}
+.wd-num{font-family:var(--font-display);font-size:13px;letter-spacing:.14em;color:#8b7fa6}
+.wd-give-card h3{font-family:var(--font-body);font-size:18px;font-weight:600;letter-spacing:-.01em;margin:14px 0 10px;color:#f8f6fb}
+.wd-give-card p{margin:0;font-size:15px;line-height:1.6;color:#c4bcd6}
+
+/* where you decide */
+.wd-control{padding:76px 0;background:#1c1526;border-top:3px solid #f3b950}
+.wd-control>.container{display:grid;grid-template-columns:.82fr 1.18fr;gap:52px;align-items:start}
+.wd-control .eyebrow{display:flex;align-items:center;gap:8px;font-size:12px;letter-spacing:.17em;color:#f3b950}
+.wd-control h2{font-size:clamp(1.8rem,2.9vw,2.45rem);color:#f8f6fb}
+.wd-control em{color:#f3b950}
+.wd-control-body{margin:0;font-size:16.5px;line-height:1.7;color:#ded7ea}
+.wd-control-body a{color:#c7aeff;text-decoration:underline;text-underline-offset:3px}
+
+/* two columns */
+.wd-two{background:#100f16}
+.wd-two>.container{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:start}
+.wd-two h2{font-size:clamp(1.6rem,2.3vw,2rem)}
+.wd-col-lede{margin:14px 0 26px;font-size:15.5px;line-height:1.62;color:#b3aac4}
+.wd-bring{display:flex;flex-direction:column;gap:1px;background:#ffffff17;border:1px solid #ffffff17;border-radius:4px;overflow:hidden}
+.wd-bring li{display:flex;gap:16px;background:#191622;padding:17px 20px}
+.wd-bring span{font-family:var(--font-display);font-size:14px;color:#b78bff;min-width:22px}
+.wd-bring p{margin:0;font-size:14.5px;line-height:1.55;color:#ded7ea}
+.wd-connects{display:flex;flex-direction:column}
+.wd-connects li{display:flex;gap:14px;align-items:flex-start;padding:15px 0;border-bottom:1px solid #ffffff14;font-size:14.5px;line-height:1.55;color:#ded7ea}
+.wd-connects li:last-child{border-bottom:0}
+.wd-connects svg{flex-shrink:0;margin-top:2px;color:#b78bff}
+
+/* how it is judged */
+.wd-measure{background:#141220}
+.wd-measure-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.wd-measure-card{background:#191622;border:1px solid #ffffff24;border-radius:4px;padding:24px}
+.wd-measure-card span{font-family:var(--font-display);font-size:30px;color:#b78bff}
+.wd-measure-card h3{font-family:var(--font-body);font-size:15.5px;font-weight:600;letter-spacing:-.01em;line-height:1.35;margin:12px 0 6px;color:#f8f6fb}
+.wd-measure-card p{margin:0;font-size:13px;line-height:1.5;color:#a79fbb}
+
+/* read more */
+.wd-reading{background:#100f16;padding-bottom:92px}
+.wd-all{display:inline-flex;align-items:center;gap:9px;flex-shrink:0;font-size:14.5px;font-weight:500;color:#b78bff}
+.wd-all:hover{color:#d3bcff}
+
+@media(max-width:1100px){
+  .wd-give,.wd-two,.wd-measure,.wd-reading{padding:60px 0}
+  .wd-control{padding:54px 0}
+  .wd-give-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .wd-measure-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .wd-control>.container,.wd-two>.container{grid-template-columns:1fr;gap:32px}
+}
+@media(max-width:760px){
+  .wd-give,.wd-two,.wd-measure,.wd-reading{padding:46px 0}
+  .wd-give-grid,.wd-measure-grid{grid-template-columns:1fr}
+  .wd-give-card{padding:22px 20px 24px}
+}
