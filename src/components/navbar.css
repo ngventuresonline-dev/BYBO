@@ -1,0 +1,102 @@
+/* ── Navigation ────────────────────────────────────────────────────────
+   Desktop: Systems opens a full-width panel that previews the system under
+   the cursor with its own artwork. Phone: a full-screen sheet in display
+   type, with the systems as a grid of pictures rather than a list of words. */
+
+.site-header{--nv-line:#ffffff1f}
+.site-header .nav-inner{position:relative}
+
+/* the bar's own links */
+.site-header .nav-links>a:not(.nav-cta),.site-header .nav-systems>button{position:relative;padding-block:7px;font-size:.85rem;color:var(--paper);background:none;border:0;display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-family:inherit}
+.site-header .nav-links>a:not(.nav-cta)::after,.site-header .nav-systems>button::after{content:'';position:absolute;left:0;right:0;bottom:0;height:1px;background:linear-gradient(90deg,#0000,var(--violet-light),#0000);opacity:0;transform:scaleX(.4);transition:opacity .22s,transform .22s}
+.site-header .nav-links>a:not(.nav-cta):hover::after,.site-header .nav-links [aria-current=page]::after,.site-header .nav-systems>button[aria-expanded=true]::after{opacity:1;transform:none}
+.site-header .nav-systems>button svg{transition:transform .25s}
+.site-header .nav-systems>button[aria-expanded=true] svg{transform:rotate(180deg)}
+.site-header .nav-sheet-head,.site-header .nav-sheet-foot,.site-header .nav-systems-grid{display:none}
+
+/* ── the panel ── */
+.site-header .nav-systems{position:static}
+.site-header .nav-panel{position:absolute;top:calc(100% + 1px);left:50%;width:100vw;transform:translateX(-50%);z-index:60;
+  background:linear-gradient(180deg,#16121fF7,#0e0c15fa);
+  backdrop-filter:blur(30px) saturate(180%);-webkit-backdrop-filter:blur(30px) saturate(180%);
+  border-top:1px solid var(--nv-line);box-shadow:0 34px 60px -26px #000000cc;
+  animation:nv-open .26s cubic-bezier(.2,.7,.3,1)}
+.site-header .nav-panel[hidden]{display:none}
+@keyframes nv-open{from{opacity:0;transform:translateX(-50%) translateY(-10px)}}
+.site-header .nav-panel-inner{display:grid;grid-template-columns:minmax(0,1.05fr) 380px 232px;gap:46px;padding:34px 0 38px;align-items:start}
+.site-header .nav-panel-eyebrow{font-size:10.5px;letter-spacing:.19em;text-transform:uppercase;color:var(--violet-light);margin-bottom:16px}
+.site-header .nav-panel-list ul{display:grid;grid-template-columns:1fr 1fr;gap:2px 20px}
+.site-header .nav-panel-list a{display:flex;align-items:center;gap:13px;padding:11px 13px;border-radius:8px;font-size:15px;color:#ded7ea;transition:background .16s,color .16s}
+.site-header .nav-panel-list a[data-active],.site-header .nav-panel-list a:hover{background:#ffffff12;color:#fff}
+.site-header .nav-panel-list a[aria-current=page]{color:var(--violet-light)}
+.site-header .nav-panel-num{font-family:var(--font-display);font-size:11.5px;color:#8b7fa6;min-width:18px}
+.site-header .nav-panel-name{flex:1}
+.site-header .nav-panel-list a svg{opacity:0;transform:translateX(-4px);transition:opacity .16s,transform .16s;color:var(--violet-light)}
+.site-header .nav-panel-list a[data-active] svg,.site-header .nav-panel-list a:hover svg{opacity:1;transform:none}
+
+.site-header .nav-panel-preview{display:flex;flex-direction:column;border:1px solid var(--nv-line);border-radius:10px;overflow:hidden;background:#191622;transition:border-color .2s}
+.site-header .nav-panel-preview:hover{border-color:#8646ff8c}
+.site-header .nav-panel-shot{display:block;position:relative;aspect-ratio:16/10;overflow:hidden;background:#221d2e}
+.site-header .nav-panel-shot img{width:100%;height:100%;object-fit:cover;animation:nv-fade .32s ease}
+@keyframes nv-fade{from{opacity:0;transform:scale(1.03)}}
+.site-header .nav-panel-copy{display:flex;flex-direction:column;gap:7px;padding:17px 19px 19px}
+.site-header .nav-panel-copy strong{font-family:var(--font-display);font-weight:400;font-size:19px;letter-spacing:-.02em;color:#f5f4f0;line-height:1.22}
+.site-header .nav-panel-copy>span{font-size:13.5px;line-height:1.5;color:#a79fbb}
+.site-header .nav-panel-go{display:inline-flex;align-items:center;gap:7px;margin-top:4px;font-size:13px;color:var(--violet-light)}
+
+.site-header .nav-panel-aside{display:flex;flex-direction:column;gap:11px;padding-left:26px;border-left:1px solid var(--nv-line)}
+.site-header .nav-panel-aside p{font-size:13px;color:#8b84a0;margin-bottom:3px}
+.site-header .nav-panel-aside a{display:inline-flex;align-items:center;gap:8px;font-size:14px;color:#ded7ea;transition:color .16s}
+.site-header .nav-panel-aside a:hover{color:var(--violet-light)}
+.site-header .nav-panel-talk{margin-top:8px;padding-top:13px;border-top:1px solid var(--nv-line);color:var(--violet-light)!important}
+
+@media(max-width:1240px){
+  .site-header .nav-panel-inner{grid-template-columns:minmax(0,1fr) 320px;gap:34px}
+  .site-header .nav-panel-aside{grid-column:1/-1;flex-direction:row;align-items:center;gap:24px;padding:16px 0 0;border-left:0;border-top:1px solid var(--nv-line)}
+  .site-header .nav-panel-talk{margin:0;padding:0;border-top:0}
+}
+
+/* ── the phone sheet ── */
+@media(max-width:760px){
+  .site-header .nav-links{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:70;
+    flex-direction:column;align-items:stretch;gap:0;padding:22px 24px calc(24px + env(safe-area-inset-bottom));
+    background:linear-gradient(#141020,#0c0a13);overflow:auto;border:0;max-height:none;
+    -webkit-overflow-scrolling:touch}
+  .site-header .nav-links.is-open{display:flex;animation:nv-sheet .3s cubic-bezier(.2,.7,.3,1)}
+ @keyframes nv-sheet{from{opacity:0;transform:translateY(-12px)}}
+
+  .site-header .nav-sheet-head{display:block;font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:#6f6788;padding:46px 0 18px;border-bottom:1px solid var(--nv-line);margin-bottom:6px}
+
+  /* the five destinations, as display type with their number */
+  .site-header .nav-links>a:not(.nav-cta),.site-header .nav-systems>button{font-family:var(--font-display);font-weight:400;font-size:34px;letter-spacing:-.03em;line-height:1.1;
+    padding:17px 0;width:100%;justify-content:flex-start;border-bottom:1px solid #ffffff14;color:#f5f4f0}
+  .site-header .nav-links>a:not(.nav-cta)::after,.site-header .nav-systems>button::after{display:none}
+  .site-header .nav-links>a[data-n]::before,.site-header .nav-systems>button[data-n]::before{content:attr(data-n);font-family:var(--font-body);font-size:11px;letter-spacing:.14em;color:#7b7396;margin-right:16px;align-self:flex-start;margin-top:12px}
+  .site-header .nav-links>a[aria-current=page]{color:var(--violet-light)}
+  .site-header .nav-systems>button svg{margin-left:auto}
+  .site-header .nav-systems>button svg{width:20px;height:20px;color:#7b7396}
+
+  .site-header .nav-panel{display:none}
+
+  /* systems become pictures, not more words */
+  .site-header .nav-systems-grid{display:none;grid-template-columns:1fr 1fr;gap:10px;padding:14px 0 18px}
+  .site-header .nav-systems>button[aria-expanded=true]~.nav-systems-grid{display:grid;animation:nv-sheet .26s ease}
+  .site-header .nav-systems-grid a{display:flex;flex-direction:column;border:1px solid var(--nv-line);border-radius:10px;overflow:hidden;background:#191622}
+  .site-header .nav-systems-grid img{width:100%;height:74px;object-fit:cover}
+  .site-header .nav-systems-grid span{padding:10px 12px 12px;font-size:13px;line-height:1.3;color:#ded7ea}
+
+  .site-header .nav-cta{justify-content:space-between;padding:17px 20px;margin-top:24px;font-size:1rem;border-radius:8px}
+  .site-header .nav-sheet-foot{display:flex;flex-direction:column;gap:7px;margin-top:34px;padding-top:24px;border-top:1px solid #ffffff14}
+  .site-header .nav-sheet-foot a{font-size:15px;color:var(--violet-light)}
+  .site-header .nav-sheet-foot span{font-size:12.5px;color:#6f6788}
+
+  .site-header[data-open]{position:fixed;top:0;left:0;right:0}
+  .site-header[data-open] .menu-toggle,
+  .site-header[data-open] .wordmark{position:relative;z-index:80}
+  .site-header[data-open] .brand-note{display:none}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .site-header .nav-panel,.site-header .nav-links.is-open,.site-header .nav-panel-shot img,.site-header .nav-systems-grid{animation:none}
+  .site-header .nav-panel-list a svg,.site-header .nav-systems>button svg{transition:none}
+}
