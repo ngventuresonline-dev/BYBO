@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { Wordmark } from './Wordmark';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { ArrowUpRight, ChevronDown, Menu, X } from 'lucide-react';
@@ -41,7 +42,7 @@ export function Navbar() {
     <header className="site-header">
       <div className="container nav-inner">
         <Link href="/" className="wordmark" aria-label="BYBO home" onClick={close}>
-          BYBO<span className="brand-dot">.</span>
+          <Wordmark />
         </Link>
         <span className="brand-note">Built around your business.</span>
         <button ref={menuButton} type="button" className="menu-toggle" aria-label={open ? 'Close navigation' : 'Open navigation'} aria-controls="site-navigation" aria-expanded={open} onClick={() => setOpen(!open)}>
