@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { CONTACT } from '@/lib/site';
+import { firstName, visitorAck } from '@/lib/enquiry-ack';
 
 /**
  * Receives an enquiry from /apply and emails it to the team inbox.
@@ -8,6 +9,10 @@ import { CONTACT } from '@/lib/site';
  * up to date — only RESEND_API_KEY in the environment. Without that key the
  * route says so plainly and the form falls back to the visitor's own email
  * client, so an enquiry is never silently lost.
+ *
+ * After the team email succeeds, a visitor acknowledgement is sent with the
+ * published Resend template `bybo-enquiry-ack`. A failed ack is logged and
+ * does not fail the request — the team copy is the hard requirement.
  */
 
 export const runtime = 'nodejs';
@@ -32,7 +37,13 @@ function rateLimited(ip: string) {
 
 const str = (v: FormDataEntryValue | null, max: number) => String(v ?? '').trim().slice(0, max);
 
-type Mail = { to: string[]; subject: string; text: string; replyTo?: string };
+type Mail = {
+  to: string[];
+  subject: string;
+  text?: string;
+  replyTo?: string;
+  template?: { id: string; variables: Record<string, string> };
+};
 
 async function send(key: string, mail: Mail) {
   return fetch('https://api.resend.com/emails', {
@@ -42,10 +53,44 @@ async function send(key: string, mail: Mail) {
       from: FROM,
       to: mail.to,
       subject: mail.subject,
-      text: mail.text,
+      ...(mail.template
+        ? { template: mail.template }
+        : { text: mail.text }),
       ...(mail.replyTo ? { reply_to: mail.replyTo } : {}),
     }),
   }).catch(() => null);
+}
+
+async function logFailure(label: string, res: Response | null) {
+  const detail = res ? await res.text().catch(() => '') : 'network_error';
+  console.error(label, res?.status ?? 0, detail.slice(0, 300));
+}
+
+/** Best-effort visitor copy. Never throws; never fails the enquiry. */
+async function acknowledgeVisitor(key: string, email: string, name: string, services: string[]) {
+  const ack = visitorAck(name, services);
+  const templated = await send(key, { to: [email], ...ack });
+  if (templated?.ok) return;
+
+  await logFailure('enquiry acknowledgement template failed', templated);
+
+  const fallback = await send(key, {
+    to: [email],
+    subject: ack.subject,
+    text: [
+      `We have your note, ${firstName(name)}.`,
+      '',
+      `Thank you for writing to BYBO${ack.template.variables.TOPIC_LINE}. A person on the team will review what you sent.`,
+      '',
+      'We reply during Indian business hours. You do not need to repeat the details unless something material has changed.',
+      '',
+      `If it is urgent, WhatsApp is faster: ${CONTACT.phone}.`,
+      '',
+      '— BYBO',
+      'bybo.in',
+    ].join('\n'),
+  });
+  if (!fallback?.ok) await logFailure('enquiry acknowledgement fallback failed', fallback);
 }
 
 export async function POST(request: Request) {
@@ -90,30 +135,14 @@ export async function POST(request: Request) {
   });
 
   if (!notified?.ok) {
-    const detail = await notified?.text().catch(() => '') ?? '';
-    console.error('enquiry send failed', notified?.status, detail.slice(0, 300));
+    await logFailure('enquiry send failed', notified);
     return NextResponse.json({ ok: false, reason: 'send_failed' }, { status: 502 });
   }
 
-  /* An acknowledgement to the visitor is off unless asked for: it would arrive
-     from support@bybo.in, which has no MX record yet, so a reply to it would
-     bounce. Turn it on once receiving is set up. */
-  if (process.env.ENQUIRY_ACK === '1') {
-    await send(key, {
-      to: [email],
-      subject: 'We have your enquiry',
-      text: [
-        `Hi ${name.split(' ')[0]},`,
-        '',
-        'Thank you for getting in touch. Your enquiry is with us and a person will read it — we reply within one working day.',
-        '',
-        `If it is urgent, WhatsApp is faster: ${CONTACT.phone}.`,
-        '',
-        '— BYBO',
-        'bybo.in',
-      ].join('\n'),
-    });
+  try {
+    await acknowledgeVisitor(key, email, name, services);
+  } catch (err) {
+    console.error('enquiry acknowledgement failed', err);
   }
-
   return NextResponse.json({ ok: true });
 }
