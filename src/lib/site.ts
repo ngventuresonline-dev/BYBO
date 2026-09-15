@@ -1,8 +1,16 @@
-/** Contact details, referenced by the nav, footer, apply page and menu. */
+/**
+ * Contact details, in one place.
+ *
+ * Everything user-facing should import these rather than repeating a literal —
+ * an address hardcoded in eight components is how the site ended up offering
+ * two different ones.
+ */
 export const CONTACT = {
-  email: "hello@bybo.in",
-  phone: "+91 63600 79756",
-  phoneHref: "+916360079756",
+  email: "support@bybo.in",
+  emailHref: "mailto:support@bybo.in",
+  phone: "+91 63643 54899",
+  phoneHref: "+916364354899",
+  whatsapp: "916364354899",
   city: "Bengaluru",
   parent: "N&G Ventures",
   partner: "Bcon Club",

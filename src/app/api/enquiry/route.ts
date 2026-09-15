@@ -1,19 +1,21 @@
 import { NextResponse } from 'next/server';
+import { CONTACT } from '@/lib/site';
 
 /**
- * Receives an enquiry from /apply and emails it to the inbox.
+ * Receives an enquiry from /apply and emails it to the team inbox.
  *
  * Delivery goes through Resend's REST API, so there is no dependency to keep
  * up to date — only RESEND_API_KEY in the environment. Without that key the
- * route says so plainly and the form falls back to opening the visitor's own
- * email client, so an enquiry is never silently lost.
+ * route says so plainly and the form falls back to the visitor's own email
+ * client, so an enquiry is never silently lost.
  */
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const TO = process.env.ENQUIRY_TO ?? 'hello@bybo.in';
-const FROM = process.env.ENQUIRY_FROM ?? 'BYBO site <onboarding@resend.dev>';
+const TO = process.env.ENQUIRY_TO ?? CONTACT.email;
+/** Must be a domain verified in Resend, or every send is rejected. */
+const FROM = process.env.ENQUIRY_FROM ?? `BYBO <${CONTACT.email}>`;
 
 /** Simple in-memory throttle. Enough to stop a bored script, not a botnet. */
 const seen = new Map<string, number[]>();
@@ -29,6 +31,22 @@ function rateLimited(ip: string) {
 }
 
 const str = (v: FormDataEntryValue | null, max: number) => String(v ?? '').trim().slice(0, max);
+
+type Mail = { to: string[]; subject: string; text: string; replyTo?: string };
+
+async function send(key: string, mail: Mail) {
+  return fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      from: FROM,
+      to: mail.to,
+      subject: mail.subject,
+      text: mail.text,
+      ...(mail.replyTo ? { reply_to: mail.replyTo } : {}),
+    }),
+  }).catch(() => null);
+}
 
 export async function POST(request: Request) {
   const form = await request.formData();
@@ -47,7 +65,7 @@ export async function POST(request: Request) {
   if (rateLimited(ip)) return NextResponse.json({ ok: false, reason: 'rate_limited' }, { status: 429 });
 
   const services = form.getAll('services').map(v => str(v, 80)).filter(Boolean);
-  const lines = [
+  const body = [
     `Name: ${name}`,
     `Work email: ${email}`,
     `Company: ${str(form.get('company'), 160) || 'Not provided'}`,
@@ -58,23 +76,44 @@ export async function POST(request: Request) {
     `Website: ${str(form.get('website'), 200) || 'Not provided'}`,
     '',
     message,
-  ];
+  ].join('\n');
 
   const key = process.env.RESEND_API_KEY;
   if (!key) return NextResponse.json({ ok: false, reason: 'not_configured' }, { status: 503 });
 
-  const sent = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      from: FROM,
-      to: [TO],
-      reply_to: email,
-      subject: `Enquiry from ${name}${services.length ? ` — ${services[0]}${services.length > 1 ? ` +${services.length - 1}` : ''}` : ''}`,
-      text: lines.join('\n'),
-    }),
-  }).catch(() => null);
+  const picked = services.length ? ` — ${services[0]}${services.length > 1 ? ` +${services.length - 1}` : ''}` : '';
+  const notified = await send(key, {
+    to: [TO],
+    subject: `Enquiry from ${name}${picked}`,
+    text: body,
+    replyTo: email,          // replying in the inbox goes straight to the visitor
+  });
 
-  if (!sent?.ok) return NextResponse.json({ ok: false, reason: 'send_failed' }, { status: 502 });
+  if (!notified?.ok) {
+    const detail = await notified?.text().catch(() => '') ?? '';
+    console.error('enquiry send failed', notified?.status, detail.slice(0, 300));
+    return NextResponse.json({ ok: false, reason: 'send_failed' }, { status: 502 });
+  }
+
+  /* An acknowledgement to the visitor is off unless asked for: it would arrive
+     from support@bybo.in, which has no MX record yet, so a reply to it would
+     bounce. Turn it on once receiving is set up. */
+  if (process.env.ENQUIRY_ACK === '1') {
+    await send(key, {
+      to: [email],
+      subject: 'We have your enquiry',
+      text: [
+        `Hi ${name.split(' ')[0]},`,
+        '',
+        'Thank you for getting in touch. Your enquiry is with us and a person will read it — we reply within one working day.',
+        '',
+        `If it is urgent, WhatsApp is faster: ${CONTACT.phone}.`,
+        '',
+        '— BYBO',
+        'bybo.in',
+      ].join('\n'),
+    });
+  }
+
   return NextResponse.json({ ok: true });
 }

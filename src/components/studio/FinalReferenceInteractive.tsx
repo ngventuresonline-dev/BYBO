@@ -1,5 +1,6 @@
 'use client';
 import { tabWorkflows } from './TabWorkflows';
+import { CONTACT } from '@/lib/site';
 import { useState, type FormEvent } from 'react';
 import { ArrowRight, Check, FileText, Search, Users, Settings, Shield, Database, BarChart3, MessageSquare, Circle } from 'lucide-react';
 import { finalServices, type FinalServiceKey } from './FinalReferenceData';
@@ -28,12 +29,12 @@ export function ReferenceEnquiry({initialSystem='',initialIndustry='',initialInt
       // The inbox is not wired up yet, so hand the enquiry to the visitor's own
       // email client rather than losing it.
       const body=[`Name: ${data.get('name')}`,`Work email: ${data.get('email')}`,`Company: ${data.get('company')||'Not provided'}`,`Phone: ${data.get('phone')||'Not provided'}`,`Interested in: ${picked.map(s=>services.find(x=>x.slug===s)?.name).filter(Boolean).join(', ')||'Not sure yet'}`,'',String(data.get('message'))].join('\n');
-      setFallback(`mailto:hello@bybo.in?subject=${encodeURIComponent(`Enquiry from ${data.get('name')}`)}&body=${encodeURIComponent(body)}`);
+      setFallback(`mailto:${CONTACT.email}?subject=${encodeURIComponent(`Enquiry from ${data.get('name')}`)}&body=${encodeURIComponent(body)}`);
       setState('error');
     }catch{setState('error')}
   }
 
-  if(state==='sent')return <div className="fr-enquiry"><div className="fr-sent" role="status"><Check size={30}/><h2>Thank you — that is with us.</h2><p>We read every enquiry ourselves and reply within one working day, usually sooner. If it is urgent, WhatsApp is faster: <a href="https://wa.me/916360079756" target="_blank" rel="noreferrer">+91 63600 79756</a>.</p><button className="text-link" onClick={()=>setState('idle')}>Send another</button></div></div>;
+  if(state==='sent')return <div className="fr-enquiry"><div className="fr-sent" role="status"><Check size={30}/><h2>Thank you — that is with us.</h2><p>We read every enquiry ourselves and reply within one working day, usually sooner. If it is urgent, WhatsApp is faster: <a href={`https://wa.me/${CONTACT.whatsapp}`} target="_blank" rel="noreferrer">{CONTACT.phone}</a>.</p><button className="text-link" onClick={()=>setState('idle')}>Send another</button></div></div>;
 
   return <div className="fr-enquiry">
     <h2>Start the conversation</h2>
@@ -63,7 +64,7 @@ export function ReferenceEnquiry({initialSystem='',initialIndustry='',initialInt
       <button className="button" type="submit" disabled={state==='sending'}>{state==='sending'?'Sending…':'Send enquiry'} <ArrowRight size={17}/></button>
       <p className="fr-form-note">We reply within one working day. No newsletter, no sales sequence.</p>
 
-      {state==='error'&&<p className="fr-form-error" role="alert">That did not send. {fallback?<>Please <a href={fallback}>open it in your email app</a> instead, or write to <a href="mailto:hello@bybo.in">hello@bybo.in</a>.</>:<>Please try again, or write to <a href="mailto:hello@bybo.in">hello@bybo.in</a>.</>}</p>}
+      {state==='error'&&<p className="fr-form-error" role="alert">That did not send. {fallback?<>Please <a href={fallback}>open it in your email app</a> instead, or write to <a href={CONTACT.emailHref}>{CONTACT.email}</a>.</>:<>Please try again, or write to <a href={CONTACT.emailHref}>{CONTACT.email}</a>.</>}</p>}
     </form>
   </div>
 }
