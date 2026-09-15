@@ -1,4 +1,4 @@
-import { siteUrl } from '@/lib/seo';
+import { siteUrl } from './seo';
 
 /** Published Resend template for the visitor acknowledgement. */
 export const ACK_TEMPLATE = 'bybo-enquiry-ack';
