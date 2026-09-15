@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { CONTACT } from '@/lib/site';
-import { firstName, teamRecipients, visitorAck } from '@/lib/enquiry-ack';
+import { teamRecipients, visitorAck } from '@/lib/enquiry-ack';
+import { teamEnquiry, visitorAckFallback } from '@/lib/enquiry-mail';
 
 /**
  * Receives an enquiry from /apply and emails it to the team inboxes
@@ -11,9 +12,9 @@ import { firstName, teamRecipients, visitorAck } from '@/lib/enquiry-ack';
  * route says so plainly and the form falls back to the visitor's own email
  * client, so an enquiry is never silently lost.
  *
- * After the team email succeeds, a visitor acknowledgement is sent with the
- * published Resend template `bybo-enquiry-ack`. A failed ack is logged and
- * does not fail the request — the team copy is the hard requirement.
+ * The team email is a branded HTML + text multipart. After it succeeds, a
+ * visitor acknowledgement is sent with the published Resend template
+ * `bybo-enquiry-ack`. A failed ack is logged and does not fail the request.
  */
 
 export const runtime = 'nodejs';
@@ -41,6 +42,7 @@ type Mail = {
   to: string[];
   subject: string;
   text?: string;
+  html?: string;
   replyTo?: string;
   template?: { id: string; variables: Record<string, string> };
 };
@@ -55,7 +57,7 @@ async function send(key: string, mail: Mail) {
       subject: mail.subject,
       ...(mail.template
         ? { template: mail.template }
-        : { text: mail.text }),
+        : { text: mail.text, html: mail.html }),
       ...(mail.replyTo ? { reply_to: mail.replyTo } : {}),
     }),
   }).catch(() => null);
@@ -76,19 +78,7 @@ async function acknowledgeVisitor(key: string, email: string, name: string, serv
 
   const fallback = await send(key, {
     to: [email],
-    subject: ack.subject,
-    text: [
-      `We have your note, ${firstName(name)}.`,
-      '',
-      `Thank you for writing to BYBO${ack.template.variables.TOPIC_LINE}. A person on the team will review what you sent.`,
-      '',
-      'We reply during Indian business hours. You do not need to repeat the details unless something material has changed.',
-      '',
-      `If it is urgent, WhatsApp is faster: ${CONTACT.phone}.`,
-      '',
-      '— BYBO',
-      'bybo.in',
-    ].join('\n'),
+    ...visitorAckFallback(name, services),
   });
   if (!fallback?.ok) await logFailure('enquiry acknowledgement fallback failed', fallback);
 }
@@ -110,27 +100,24 @@ export async function POST(request: Request) {
   if (rateLimited(ip)) return NextResponse.json({ ok: false, reason: 'rate_limited' }, { status: 429 });
 
   const services = form.getAll('services').map(v => str(v, 80)).filter(Boolean);
-  const body = [
-    `Name: ${name}`,
-    `Work email: ${email}`,
-    `Company: ${str(form.get('company'), 160) || 'Not provided'}`,
-    `Phone: ${str(form.get('phone'), 30) || 'Not provided'}`,
-    `Interested in: ${services.length ? services.join(', ') : 'Not sure yet'}`,
-    `Industry: ${str(form.get('industry'), 120) || 'Not provided'}`,
-    `Role: ${str(form.get('role'), 100) || 'Not provided'}`,
-    `Website: ${str(form.get('website'), 200) || 'Not provided'}`,
-    '',
+  const details = {
+    name,
+    email,
+    company: str(form.get('company'), 160),
+    phone: str(form.get('phone'), 30),
+    services,
+    industry: str(form.get('industry'), 120),
+    role: str(form.get('role'), 100),
+    website: str(form.get('website'), 200),
     message,
-  ].join('\n');
+  };
 
   const key = process.env.RESEND_API_KEY;
   if (!key) return NextResponse.json({ ok: false, reason: 'not_configured' }, { status: 503 });
 
-  const picked = services.length ? ` — ${services[0]}${services.length > 1 ? ` +${services.length - 1}` : ''}` : '';
   const notified = await send(key, {
     to: teamRecipients(),
-    subject: `Enquiry from ${name}${picked}`,
-    text: body,
+    ...teamEnquiry(details),
     replyTo: email,          // replying in the inbox goes straight to the visitor
   });
 

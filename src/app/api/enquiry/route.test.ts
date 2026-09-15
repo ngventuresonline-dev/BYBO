@@ -86,9 +86,14 @@ describe('POST /api/enquiry', () => {
       'byboonline@gmail.com',
     ]);
     assert.equal((calls[0].body as { reply_to: string }).reply_to, 'priya@example.com');
+    assert.match((calls[0].body as { html: string }).html, /#111116/);
+    assert.match((calls[0].body as { html: string }).html, /Georgia/);
+    assert.match((calls[0].body as { text: string }).text, /Priya Sharma/);
     assert.equal((calls[1].body as { template: { id: string } }).template.id, 'bybo-enquiry-ack');
     assert.deepEqual((calls[1].body as { to: string[] }).to, ['priya@example.com']);
     assert.equal((calls[2].body as { subject: string }).subject, 'We have your note, Priya');
+    assert.match((calls[2].body as { html: string }).html, /#111116/);
+    assert.match((calls[2].body as { html: string }).html, /We have your note, Priya/);
   });
 
   it('sends the template ack after the team email and skips the fallback', async () => {
@@ -115,6 +120,9 @@ describe('POST /api/enquiry', () => {
       'byboonline@gmail.com',
     ]);
     assert.deepEqual((calls[1] as { to: string[] }).to, ['priya@example.com']);
+    assert.match((calls[0] as { html: string }).html, /#793cff/);
+    assert.ok((calls[0] as { html?: string }).html);
+    assert.ok((calls[0] as { text?: string }).text);
     assert.equal((calls[1] as { template: { id: string } }).template.id, 'bybo-enquiry-ack');
     assert.equal((calls[1] as { subject: string }).subject, 'We have your note, Priya');
     assert.equal((calls[1] as { template: { variables: { TOPIC_LINE: string } } }).template.variables.TOPIC_LINE, ' about Customer & Workforce AI');
