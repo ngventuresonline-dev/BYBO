@@ -187,3 +187,29 @@
   .wc-product-app{transform:none}
   .wc-creator figure img{aspect-ratio:16/10}
 }
+
+/* ── The concept tour ───────────────────────────────────────────────────
+   Autoplay with the usual carousel failures designed out: it only runs when
+   the showcase is on screen, it stops for good on the first interaction
+   rather than merely pausing, a progress bar shows when the next one is due,
+   and there is an explicit pause control — auto-updating content needs one. */
+.wc-concept-tabs{position:relative;flex-wrap:wrap}
+.wc-concept-tabs>button{position:relative;overflow:hidden}
+.wc-tab-progress{position:absolute;left:0;bottom:0;height:2px;width:100%;transform-origin:left;background:#ffffffa6;animation:wc-tab-fill 7s linear forwards}
+@keyframes wc-tab-fill{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+
+.wc-auto-toggle{display:inline-flex;align-items:center;gap:7px;margin-left:auto;
+  background:none;border:1px solid #ffffff2b;border-radius:999px;padding:7px 14px;
+  font-size:11.5px;letter-spacing:.06em;color:#a79fbb;cursor:pointer;
+  transition:color .16s,border-color .16s,background .16s}
+.wc-auto-toggle:hover{color:#e6e0f0;border-color:#ffffff4d;background:#ffffff0f}
+.wc-auto-toggle svg{flex-shrink:0}
+
+@media(max-width:760px){
+  .wc-auto-toggle{margin-left:0;order:99}
+  .wc-auto-toggle span{display:none}
+  .wc-auto-toggle{padding:8px 11px}
+}
+@media (prefers-reduced-motion:reduce){
+  .wc-tab-progress{display:none}
+}
