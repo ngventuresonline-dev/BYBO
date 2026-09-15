@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { ArrowUpRight, ArrowRight, Monitor, Smartphone, ShoppingBag, Check, Plus, ChevronRight, ArrowDown, X, Sparkles, MousePointer2 } from 'lucide-react';
 import { WebsiteDepth } from './WebsiteDepth';
 import './website-cinema.css';
+import './concept-worlds.css';
 
 const concepts = [
   {id:'shop',label:'Commerce',brand:'FORME',tag:'A daily ritual. An extraordinary store.',description:'A premium Indian D2C storefront, with considered product discovery, rupee pricing and a delivery-pincode journey.',features:['Product discovery','Delivery pincodes','Shopping bag'],hint:'Choose a ritual. Check a pincode. Try the bag.',audience:'Brand / online store',image:'shop'},

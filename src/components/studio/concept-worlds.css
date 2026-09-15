@@ -1,0 +1,189 @@
+/* ══ SIX WORLDS ════════════════════════════════════════════════════════
+   The showcase claims "one studio, very different worlds". It was not true:
+   every concept sat on one cream ground with one serif heading rule, so five
+   of the six read as the same editorial page under different names.
+
+   Each concept now owns its ground, its type and its rhythm — three light,
+   three dark, no two alike. Type is the system sans throughout: a webfont per
+   concept would cost more than it returns this far down a page. */
+
+/* Undo the two shared rules that made them identical. */
+.wc-demo-screen{background:#111116}
+.wc-demo-screen h3{font-family:Arial,Helvetica,sans-serif;font-weight:700}
+.wc-demo-screen :is(h4,strong){font-family:Arial,Helvetica,sans-serif}
+/* .wc-page em forces Georgia italic across the studio page; inside a concept
+   the second line belongs to that concept's own type, not the studio's. */
+.wc-demo-screen em{font-family:inherit;font-style:normal}
+.wc-demo-screen .wc-story-link{font-family:inherit}
+
+/* ── 01 FORME · commerce ─ warm cream, clay, retail calm ─────────────── */
+.wc-shop{--ink:#191614;--paper:#f6f2ec;--clay:#c2512b;--line:#0000001a;
+  background:var(--paper);color:var(--ink)}
+.wc-shop .wc-demo-nav{border-color:var(--line);padding:20px 30px}
+.wc-shop .wc-demo-nav>strong{display:flex;flex-direction:column;gap:3px;font-size:19px;font-weight:700;letter-spacing:.24em}
+.wc-shop .wc-demo-nav>strong span{font-size:8.5px;letter-spacing:.2em;color:#8a8079;font-weight:400}
+.wc-shop .wc-demo-nav button{display:flex;align-items:center;gap:8px;background:var(--ink);color:var(--paper);border:0;border-radius:999px;padding:9px 16px;font-size:13px}
+.wc-shop-body{display:grid;grid-template-columns:1.02fr .98fr}
+.wc-shop-photo{position:relative;background:#e9e1d6;overflow:hidden;min-height:430px}
+.wc-shop-photo img{width:100%;height:100%;object-fit:cover}
+.wc-shop-photo>span{position:absolute;left:24px;bottom:24px;background:var(--clay);color:#fff;padding:8px 15px;border-radius:999px;font-size:10.5px;font-weight:700;letter-spacing:.14em}
+.wc-shop-copy{padding:40px 38px 34px;display:flex;flex-direction:column}
+.wc-shop-copy>small{font-size:10.5px;letter-spacing:.18em;color:var(--clay);font-weight:700}
+.wc-shop h3{margin:16px 0 0;font-size:clamp(30px,5cqw,46px);font-weight:800;line-height:1.02;letter-spacing:-.04em}
+.wc-shop h3 em{font-style:normal;color:var(--clay)}
+.wc-shop-copy>p{margin:14px 0 0;font-size:15px;line-height:1.6;color:#5d554e;max-width:36ch}
+.wc-rituals{display:flex;gap:8px;margin:24px 0 20px}
+.wc-rituals button{border:1px solid #0000002e;background:none;border-radius:999px;padding:9px 17px;font-size:13px;font-weight:600;color:var(--ink);transition:background .15s,color .15s,border-color .15s}
+.wc-rituals button[aria-pressed=true]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.wc-shop h4{font-size:19px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
+.wc-shop-copy h4+p{font-size:14px;color:#6b635c;margin-bottom:18px}
+.wc-shop .wc-demo-button{width:100%;margin-bottom:16px;background:var(--clay);border-radius:999px;padding:16px 22px;font-size:14.5px;font-weight:700;color:#fff}
+.wc-delivery{border-top:1px solid var(--line);padding-top:18px}
+.wc-delivery label{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#8a8079;font-weight:600}
+.wc-delivery>div{display:flex;gap:8px;margin-top:9px}
+.wc-delivery input{flex:1;min-width:0;border:1px solid #0000002e;border-radius:999px;padding:11px 16px;font-size:14px;background:#fff;color:var(--ink)}
+.wc-delivery button{border:0;background:var(--ink);color:var(--paper);border-radius:999px;padding:11px 20px;font-size:13px;font-weight:600}
+.wc-delivery small{display:block;margin-top:9px;font-size:11px;color:#9b938c}
+.wc-delivery p{margin-top:9px;font-size:13px;color:var(--clay);line-height:1.5}
+.wc-shop-copy>small:last-child{margin-top:auto;padding-top:18px;color:#9b938c;letter-spacing:0;font-weight:400;font-size:11px}
+.wc-shop .wc-demo-reveal{background:var(--ink);color:var(--paper);border:0}
+.wc-shop .wc-demo-reveal button{background:none;border:1px solid #ffffff3d;color:var(--paper);border-radius:999px;padding:7px 14px;font-size:12px}
+
+/* ── 02 EMBER · hospitality ─ warm dark, ember, appetite ─────────────── */
+.wc-restaurant{--ink:#14100d;--cream:#f6efe6;--ember:#ff6b35;--line:#ffffff1f;
+  background:var(--ink);color:var(--cream)}
+.wc-restaurant .wc-demo-nav{border-color:var(--line);padding:20px 30px}
+.wc-restaurant .wc-demo-nav>strong{display:flex;flex-direction:column;gap:3px;font-size:22px;font-weight:800;letter-spacing:.18em}
+.wc-restaurant .wc-demo-nav>strong span{font-size:8.5px;letter-spacing:.22em;color:#9c8f80;font-weight:400}
+.wc-restaurant .wc-demo-nav button{display:flex;align-items:center;gap:8px;background:var(--ember);color:#14100d;border:0;border-radius:999px;padding:10px 18px;font-size:13px;font-weight:700}
+.wc-restaurant-scene{position:relative;min-height:330px;overflow:hidden}
+.wc-restaurant-scene img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.wc-restaurant-scene::after{content:'';position:absolute;inset:0;background:linear-gradient(0deg,#14100df2 8%,#14100d59 58%,#14100d26 100%)}
+.wc-restaurant-scene>div{position:relative;z-index:2;padding:110px 34px 32px}
+.wc-restaurant-scene small{font-size:10.5px;letter-spacing:.2em;color:var(--ember);font-weight:700}
+.wc-restaurant h3{margin:14px 0 0;font-size:clamp(32px,5.6cqw,54px);font-weight:800;line-height:.98;letter-spacing:-.045em;color:var(--cream)}
+.wc-restaurant h3 em{font-style:normal;color:var(--ember)}
+.wc-menu{display:grid;grid-template-columns:.75fr 1.25fr;gap:28px;padding:30px 34px 34px}
+.wc-menu small{font-size:10.5px;letter-spacing:.18em;color:#9c8f80;font-weight:700}
+.wc-menu>div>div{display:flex;flex-direction:column;gap:7px;margin-top:14px}
+.wc-menu button{text-align:left;background:none;border:0;border-left:2px solid transparent;padding:6px 0 6px 13px;font-size:15px;font-weight:600;color:#a89a8b;transition:color .15s,border-color .15s}
+.wc-menu button[aria-pressed=true]{color:var(--ember);border-left-color:var(--ember)}
+.wc-menu ul{display:flex;flex-direction:column}
+.wc-menu li{display:flex;justify-content:space-between;gap:18px;padding:15px 0;border-bottom:1px solid var(--line);font-size:15.5px;color:var(--cream)}
+.wc-menu li:last-child{border-bottom:0}
+.wc-booking{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:30px 34px 34px}
+.wc-booking label{display:flex;flex-direction:column;gap:8px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#9c8f80;font-weight:600}
+.wc-booking select{background:#ffffff0f;border:1px solid var(--line);border-radius:8px;padding:13px 14px;color:var(--cream);font-size:15px}
+.wc-booking .wc-demo-button{grid-column:1/-1;background:var(--ember);color:#14100d;border-radius:999px;padding:15px 22px;font-weight:700;font-size:14.5px;justify-content:center}
+.wc-booking p{grid-column:1/-1;font-size:13px;line-height:1.55;color:#9c8f80}
+
+/* ── 03 MIRA · creator ─ bright paper, black, one red. A zine. ───────── */
+.wc-creator{--paper:#fbfaf7;--ink:#121010;--red:#d9342b;--line:#0000001a;
+  background:var(--paper);color:var(--ink)}
+.wc-creator .wc-demo-nav{border-bottom:2px solid var(--ink);padding:18px 28px}
+.wc-creator .wc-demo-nav strong{font-size:20px;font-weight:800;letter-spacing:-.03em}
+.wc-creator .wc-demo-nav span{font-size:12px;color:#6d6663}
+.wc-creator-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:32px;padding:34px 28px 10px;align-items:start}
+.wc-creator h3{margin:0;font-size:clamp(34px,6cqw,58px);font-weight:800;line-height:.95;letter-spacing:-.05em;text-transform:uppercase}
+.wc-creator h3 em{font-style:normal;color:var(--red)}
+.wc-creator-grid>div>p{margin:18px 0 0;font-size:15px;line-height:1.6;color:#57514e;max-width:38ch}
+.wc-journal-tabs{display:flex;margin:24px 0 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.wc-journal-tabs button{flex:1;background:none;border:0;border-right:1px solid var(--line);padding:13px 6px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8a827e;transition:background .15s,color .15s}
+.wc-journal-tabs button:last-child{border-right:0}
+.wc-journal-tabs button[aria-pressed=true]{background:var(--ink);color:var(--paper)}
+.wc-creator figure{margin:0;position:relative;border:1px solid var(--line)}
+.wc-creator figure img{width:100%;height:100%;object-fit:cover;aspect-ratio:4/5;display:block}
+.wc-creator figcaption{position:absolute;left:0;bottom:0;background:var(--ink);color:var(--paper);padding:7px 13px;font-size:9.5px;letter-spacing:.16em;font-weight:700}
+.wc-story-link{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;text-align:left;width:100%;
+  border:0;border-top:2px solid var(--ink);background:none;color:var(--ink);padding:22px 28px 6px;
+  font-size:clamp(20px,2.6cqw,27px);font-weight:700;letter-spacing:-.03em;line-height:1.2;margin-top:18px}
+.wc-story-link svg{flex-shrink:0;color:var(--red);margin-top:4px}
+.wc-story-text{padding:10px 28px 0;font-size:15px;line-height:1.65;color:#57514e;max-width:62ch}
+.wc-newsletter{display:grid;gap:12px;padding:26px 28px 30px;margin-top:22px;background:var(--ink);color:var(--paper)}
+.wc-newsletter label{font-size:21px;font-weight:800;letter-spacing:-.03em}
+.wc-newsletter>div{display:flex;border:1px solid #ffffff2e}
+.wc-newsletter input{flex:1;min-width:0;background:none;border:0;padding:13px 16px;color:var(--paper);font-size:14px}
+.wc-newsletter input::placeholder{color:#8a827e}
+.wc-newsletter button{border:0;background:var(--red);color:#fff;padding:13px 20px;display:flex;align-items:center}
+.wc-newsletter small{font-size:11px;color:#8a827e}
+
+/* ── 04 STILL HOUSE · property ─ cool white, monochrome, architectural ─ */
+.wc-property{--paper:#fafafa;--ink:#101112;--grey:#6e7175;--line:#0000001f;
+  background:var(--paper);color:var(--ink)}
+.wc-property .wc-demo-nav{border-color:var(--line);padding:22px 32px}
+.wc-property .wc-demo-nav strong{font-size:14px;font-weight:600;letter-spacing:.3em}
+.wc-property .wc-demo-nav>span{font-size:12px;color:var(--grey)}
+.wc-property .wc-demo-nav button{display:flex;align-items:center;gap:8px;background:none;border:1px solid var(--ink);border-radius:0;padding:10px 18px;font-size:12px;letter-spacing:.06em;color:var(--ink)}
+.wc-property-image{position:relative;min-height:360px;overflow:hidden}
+.wc-property-image img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;transition:filter .5s}
+.wc-property-detail img{filter:grayscale(1) contrast(1.06)}
+.wc-property-image::after{content:'';position:absolute;inset:0;background:linear-gradient(0deg,#0d0e0fd9 4%,#0d0e0f75 46%,#0d0e0f1f 100%)}
+.wc-property-image>div{position:relative;z-index:2;padding:150px 32px 30px}
+.wc-property-image small{font-size:10px;letter-spacing:.24em;color:#d4d6d8;font-weight:500}
+.wc-property h3{margin:14px 0 0;font-size:clamp(30px,5cqw,48px);font-weight:300;line-height:1.02;letter-spacing:-.035em;color:#fff}
+.wc-property h3 em{font-style:normal;font-weight:600}
+.wc-property-image>span{position:absolute;right:32px;bottom:30px;z-index:2;font-size:10px;letter-spacing:.2em;color:#d4d6d8}
+.wc-property-bottom{display:grid;grid-template-columns:auto 1fr;gap:30px;align-items:center;padding:24px 32px 30px}
+.wc-property .wc-journal-tabs{margin:0;border:0;gap:26px}
+.wc-property .wc-journal-tabs button{flex:0 0 auto;border:0;border-bottom:1px solid transparent;padding:4px 0;font-size:11.5px;letter-spacing:.14em;color:var(--grey);background:none;text-transform:uppercase}
+.wc-property .wc-journal-tabs button[aria-pressed=true]{color:var(--ink);border-bottom-color:var(--ink);background:none}
+.wc-property-bottom>p{margin:0;font-size:13px;letter-spacing:.06em;color:var(--grey);text-align:right}
+.wc-property .wc-demo-reveal{background:var(--ink);color:var(--paper);border:0;font-size:13px}
+.wc-property .wc-demo-reveal button{background:none;border:0;color:var(--paper)}
+
+/* ── 05 RELAY · saas ─ charcoal, bloom, glass. A product. ────────────── */
+.wc-saas{--bg:#0b0c10;--ink:#eceefb;--violet:#7c6cff;--line:#ffffff17;
+  background:
+    radial-gradient(70% 55% at 78% -6%,#7c6cff2e,#0000 62%),
+    radial-gradient(48% 40% at 2% 104%,#31d0aa1f,#0000 60%),var(--bg);
+  color:var(--ink)}
+.wc-saas .wc-demo-nav{border-color:var(--line);padding:18px 30px}
+.wc-saas .wc-demo-nav strong{display:flex;align-items:center;gap:9px;font-size:18px;font-weight:700;letter-spacing:-.03em}
+.wc-saas .wc-demo-nav>span{font-size:12.5px;color:#8d92b5}
+.wc-saas .wc-demo-nav button{display:flex;align-items:center;gap:8px;background:var(--violet);color:#fff;border:0;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;box-shadow:0 8px 22px -10px #7c6cffb8}
+.wc-saas-grid{display:grid;grid-template-columns:.92fr 1.08fr;gap:34px;padding:38px 30px 34px;align-items:center}
+.wc-saas small{font-size:10.5px;letter-spacing:.17em;color:#9b8dff;font-weight:600}
+.wc-saas h3{margin:14px 0 0;font-size:clamp(30px,4.8cqw,46px);font-weight:700;line-height:1.02;letter-spacing:-.04em}
+.wc-saas h3 em{font-style:normal;color:#9b8dff}
+.wc-saas-grid>div>p{margin:15px 0 0;font-size:15px;line-height:1.62;color:#9ba0c2;max-width:36ch}
+.wc-product-app{position:relative;border:1px solid var(--line);border-radius:14px;overflow:hidden;
+  background:linear-gradient(160deg,#ffffff12,#ffffff05);box-shadow:0 40px 70px -34px #000c,inset 0 1px 0 #ffffff1f;
+  transform:perspective(1400px) rotateY(-7deg) rotateX(2deg)}
+.wc-saas .wc-demo-button{background:var(--violet);border-radius:8px;font-weight:600}
+
+/* ── 06 NORTH · advisory ─ near-black, one blue, data-forward ────────── */
+.wc-advisory{--bg:#0e1014;--ink:#f2f4f7;--blue:#5b8cff;--grey:#8b93a3;--line:#ffffff17;
+  background:var(--bg);color:var(--ink)}
+.wc-advisory .wc-demo-nav{border-color:var(--line);padding:22px 32px}
+.wc-advisory .wc-demo-nav>strong{display:flex;flex-direction:column;gap:4px;font-size:19px;font-weight:700;letter-spacing:.22em}
+.wc-advisory .wc-demo-nav>strong span{font-size:8.5px;letter-spacing:.2em;color:var(--grey);font-weight:400}
+.wc-advisory .wc-demo-nav>span{font-size:12px;color:var(--grey)}
+.wc-advisory .wc-demo-nav button{display:flex;align-items:center;gap:8px;background:none;border:1px solid #ffffff2e;border-radius:6px;padding:9px 16px;font-size:12.5px;color:var(--ink)}
+.wc-advisory-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:36px;padding:38px 32px 34px;align-items:start}
+.wc-advisory small{font-size:10px;letter-spacing:.2em;color:var(--blue);font-weight:600}
+.wc-advisory h3{margin:14px 0 0;font-size:clamp(28px,4.6cqw,44px);font-weight:600;line-height:1.04;letter-spacing:-.035em}
+.wc-advisory h3 em{font-style:normal;color:var(--grey)}
+.wc-advisory-grid>div>p{margin:15px 0 0;font-size:15px;line-height:1.62;color:var(--grey);max-width:38ch}
+.wc-advisory-options{display:flex;flex-direction:column;gap:1px;margin:24px 0 0;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.wc-advisory-options button{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#12151b;border:0;padding:14px 17px;font-size:14px;color:var(--ink);transition:background .15s}
+.wc-advisory-options button[aria-pressed=true]{background:var(--blue);color:#fff}
+.wc-advisory-result{margin-top:20px;padding:20px 22px;border:1px solid var(--line);border-left:2px solid var(--blue);border-radius:0 8px 8px 0;background:#12151b}
+.wc-advisory-result h4{font-size:17px;font-weight:600;letter-spacing:-.02em;margin-bottom:7px}
+.wc-advisory-result p{margin:0;font-size:14px;line-height:1.6;color:var(--grey)}
+.wc-advisory img{border-radius:10px;filter:grayscale(.35) contrast(1.05)}
+.wc-advisory .wc-demo-reveal{background:#12151b;color:var(--ink);border-top:1px solid var(--line)}
+.wc-advisory .wc-demo-reveal button{background:none;border:0;color:var(--grey)}
+
+@container (max-width:720px){
+  .wc-shop-body,.wc-menu,.wc-booking,.wc-creator-grid,.wc-saas-grid,.wc-advisory-grid{grid-template-columns:1fr}
+  .wc-shop-photo{min-height:230px}
+  .wc-shop-copy,.wc-menu,.wc-booking{padding-left:22px;padding-right:22px}
+  .wc-restaurant-scene>div{padding:90px 22px 26px}
+  .wc-creator-grid,.wc-story-link,.wc-story-text,.wc-newsletter{padding-left:22px;padding-right:22px}
+  .wc-property-image>div{padding:110px 22px 26px}
+  .wc-property-bottom,.wc-saas-grid,.wc-advisory-grid{padding-left:22px;padding-right:22px}
+  .wc-property-bottom{grid-template-columns:1fr;gap:14px}
+  .wc-property-bottom>p{text-align:left}
+  .wc-product-app{transform:none}
+  .wc-creator figure img{aspect-ratio:16/10}
+}
