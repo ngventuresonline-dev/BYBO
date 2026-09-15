@@ -1,3 +1,4 @@
+import { ENQUIRY_INBOXES } from './site';
 import { siteUrl } from './seo';
 
 /** Published Resend template for the visitor acknowledgement. */
@@ -17,6 +18,27 @@ export function topicLine(services: string[]): string {
 
 export function firstName(name: string): string {
   return name.trim().split(/\s+/)[0] || name;
+}
+
+/**
+ * Team recipients for the enquiry itself.
+ * Always includes support@ and byboonline@; ENQUIRY_TO may add more
+ * (comma-separated). The visitor acknowledgement does not use this list.
+ */
+export function teamRecipients(env = process.env.ENQUIRY_TO): string[] {
+  const extra = (env ?? '')
+    .split(/[,;]/)
+    .map((s) => s.trim())
+    .filter((s) => s.includes('@'));
+  const seen = new Set<string>();
+  const to: string[] = [];
+  for (const address of [...ENQUIRY_INBOXES, ...extra]) {
+    const key = address.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    to.push(address);
+  }
+  return to;
 }
 
 export function visitorAck(name: string, services: string[]) {

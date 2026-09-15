@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { ACK_TEMPLATE, firstName, topicLine, visitorAck } from './enquiry-ack';
+import { ACK_TEMPLATE, firstName, teamRecipients, topicLine, visitorAck } from './enquiry-ack';
 
 describe('firstName', () => {
   it('takes the first word', () => {
@@ -34,6 +34,34 @@ describe('topicLine', () => {
   });
   it('drops the unsure chip when mixed with a named system', () => {
     assert.equal(topicLine(['Not sure yet', 'Website Design & Development']), ' about Website Design & Development');
+  });
+});
+
+describe('teamRecipients', () => {
+  it('always includes support@ and byboonline@', () => {
+    assert.deepEqual(teamRecipients(''), [
+      'support@bybo.in',
+      'byboonline@gmail.com',
+    ]);
+  });
+  it('keeps both when the env lists only support@', () => {
+    assert.deepEqual(teamRecipients('support@bybo.in'), [
+      'support@bybo.in',
+      'byboonline@gmail.com',
+    ]);
+  });
+  it('adds extra addresses from a comma-separated env', () => {
+    assert.deepEqual(teamRecipients('support@bybo.in, ops@bybo.in'), [
+      'support@bybo.in',
+      'byboonline@gmail.com',
+      'ops@bybo.in',
+    ]);
+  });
+  it('dedupes case-insensitively', () => {
+    assert.deepEqual(teamRecipients('Support@bybo.in, BYBOONLINE@gmail.com'), [
+      'support@bybo.in',
+      'byboonline@gmail.com',
+    ]);
   });
 });
 

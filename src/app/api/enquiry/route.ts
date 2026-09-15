@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
 import { CONTACT } from '@/lib/site';
-import { firstName, visitorAck } from '@/lib/enquiry-ack';
+import { firstName, teamRecipients, visitorAck } from '@/lib/enquiry-ack';
 
 /**
- * Receives an enquiry from /apply and emails it to the team inbox.
+ * Receives an enquiry from /apply and emails it to the team inboxes
+ * (support@bybo.in and byboonline@gmail.com).
  *
  * Delivery goes through Resend's REST API, so there is no dependency to keep
  * up to date — only RESEND_API_KEY in the environment. Without that key the
@@ -18,7 +19,6 @@ import { firstName, visitorAck } from '@/lib/enquiry-ack';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const TO = process.env.ENQUIRY_TO ?? CONTACT.email;
 /** Must be a domain verified in Resend, or every send is rejected. */
 const FROM = process.env.ENQUIRY_FROM ?? `BYBO <${CONTACT.email}>`;
 
@@ -128,7 +128,7 @@ export async function POST(request: Request) {
 
   const picked = services.length ? ` — ${services[0]}${services.length > 1 ? ` +${services.length - 1}` : ''}` : '';
   const notified = await send(key, {
-    to: [TO],
+    to: teamRecipients(),
     subject: `Enquiry from ${name}${picked}`,
     text: body,
     replyTo: email,          // replying in the inbox goes straight to the visitor

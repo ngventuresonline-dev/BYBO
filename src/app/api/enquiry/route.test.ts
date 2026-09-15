@@ -7,6 +7,7 @@ const originalFetch = globalThis.fetch;
 afterEach(() => {
   globalThis.fetch = originalFetch;
   delete process.env.RESEND_API_KEY;
+  delete process.env.ENQUIRY_TO;
 });
 
 function form(fields: Record<string, string | string[]>) {
@@ -63,7 +64,7 @@ describe('POST /api/enquiry', () => {
       const body = JSON.parse(String(init?.body));
       calls.push({ url: String(_url), body });
       if (body.template) return new Response('template missing', { status: 422 });
-      if (body.text && body.to?.[0] !== 'support@bybo.in') {
+      if (body.text && !body.to?.includes('support@bybo.in')) {
         return new Response('fallback failed', { status: 500 });
       }
       return new Response(JSON.stringify({ id: 'team-ok' }), { status: 200 });
@@ -80,7 +81,10 @@ describe('POST /api/enquiry', () => {
     assert.equal(res.status, 200);
     assert.deepEqual(await res.json(), { ok: true });
     assert.equal(calls.length, 3);
-    assert.deepEqual((calls[0].body as { to: string[] }).to, ['support@bybo.in']);
+    assert.deepEqual((calls[0].body as { to: string[] }).to, [
+      'support@bybo.in',
+      'byboonline@gmail.com',
+    ]);
     assert.equal((calls[0].body as { reply_to: string }).reply_to, 'priya@example.com');
     assert.equal((calls[1].body as { template: { id: string } }).template.id, 'bybo-enquiry-ack');
     assert.deepEqual((calls[1].body as { to: string[] }).to, ['priya@example.com']);
@@ -106,9 +110,38 @@ describe('POST /api/enquiry', () => {
     assert.equal(res.status, 200);
     assert.deepEqual(await res.json(), { ok: true });
     assert.equal(calls.length, 2);
+    assert.deepEqual((calls[0] as { to: string[] }).to, [
+      'support@bybo.in',
+      'byboonline@gmail.com',
+    ]);
+    assert.deepEqual((calls[1] as { to: string[] }).to, ['priya@example.com']);
     assert.equal((calls[1] as { template: { id: string } }).template.id, 'bybo-enquiry-ack');
     assert.equal((calls[1] as { subject: string }).subject, 'We have your note, Priya');
     assert.equal((calls[1] as { template: { variables: { TOPIC_LINE: string } } }).template.variables.TOPIC_LINE, ' about Customer & Workforce AI');
+  });
+
+  it('still delivers to both team inboxes when ENQUIRY_TO lists only support@', async () => {
+    process.env.RESEND_API_KEY = 're_test';
+    process.env.ENQUIRY_TO = 'support@bybo.in';
+    const calls: unknown[] = [];
+    globalThis.fetch = (async (_url: URL | RequestInfo, init?: RequestInit) => {
+      calls.push(JSON.parse(String(init?.body)));
+      return new Response(JSON.stringify({ id: 'ok' }), { status: 200 });
+    }) as typeof fetch;
+
+    const { POST } = await import('./route');
+    const res = await POST(form({
+      name: 'Priya Sharma',
+      email: 'priya@example.com',
+      message: 'A recurring invoice that waits a week.',
+    }));
+
+    assert.equal(res.status, 200);
+    assert.deepEqual((calls[0] as { to: string[] }).to, [
+      'support@bybo.in',
+      'byboonline@gmail.com',
+    ]);
+    assert.deepEqual((calls[1] as { to: string[] }).to, ['priya@example.com']);
   });
 
   it('fails the enquiry when the team send fails', async () => {
