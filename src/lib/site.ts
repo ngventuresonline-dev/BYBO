@@ -15,3 +15,12 @@ export const CONTACT = {
   parent: "N&G Ventures",
   partner: "Bcon Club",
 } as const;
+
+/**
+ * Every /apply enquiry is delivered here. Public pages keep using CONTACT.email.
+ * ENQUIRY_TO may add more addresses (comma-separated) but cannot drop these two.
+ */
+export const ENQUIRY_INBOXES = [
+  "support@bybo.in",
+  "byboonline@gmail.com",
+] as const;
