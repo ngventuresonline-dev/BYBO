@@ -1,0 +1,75 @@
+/* Blueprint-only pieces. Everything else reuses the system-landing language. */
+
+.bp .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* the two depths */
+.bp-tier-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.bp-tier{display:flex;flex-direction:column;background:#fff;border:1px solid #e4dfea;border-radius:16px;overflow:hidden}
+.bp-tier-shot{aspect-ratio:16/8;overflow:hidden;background:#efe9f9;border-bottom:1px solid #ece6f2}
+.bp-tier-shot img{width:100%;height:100%;object-fit:cover}
+.bp-tier-body{display:flex;flex-direction:column;gap:12px;padding:24px 26px 26px;flex:1}
+.bp-tier-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.bp-tier-head h3{font-family:var(--font-display);font-weight:400;font-size:25px;letter-spacing:-.025em;margin:0}
+.bp-tier-head span{font-size:11.5px;letter-spacing:.11em;text-transform:uppercase;color:#6532c7;background:#f0e9fc;padding:5px 11px;border-radius:999px;white-space:nowrap}
+.bp-tier-blurb{margin:0;font-size:15.5px;line-height:1.55;color:#4a4553}
+.bp-tier ul{display:flex;flex-direction:column;gap:9px;margin:2px 0 0}
+.bp-tier li{display:flex;gap:11px;font-size:14.5px;line-height:1.5;color:#3a3542}
+.bp-tier li svg{flex-shrink:0;margin-top:3px;color:#793cff}
+.bp-tier-fit{margin:6px 0 0;padding-top:14px;border-top:1px solid #ece6f2;font-size:13.5px;line-height:1.55;color:#67626f}
+.bp-tier .sl-quiet{margin-top:auto;padding-top:6px}
+
+/* the sample ranking */
+.bp-table-wrap{overflow-x:auto;border:1px solid #ffffff24;border-radius:10px;background:#191622}
+.bp-table{width:100%;border-collapse:collapse;min-width:680px;font-size:14px}
+.bp-table th{text-align:left;padding:14px 18px;font-size:10.5px;letter-spacing:.15em;text-transform:uppercase;color:#b794ff;font-weight:600;background:#221e2e;border-bottom:1px solid #ffffff1f;white-space:nowrap}
+.bp-table td{padding:15px 18px;border-bottom:1px solid #ffffff12;color:#ded7ea;vertical-align:top}
+.bp-table tbody tr:last-child td{border-bottom:0}
+.bp-table tbody tr:hover td{background:#ffffff08}
+.bp-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:9px;vertical-align:middle}
+.bp-dot.is-hi{background:#7ee0a8}
+.bp-dot.is-mid{background:#f3b950}
+.bp-dot.is-lo{background:#e8927a}
+.bp-yes{color:#7ee0a8;font-weight:600}
+.bp-soon{color:#f3b950}
+.bp-no{color:#b3aac4}
+
+/* the six moves */
+.bp-days{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#ffffff1a;border:1px solid #ffffff1a;border-radius:12px;overflow:hidden}
+.bp-days li{display:flex;gap:16px;padding:22px 24px;background:#1a1724}
+.bp-days li.is-key{background:#241f31}
+.bp-days-num{font-family:var(--font-display);font-size:14px;color:#8b7fa6;min-width:22px}
+.bp-days li.is-key .bp-days-num{color:#f3b950}
+.bp-days h3{font-family:var(--font-body);font-size:16px;font-weight:600;letter-spacing:-.01em;margin:0 0 7px;color:#f5f4f0}
+.bp-days p{margin:0;font-size:14px;line-height:1.58;color:#a79fbb}
+
+/* worth doing / not worth doing */
+.bp-suits-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.bp-suit{border-radius:16px;padding:26px 28px;border:1px solid #e4dfea;background:#fff}
+.bp-suit.is-no{background:#fdf8ed;border-color:#e8ddc6}
+.bp-suit h3{display:flex;align-items:center;gap:9px;font-family:var(--font-body);font-size:13px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;margin:0 0 18px}
+.bp-suit.is-yes h3{color:#2f7d55}
+.bp-suit.is-no h3{color:#8f5e00}
+.bp-suit ul{display:flex;flex-direction:column;gap:13px}
+.bp-suit li{font-size:15px;line-height:1.55;color:#3a3542;padding-left:16px;position:relative}
+.bp-suit li::before{content:'';position:absolute;left:0;top:.62em;width:5px;height:5px;border-radius:50%;background:#2f7d55}
+.bp-suit.is-no li::before{background:#b8862a}
+
+/* three endings */
+.bp-after-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.bp-after-card{background:#fff;border:1px solid #ddd4e6;border-radius:14px;padding:24px}
+.bp-after-card span{font-family:var(--font-display);font-size:30px;color:#793cff}
+.bp-after-card h3{font-family:var(--font-body);font-size:17px;font-weight:600;letter-spacing:-.01em;margin:11px 0 8px}
+.bp-after-card p{margin:0;font-size:14.5px;line-height:1.58;color:#4a4553}
+
+/* Six deliverables read as two rows of three; the shared 2-wide layout
+   leaves the sixth stranded on a row of its own. */
+.bp .sl-give-card,.bp .sl-give-card.is-wide{grid-column:span 2}
+
+/* numbered deliverables, in place of the shared icons */
+.bp .sl-give-card .bp-num{font-family:var(--font-display);font-size:13px;letter-spacing:.12em;color:#8b7fa6}
+.bp .sl-give-card h3{margin-top:12px}
+
+@media(max-width:1000px){
+  .bp-tier-grid,.bp-suits-grid,.bp-days{grid-template-columns:1fr}
+  .bp-after-grid{grid-template-columns:1fr}
+}
