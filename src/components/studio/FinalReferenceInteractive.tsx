@@ -34,7 +34,7 @@ export function ReferenceEnquiry({initialSystem='',initialIndustry='',initialInt
     }catch{setState('error')}
   }
 
-  if(state==='sent')return <div className="fr-enquiry"><div className="fr-sent" role="status"><Check size={30}/><h2>Thank you — that is with us.</h2><p>We read every enquiry ourselves and reply within one working day, usually sooner. If it is urgent, WhatsApp is faster: <a href={`https://wa.me/${CONTACT.whatsapp}`} target="_blank" rel="noreferrer">{CONTACT.phone}</a>.</p><button className="text-link" onClick={()=>setState('idle')}>Send another</button></div></div>;
+  if(state==='sent')return <div className="fr-enquiry"><div className="fr-sent" role="status"><Check size={30}/><h2>Thank you — that is with us.</h2><p>We read every enquiry ourselves and reply within one working day, usually sooner. If anything changes in the meantime, write to <a href={CONTACT.emailHref}>{CONTACT.email}</a>.</p><button className="text-link" onClick={()=>setState('idle')}>Send another</button></div></div>;
 
   return <div className="fr-enquiry">
     <h2>Start the conversation</h2>
