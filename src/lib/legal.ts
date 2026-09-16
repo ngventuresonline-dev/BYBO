@@ -58,7 +58,8 @@ export const privacy: Section[] = [
     id: 'form',
     heading: 'What happens to the enquiry form',
     paras: [
-      'When you press Send enquiry, the form posts to a BYBO server, which emails the contents to our team inbox and does not store them in a database. This is a change from an earlier version of this site, where the form only prepared a draft in your own email or WhatsApp app; that notice no longer describes how the site works, and this paragraph replaces it.',
+      'When you press Send enquiry, the form posts to a BYBO server, which emails the contents to our team inboxes and does not store them in a database. One of those inboxes is a Google Workspace address, so Google receives the enquiry as our email provider. This is a change from an earlier version of this site, where the form only prepared a draft in your own email or WhatsApp app; that notice no longer describes how the site works, and this paragraph replaces it.',
+      'We also send you an acknowledgement, to the address you gave, so that you have a record that it arrived and know when to expect a reply.',
       'The email is delivered by Resend, a transactional email provider, acting on our instructions. Your email address is set as the reply-to so that a reply from us reaches you directly.',
       'A hidden field and a per-address rate limit are used to reject automated submissions. Nothing about that involves tracking you.',
     ],
@@ -70,7 +71,7 @@ export const privacy: Section[] = [
     list: [
       'Vercel — hosting and server logs, so that this site is served at all.',
       'Resend — delivery of the enquiry email described above.',
-      'Google (Analytics and Tag Manager) — website measurement, only if you allow it.',
+      'Google — as our email provider, one of the team inboxes an enquiry is delivered to; and separately, through Analytics and Tag Manager, website measurement, which happens only if you allow it.',
       'Meta — advertising measurement, only if you allow it.',
       'WhatsApp and your email provider — if you choose to contact us that way, that conversation is also handled under their own terms.',
     ],
