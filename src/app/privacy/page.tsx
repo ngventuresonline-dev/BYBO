@@ -1,4 +1,21 @@
+import { LegalPage } from '@/components/legal/LegalPage';
+import { privacy } from '@/lib/legal';
 import { pageMetadata } from '@/lib/seo';
-import { CONTACT } from '@/lib/site';
-export const metadata = pageMetadata({ title: 'Privacy Information', description: 'How the BYBO website prepares enquiries and how to contact BYBO with privacy questions.', path: '/privacy', noIndex: true });
-export default function Privacy() { return <><header className="article-hero container"><p className="eyebrow">Privacy · Updated 9 September 2026</p><h1>Your information.<br />A clear explanation.</h1><p className="lede">This notice explains how the BYBO website handles enquiries and website measurement.</p></header><section className="section light"><article className="container privacy-body"><section><h2>Who is responsible</h2><p>BYBO is an enterprise AI and website practice of N&amp;G Ventures, based in Bengaluru, India. N&amp;G Ventures is responsible for the personal information you choose to send to BYBO.</p></section><section><h2>The consultation form</h2><p>The form prepares an email or WhatsApp message on your device. The website does not submit the form contents to a BYBO server or store those form entries in a database. You can review the prepared text before opening either app.</p><p>Opening a draft is not the same as sending it. You control whether to send the message through your chosen provider.</p></section><section><h2>When you contact us</h2><p>Email and WhatsApp process messages under their own terms and privacy notices. BYBO uses the details you send to understand your request, respond to you and, when you choose to proceed, manage the resulting business relationship.</p><p>Access is limited to people who need the information for that work. We keep it only for as long as it is reasonably needed for the enquiry, the relationship and applicable business or legal records.</p><p>Please leave confidential documents and sensitive customer information out of an initial enquiry. We can agree suitable access and sharing arrangements if the work proceeds.</p></section><section><h2>Website measurement</h2><p>If analytics are configured, the website asks for your choice before loading them. You can continue using the website with only necessary browser storage. If you allow measurement, configured services such as Google Analytics, Google Tag Manager or Meta Pixel may process page visits and interactions.</p><p>The enquiry text you prepare is not included in the measurement events implemented by this website. Your measurement choice is stored in your browser so the site can remember it.</p></section><section><h2>Your choices</h2><p>You can ask about personal information you have sent, request a correction or deletion, or withdraw a request by emailing BYBO. Some information may need to be retained for legal, security or record-keeping reasons.</p></section><section><h2>Contact BYBO</h2><p>For privacy questions or requests, email <a href={CONTACT.emailHref}>{CONTACT.email}</a>.</p><p>BYBO · N&amp;G Ventures · Bengaluru, India</p></section></article></section></>; }
+
+export const metadata = pageMetadata({
+  title: 'Privacy notice',
+  description: 'What BYBO collects through this website, why, who else touches it, how long it is kept and the rights you have under India’s Digital Personal Data Protection Act.',
+  path: '/privacy',
+});
+
+export default function Privacy() {
+  return (
+    <LegalPage
+      eyebrow="Privacy"
+      title="Your information. A straight answer."
+      lede="What this website collects, why, who else touches it, how long we keep it, and what you can ask us to do about it."
+      sections={privacy}
+      sibling={{ href: '/terms', label: 'Terms of use' }}
+    />
+  );
+}
