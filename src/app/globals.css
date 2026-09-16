@@ -109,3 +109,13 @@
   .site-header .sh-glass,.site-header .nav-cta,.site-header .nav-links>a::after{transition:none}
   .services-menu{animation:none}
 }
+
+/* The PROXe widget parks itself at bottom-right on z-index 2147483647, which
+   is above everything including the consent banner and the phone menu. Lift
+   the banner clear of the bubble, and get the bubble out of the way entirely
+   while the full-screen menu is open. */
+.measurement-consent{padding-right:132px}
+body:has(.site-header[data-open]) #wc-chat-widget{display:none}
+@media(max-width:760px){
+  .measurement-consent{padding-right:18px;bottom:96px}
+}
