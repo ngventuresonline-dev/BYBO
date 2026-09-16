@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowUpRight, Mail, MessageCircle, Phone } from 'lucide-react';
+import { ArrowUpRight, Mail } from 'lucide-react';
 import { CONTACT } from '@/lib/site';
 import { Wordmark } from './Wordmark';
 import { MeasurementSettings } from './MarketingPixels';
@@ -35,10 +35,10 @@ export function Footer() {
           <div className="ft-brand">
             <Link className="wordmark" href="/" aria-label="BYBO home"><Wordmark /></Link>
             <p>AI systems and websites built around the work your business already does.</p>
+            {/* Phone and WhatsApp are held back for now; CONTACT still carries
+                both, so restoring them is two list items. */}
             <ul className="ft-contact">
               <li><a href={CONTACT.emailHref}><Mail size={15} aria-hidden />{CONTACT.email}</a></li>
-              <li><a href={`tel:${CONTACT.phoneHref}`}><Phone size={15} aria-hidden />{CONTACT.phone}</a></li>
-              <li><a href={`https://wa.me/${CONTACT.whatsapp}`} target="_blank" rel="noreferrer"><MessageCircle size={15} aria-hidden />WhatsApp</a></li>
             </ul>
           </div>
 
