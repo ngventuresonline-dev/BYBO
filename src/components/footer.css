@@ -1,0 +1,57 @@
+/* The footer. Its job at the bottom of a paid-traffic page is to catch the
+   visitor who has read enough and not yet acted, then be a proper directory
+   for the one who is orienting — not a single row of links. */
+
+.ft{background:#0d0c12;color:#ece9f2;padding:0 0 30px;border-top:1px solid #ffffff14}
+
+/* the ask comes before the directory */
+.ft-top{display:flex;align-items:center;justify-content:space-between;gap:44px;
+  padding:52px 0 46px;border-bottom:1px solid #ffffff14}
+.ft-eyebrow{font-size:10.5px;letter-spacing:.19em;text-transform:uppercase;color:var(--violet-light);margin-bottom:14px}
+.ft-pitch{font-family:var(--font-display);font-weight:400;font-size:clamp(1.35rem,2.3vw,1.95rem);line-height:1.22;letter-spacing:-.025em;color:#fff;margin:0}
+.ft-cta{display:inline-flex;align-items:center;gap:11px;flex-shrink:0;
+  background:var(--violet);color:#fff;padding:15px 24px;border-radius:6px;font-size:14.5px;font-weight:500;
+  box-shadow:0 12px 30px -14px #793cffcc;transition:background .18s,transform .18s,box-shadow .18s}
+.ft-cta:hover{background:#8a52ff;transform:translateY(-1px);box-shadow:0 16px 36px -14px #793cffe0}
+.ft-cta svg{transition:transform .18s}
+.ft-cta:hover svg{transform:translate(2px,-2px)}
+
+/* the directory */
+.ft-grid{display:grid;grid-template-columns:minmax(0,1.5fr) repeat(3,minmax(0,1fr));gap:48px;padding:46px 0 42px}
+
+.ft-brand .wordmark{--wm-size:27px;--wm-accent:var(--violet-light);color:#ece9f2;display:inline-flex}
+.ft-brand>p{margin:20px 0 22px;font-size:14.5px;line-height:1.62;color:#9d97ac;max-width:34ch}
+.ft-contact{display:flex;flex-direction:column;gap:11px}
+.ft-contact a{display:inline-flex;align-items:center;gap:10px;font-size:14px;color:#ded7ea;transition:color .16s}
+.ft-contact a:hover{color:var(--violet-light)}
+.ft-contact svg{flex-shrink:0;color:#6f6884}
+
+.ft-col h2{font-size:10.5px;letter-spacing:.19em;text-transform:uppercase;color:var(--violet-light);
+  font-family:var(--font-body);font-weight:600;margin-bottom:18px}
+.ft-col ul{display:flex;flex-direction:column;gap:11px}
+.ft-col a{font-size:14px;line-height:1.4;color:#9d97ac;transition:color .16s}
+.ft-col a:hover{color:#fff}
+.ft-all{color:#ded7ea!important;font-weight:500}
+.ft-all:hover{color:var(--violet-light)!important}
+
+/* the line that says who you are actually dealing with */
+.ft-legal{display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap;
+  padding-top:26px;border-top:1px solid #ffffff14}
+.ft-entity{margin:0;font-size:12.5px;line-height:1.6;color:#7b7590;max-width:62ch}
+.ft-entity strong{color:#b6b0c6;font-weight:600}
+.ft-legal nav{display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.ft-legal nav a,.ft-legal nav button{font-size:12.5px;color:#9d97ac;background:none;border:0;padding:0;cursor:pointer;transition:color .16s}
+.ft-legal nav a:hover,.ft-legal nav button:hover{color:var(--violet-light)}
+
+@media(max-width:1000px){
+  .ft-grid{grid-template-columns:1fr 1fr;gap:38px 32px}
+  .ft-brand{grid-column:1/-1}
+  .ft-brand>p{max-width:46ch}
+}
+@media(max-width:760px){
+  .ft-top{flex-direction:column;align-items:flex-start;gap:24px;padding:40px 0 34px}
+  .ft-cta{width:100%;justify-content:space-between}
+  .ft-grid{grid-template-columns:1fr;gap:32px;padding:34px 0 30px}
+  .ft-legal{flex-direction:column;align-items:flex-start;gap:18px}
+  .ft-legal nav{gap:18px}
+}
