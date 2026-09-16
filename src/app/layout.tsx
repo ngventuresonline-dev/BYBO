@@ -3,7 +3,6 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { SeoJsonLd } from "@/components/SeoJsonLd";
 import { MarketingPixels } from "@/components/MarketingPixels";
-import ProxeWidget from "@/components/ProxeWidget";
 import { SITE } from "@/lib/seo";
 import "./globals.css";
 import "./desktop-heroes.css";
@@ -74,7 +73,9 @@ export default function RootLayout({ children, }: {
           {children}
         </main>
         <Footer />
-        <ProxeWidget />
+        {/* Plain deferred tag as the last thing in the body, rather than
+            next/script. The embed resolves its own base URL from this src. */}
+        <script defer src="https://proxe.bybo.in/api/widget/embed.js"></script>
       </body>
     </html>);
 }
