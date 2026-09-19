@@ -5,7 +5,7 @@ import { teamEnquiry, visitorAckFallback } from '@/lib/enquiry-mail';
 
 /**
  * Receives an enquiry from /apply and emails it to the team inboxes
- * (support@bybo.in and byboonline@gmail.com).
+ * (byboonline@gmail.com and ngventuresonline@gmail.com).
  *
  * Delivery goes through Resend's REST API, so there is no dependency to keep
  * up to date — only RESEND_API_KEY in the environment. Without that key the
