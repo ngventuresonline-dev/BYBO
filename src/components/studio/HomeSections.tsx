@@ -44,7 +44,7 @@ export function HomeMidCta() {
     <section className="hs-cta">
       <div className="container">
         <div>
-          <h2>Bring one workflow.<br />We will tell you whether it is worth building.</h2>
+          <h2>Bring one workflow. <br />We will tell you whether it is worth building.</h2>
           <p>The first conversation is free, and it is a conversation about your work — not a demo.</p>
         </div>
         <div className="actions">

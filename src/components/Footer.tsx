@@ -26,7 +26,7 @@ export function Footer() {
         <div className="ft-top">
           <div>
             <p className="ft-eyebrow">Start here</p>
-            <p className="ft-pitch">Bring one recurring problem.<br />We will tell you whether it needs a system.</p>
+            <p className="ft-pitch">Bring one recurring problem. <br />We will tell you whether it needs a system.</p>
           </div>
           <Link href="/apply" className="ft-cta">Talk to BYBO <ArrowUpRight size={17} aria-hidden /></Link>
         </div>

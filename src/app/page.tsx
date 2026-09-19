@@ -22,7 +22,7 @@ export default function Home() {
         <Image className="reference-hero-scene" src="/images/reference-hero.webp" alt="A pile of paperwork becoming a clear violet workflow, with an amber human review step" fill sizes="100vw" priority />
         <div className="container reference-hero-content">
           <p className="eyebrow">AI systems for your business</p>
-          <h1>Your team has<br />better things to do.</h1>
+          <h1>Your team has <br />better things to do.</h1>
           <p className="lede">We build systems that handle recurring work, connect your tools and bring the right decisions back to your people.</p>
           <div className="actions">
             <Button href="#starting-point">Find your starting point</Button>
@@ -46,12 +46,12 @@ export default function Home() {
           <div className="reference-comparison-grid">
             <article className="comparison-photo">
               <Image src="/images/reference-before.webp" alt="A crowded desk with paperwork, a repeated to-do list and a mug" fill sizes="(max-width: 760px) 100vw, 45vw" />
-              <div className="comparison-copy"><p>Before</p><h3>Inbox. Spreadsheet.<br />Reminder. Repeat.</h3></div>
+              <div className="comparison-copy"><p>Before</p><h3>Inbox. Spreadsheet. <br />Reminder. Repeat.</h3></div>
             </article>
             <div className="comparison-arrow" aria-hidden="true"><ArrowRight size={25} /></div>
             <article className="comparison-photo">
               <Image src="/images/reference-after.webp" alt="A tidy desk with a clear workflow and room to focus" fill sizes="(max-width: 760px) 100vw, 45vw" />
-              <div className="comparison-copy"><p>After</p><h3>One workflow.<br />Clear ownership.<br />A record of what happened.</h3></div>
+              <div className="comparison-copy"><p>After</p><h3>One workflow. <br />Clear ownership. <br />A record of what happened.</h3></div>
               <ul className="photo-checklist">
                 {['Enquiry captured', 'Response drafted', 'Follow-up scheduled', 'Recorded in your system'].map(item => <li key={item}><CheckSquare size={20} />{item}</li>)}
               </ul>
