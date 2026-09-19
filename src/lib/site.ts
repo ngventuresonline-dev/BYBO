@@ -17,10 +17,12 @@ export const CONTACT = {
 } as const;
 
 /**
- * Every /apply enquiry is delivered here. Public pages keep using CONTACT.email.
+ * Every /apply enquiry is delivered here. Public pages keep using CONTACT.email
+ * as the visible address and ENQUIRY_FROM (BYBO <support@bybo.in>) as the sender.
+ * support@bybo.in has no receive mailbox — do not add it here.
  * ENQUIRY_TO may add more addresses (comma-separated) but cannot drop these two.
  */
 export const ENQUIRY_INBOXES = [
-  "support@bybo.in",
   "byboonline@gmail.com",
+  "ngventuresonline@gmail.com",
 ] as const;
