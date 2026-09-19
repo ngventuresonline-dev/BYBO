@@ -31,7 +31,7 @@ export function InsightsIndex() {
         <div className="container">
           <nav className="rp-crumb" aria-label="Breadcrumb"><Link href="/">Home</Link><span>›</span><span>Insights</span></nav>
           <div className="rp-hero-copy">
-            <h1>Better questions.<br />Better systems.</h1>
+            <h1>Better questions. <br />Better systems.</h1>
             <p className="lede">Practical reading for the people deciding what to build, who should approve it and how to tell if it works.</p>
           </div>
         </div>
@@ -70,7 +70,7 @@ export function InsightsIndex() {
       <section className="rp-light fr-insights-close">
         <div className="container">
           <div>
-            <h2>Put the framework to work<br />on your business.</h2>
+            <h2>Put the framework to work <br />on your business.</h2>
             <p>A Blueprint starts with your records and your recurring work.</p>
             <div className="actions"><Button href="/blueprint">Explore the Blueprint</Button><Button href="/apply" secondary>Talk to BYBO</Button></div>
           </div>
