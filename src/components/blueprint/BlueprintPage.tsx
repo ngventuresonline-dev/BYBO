@@ -72,7 +72,7 @@ export function BlueprintPage() {
       <section className="sl-fit bp-tiers" aria-labelledby="bp-tiers">
         <div className="container">
           <div className="sl-top">
-            <div><p className="eyebrow">Choose the depth</p><h2 id="bp-tiers">One workflow, or<br />the whole function.</h2></div>
+            <div><p className="eyebrow">Choose the depth</p><h2 id="bp-tiers">One workflow, or <br />the whole function.</h2></div>
             <p>Scope and fee are agreed in writing before anything begins. The first conversation costs nothing.</p>
           </div>
           <div className="bp-tier-grid">
@@ -96,7 +96,7 @@ export function BlueprintPage() {
       <section className="sl-worked bp-sample" aria-labelledby="bp-sample">
         <div className="container">
           <div className="sl-top">
-            <div><p className="eyebrow">A page from one</p><h2 id="bp-sample">What the ranking<br />actually looks like.</h2></div>
+            <div><p className="eyebrow">A page from one</p><h2 id="bp-sample">What the ranking <br />actually looks like.</h2></div>
             <p>The opportunity ranking is the page most arguments end at. Every candidate scored the same way, so the discussion is about order rather than merit.</p>
           </div>
           <div className="bp-table-wrap">
@@ -127,7 +127,7 @@ export function BlueprintPage() {
       <section className="sl-give" id="deliverables" aria-labelledby="bp-give">
         <div className="container">
           <div className="sl-top">
-            <div><p className="eyebrow">What you receive</p><h2 id="bp-give">Six documents,<br />and they are all yours.</h2></div>
+            <div><p className="eyebrow">What you receive</p><h2 id="bp-give">Six documents, <br />and they are all yours.</h2></div>
             <p>Written so another supplier could quote against them. A diagnostic you cannot take elsewhere is not a diagnostic.</p>
           </div>
           <div className="sl-give-grid">
@@ -146,7 +146,7 @@ export function BlueprintPage() {
       <section className="sl-flow" aria-labelledby="bp-days">
         <div className="container">
           <div className="sl-top">
-            <div><p className="eyebrow">How the days run</p><h2 id="bp-days">Most of the value<br />is in the second step.</h2></div>
+            <div><p className="eyebrow">How the days run</p><h2 id="bp-days">Most of the value <br />is in the second step.</h2></div>
             <p>The same six moves whichever depth you choose. Only the number of workflows changes.</p>
           </div>
           <ol className="bp-days">
@@ -164,7 +164,7 @@ export function BlueprintPage() {
       <section className="sl-fit bp-suits" aria-labelledby="bp-suits">
         <div className="container">
           <div className="sl-top">
-            <div><p className="eyebrow">Who it is for</p><h2 id="bp-suits">And who should<br />skip it.</h2></div>
+            <div><p className="eyebrow">Who it is for</p><h2 id="bp-suits">And who should <br />skip it.</h2></div>
             <p>Telling you not to buy this is cheaper for both of us than an engagement that was never going to help.</p>
           </div>
           <div className="bp-suits-grid">
@@ -185,7 +185,7 @@ export function BlueprintPage() {
         <div className="container">
           <div className="sl-bring-head">
             <p className="eyebrow">What we need from you</p>
-            <h2 id="bp-bring">Five things, and none<br />of them a document pack.</h2>
+            <h2 id="bp-bring">Five things, and none <br />of them a document pack.</h2>
             <p>Bring the work as it is. A cleaned-up version hides exactly the exceptions we are looking for.</p>
           </div>
           <ol className="sl-bring-list">
@@ -198,7 +198,7 @@ export function BlueprintPage() {
       <section className="sl-cost" aria-labelledby="bp-cost">
         <div className="container">
           <div className="sl-top">
-            <div><p className="eyebrow">The investment</p><h2 id="bp-cost">Pay for the thinking.<br />Keep the plan.</h2></div>
+            <div><p className="eyebrow">The investment</p><h2 id="bp-cost">Pay for the thinking. <br />Keep the plan.</h2></div>
             <p>Quoted in writing after a free scoping conversation, and credited against implementation if you build with us.</p>
           </div>
           <div className="sl-cost-grid">
@@ -237,7 +237,7 @@ export function BlueprintPage() {
         <div className="container">
           <div className="sl-faq-head">
             <p className="eyebrow">Before you enquire</p>
-            <h2 id="bp-faq">Eight questions we<br />are asked every time.</h2>
+            <h2 id="bp-faq">Eight questions we <br />are asked every time.</h2>
             <p>Including the ones with an uncomfortable answer.</p>
             <Button href={ENQUIRE}>Discuss a Blueprint</Button>
           </div>
@@ -257,7 +257,7 @@ export function BlueprintPage() {
         <section className="sl-reading" aria-labelledby="bp-read">
           <div className="container">
             <div className="sl-top">
-              <div><p className="eyebrow">Read first</p><h2 id="bp-read">Some of this you<br />can do yourself.</h2></div>
+              <div><p className="eyebrow">Read first</p><h2 id="bp-read">Some of this you <br />can do yourself.</h2></div>
               <Link className="sl-quiet" href="/insights">All insights <ArrowRight size={16} aria-hidden /></Link>
             </div>
             <div className="ic-grid">{cards.map(c => <InsightCardView key={c.slug} card={c} />)}</div>
@@ -269,7 +269,7 @@ export function BlueprintPage() {
       <section className="sl-close">
         <div className="container">
           <div>
-            <h2>Start with a<br />clear decision.</h2>
+            <h2>Start with a <br />clear decision.</h2>
             <p>Tell us the process. We will tell you whether a Blueprint is even the right next step.</p>
           </div>
           <Button href={ENQUIRE}>Discuss a Blueprint</Button>

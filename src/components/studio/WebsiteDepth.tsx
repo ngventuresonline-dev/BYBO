@@ -23,7 +23,7 @@ export function WebsiteDepth() {
       <section className="wd-give" aria-labelledby="wd-give-title">
         <div className="container">
           <div className="wc-section-top">
-            <div><p className="eyebrow">WHAT YOU RECEIVE</p><h2 id="wd-give-title">Not a mock-up.<br /><em>A website that is live.</em></h2></div>
+            <div><p className="eyebrow">WHAT YOU RECEIVE</p><h2 id="wd-give-title">Not a mock-up. <br /><em>A website that is live.</em></h2></div>
             <p>{d.deliverables.intro ?? 'Every one of these is handed over, including the parts that let your team carry on without us.'}</p>
           </div>
           <div className="wd-give-grid">
@@ -43,7 +43,7 @@ export function WebsiteDepth() {
         <div className="container">
           <div>
             <p className="eyebrow"><CircleAlert size={14} aria-hidden /> {d.control.heading}</p>
-            <h2 id="wd-control-title">Nothing goes live<br /><em>until you have seen it.</em></h2>
+            <h2 id="wd-control-title">Nothing goes live <br /><em>until you have seen it.</em></h2>
           </div>
           <p className="wd-control-body"><RichText text={d.control.body} /></p>
         </div>
@@ -75,7 +75,7 @@ export function WebsiteDepth() {
       <section className="wd-measure" aria-labelledby="wd-measure-title">
         <div className="container">
           <div className="wc-section-top">
-            <div><p className="eyebrow">{d.measure.heading}</p><h2 id="wd-measure-title">A website is judged<br /><em>on what people do on it.</em></h2></div>
+            <div><p className="eyebrow">{d.measure.heading}</p><h2 id="wd-measure-title">A website is judged <br /><em>on what people do on it.</em></h2></div>
             <p>{d.measure.body}</p>
           </div>
           <div className="wd-measure-grid">
@@ -92,7 +92,7 @@ export function WebsiteDepth() {
         <section className="wd-reading" aria-labelledby="wd-reading-title">
           <div className="container">
             <div className="wc-section-top">
-              <div><p className="eyebrow">READ MORE ON THIS</p><h2 id="wd-reading-title">Before you commit<br /><em>to anything.</em></h2></div>
+              <div><p className="eyebrow">READ MORE ON THIS</p><h2 id="wd-reading-title">Before you commit <br /><em>to anything.</em></h2></div>
               <Link className="wd-all" href="/insights">All insights <ArrowUpRight size={17} aria-hidden /></Link>
             </div>
             <div className="ic-grid">{cards.map(c => <InsightCardView key={c.slug} card={c} />)}</div>

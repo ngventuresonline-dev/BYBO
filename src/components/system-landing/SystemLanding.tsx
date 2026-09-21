@@ -18,7 +18,7 @@ const plain = (t: string) => t.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
 /** Splits a two-line heading written with a newline. */
 function TwoLine({ text }: { text: string }) {
   const [a, b] = text.split('\n');
-  return b ? <>{a}<br />{b}</> : <>{a}</>;
+  return b ? <>{a} <br />{b}</> : <>{a}</>;
 }
 
 export function SystemLanding({ slug }: { slug: string }) {
@@ -65,7 +65,7 @@ export function SystemLanding({ slug }: { slug: string }) {
       <section className="sl-fit" aria-labelledby="sl-fit-title">
         <div className="container">
           <div className="sl-top">
-            <div><p className="eyebrow">{d.audience.heading}</p><h2 id="sl-fit-title">You will recognise<br />at least two of these.</h2></div>
+            <div><p className="eyebrow">{d.audience.heading}</p><h2 id="sl-fit-title">You will recognise <br />at least two of these.</h2></div>
             <p>{d.audience.intro ?? 'If none of them sound like your week, this is probably not the system you need — and we will say so.'}</p>
           </div>
           <div className="sl-fit-grid">
@@ -103,7 +103,7 @@ export function SystemLanding({ slug }: { slug: string }) {
       <section className="sl-uses" aria-labelledby="sl-uses-title">
         <div className="container">
           <div className="sl-top">
-            <div><p className="eyebrow">Where it is used</p><h2 id="sl-uses-title">Four shapes of<br />the same problem.</h2></div>
+            <div><p className="eyebrow">Where it is used</p><h2 id="sl-uses-title">Four shapes of <br />the same problem.</h2></div>
             <p>Most businesses start with one and add the second once the queue, the logging and the connections already exist.</p>
           </div>
           <div className="sl-uses-grid">
@@ -121,7 +121,7 @@ export function SystemLanding({ slug }: { slug: string }) {
       <section className="sl-flow" aria-labelledby="sl-flow-title">
         <div className="container">
           <div className="sl-top">
-            <div><p className="eyebrow">{d.process.heading}</p><h2 id="sl-flow-title">Five steps.<br />One of them is yours.</h2></div>
+            <div><p className="eyebrow">{d.process.heading}</p><h2 id="sl-flow-title">Five steps. <br />One of them is yours.</h2></div>
             <p>{d.process.intro ?? 'Every stage is recorded, so nothing is silently dropped or done twice.'}</p>
           </div>
           <ol className="sl-track" style={{ ['--gate' as string]: String(s.gate) }}>
@@ -152,7 +152,7 @@ export function SystemLanding({ slug }: { slug: string }) {
       <section className="sl-give" aria-labelledby="sl-give-title">
         <div className="container">
           <div className="sl-top">
-            <div><p className="eyebrow">{d.deliverables.heading}</p><h2 id="sl-give-title">{d.deliverables.items.length} things, and<br />they are all yours.</h2></div>
+            <div><p className="eyebrow">{d.deliverables.heading}</p><h2 id="sl-give-title">{d.deliverables.items.length} things, and <br />they are all yours.</h2></div>
             <p>{d.deliverables.intro ?? 'Not a demo and a slide deck. A running system, the evidence it works, and the documentation to run it without us.'}</p>
           </div>
           <div className="sl-give-grid">
@@ -175,7 +175,7 @@ export function SystemLanding({ slug }: { slug: string }) {
         <div className="container">
           <div className="sl-bring-head">
             <p className="eyebrow">{d.bring.heading}</p>
-            <h2 id="sl-bring-title">{d.bring.items.length} things, and none<br />of them technical.</h2>
+            <h2 id="sl-bring-title">{d.bring.items.length} things, and none <br />of them technical.</h2>
             <p>{d.bring.intro ?? 'You do not need a developer. You need someone who knows how the work really happens, including the exceptions nobody wrote down.'}</p>
           </div>
           <ol className="sl-bring-list">
@@ -190,7 +190,7 @@ export function SystemLanding({ slug }: { slug: string }) {
       <section className="sl-connects" aria-labelledby="sl-connects-title">
         <div className="container">
           <div className="sl-top">
-            <div><p className="eyebrow">{d.connects.heading}</p><h2 id="sl-connects-title">Built around what<br />you already run.</h2></div>
+            <div><p className="eyebrow">{d.connects.heading}</p><h2 id="sl-connects-title">Built around what <br />you already run.</h2></div>
             <p>{d.connects.body}</p>
           </div>
           <ul className="sl-connects-list">
@@ -203,7 +203,7 @@ export function SystemLanding({ slug }: { slug: string }) {
       <section className="sl-measure" aria-labelledby="sl-measure-title">
         <div className="container">
           <div className="sl-top">
-            <div><p className="eyebrow">{d.measure.heading}</p><h2 id="sl-measure-title">{d.measure.items.length} numbers, taken<br />before we build.</h2></div>
+            <div><p className="eyebrow">{d.measure.heading}</p><h2 id="sl-measure-title">{d.measure.items.length} numbers, taken <br />before we build.</h2></div>
             <p>{d.measure.body}</p>
           </div>
           <div className="sl-measure-grid">
@@ -219,7 +219,7 @@ export function SystemLanding({ slug }: { slug: string }) {
       <section className="sl-cost" aria-labelledby="sl-cost-title">
         <div className="container">
           <div className="sl-top">
-            <div><p className="eyebrow">{d.cost.heading}</p><h2 id="sl-cost-title">No price here,<br />and here is why.</h2></div>
+            <div><p className="eyebrow">{d.cost.heading}</p><h2 id="sl-cost-title">No price here, <br />and here is why.</h2></div>
             <p>The honest answer depends on your work and your systems. Scope and fee are agreed in writing before paid work begins, and the first conversation costs nothing.</p>
           </div>
           <div className="sl-cost-grid">
@@ -243,7 +243,7 @@ export function SystemLanding({ slug }: { slug: string }) {
         <div className="container">
           <div className="sl-faq-head">
             <p className="eyebrow">Before you enquire</p>
-            <h2 id="sl-faq-title">{d.faqs.length} questions we<br />are asked every time.</h2>
+            <h2 id="sl-faq-title">{d.faqs.length} questions we <br />are asked every time.</h2>
             <p>Answered plainly, including the ones with an uncomfortable answer.</p>
             <Button href={enquiry}>Discuss this system</Button>
           </div>
@@ -263,7 +263,7 @@ export function SystemLanding({ slug }: { slug: string }) {
         <section className="sl-reading" aria-labelledby="sl-reading-title">
           <div className="container">
             <div className="sl-top">
-              <div><p className="eyebrow">Read more on this</p><h2 id="sl-reading-title">Before you commit<br />to anything.</h2></div>
+              <div><p className="eyebrow">Read more on this</p><h2 id="sl-reading-title">Before you commit <br />to anything.</h2></div>
               <Link className="sl-quiet" href="/insights">All insights <ArrowRight size={16} aria-hidden /></Link>
             </div>
             <div className="ic-grid">{cards.map(c => <InsightCardView key={c.slug} card={c} />)}</div>

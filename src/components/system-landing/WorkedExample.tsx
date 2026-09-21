@@ -160,7 +160,7 @@ export function WorkedExample({ w }: { w: Worked }) {
         <div className="sl-top">
           <div>
             <p className="eyebrow">A worked example</p>
-            <h2 id="sl-worked-title">{line1}<br />{line2}</h2>
+            <h2 id="sl-worked-title">{line1} <br />{line2}</h2>
           </div>
           <p>{w.lede}</p>
         </div>
