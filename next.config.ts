@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { SITE } from "./src/lib/seo";
 
 const nextConfig: NextConfig = {
   allowedDevOrigins: ["terminal.local"],
@@ -15,6 +16,13 @@ const nextConfig: NextConfig = {
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), payment=()" },
           { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
+          // Vercel CDN injects Access-Control-Allow-Origin: * on cached
+          // prerendered HTML when this header is absent (live /, /insights,
+          // /privacy, www). There is no cross-origin reader for this
+          // marketing site. Deployment headers cannot delete that default —
+          // they can only replace it — so this same-origin value is the
+          // override that survives cache after redeploy. Never set `*`.
+          { key: "Access-Control-Allow-Origin", value: SITE.url },
         ],
       },
     ];
