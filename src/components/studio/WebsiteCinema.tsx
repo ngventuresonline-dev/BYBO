@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
+import Image, { getImageProps } from 'next/image';
 import { ArrowUpRight, ArrowRight, Monitor, Smartphone, ShoppingBag, Check, Plus, ChevronRight, ArrowDown, X, Sparkles, MousePointer2, Pause, Play } from 'lucide-react';
 import { WebsiteDepth } from './WebsiteDepth';
 import './website-cinema.css';
@@ -57,6 +57,18 @@ function AdvisoryDemo(){
 
 function ConceptDemo({id}:{id:ConceptId}){switch(id){case 'shop':return <CommerceDemo/>;case 'restaurant':return <RestaurantDemo/>;case 'creator':return <CreatorDemo/>;case 'property':return <PropertyDemo/>;case 'saas':return <SaaSDemo/>;case 'advisory':return <AdvisoryDemo/>}}
 
+/* One hero frame, art-directed. Landscape screens get the 4K master; portrait
+   screens get a portrait crop of it. Without the crop a phone scales the
+   landscape image to the hero's height, renders it ~3x wider than the screen,
+   and either downloads far more than it shows or shows it soft. */
+function HeroFrame({name,first}:{name:string;first:boolean}){
+  const common={alt:'',quality:85,priority:first,fill:true as const};
+  const {props:{srcSet:portrait,sizes:portraitSizes}}=getImageProps({...common,src:`/images/hero/m/${name}.webp`,sizes:'120vw'});
+  const {props:landscape}=getImageProps({...common,src:`/images/hero/${name}.webp`,sizes:'100vw'});
+  // eslint-disable-next-line jsx-a11y/alt-text
+  return <picture><source media="(orientation: portrait)" srcSet={portrait} sizes={portraitSizes}/><img {...landscape}/></picture>;
+}
+
 export function WebsiteCinema(){
   const [selected,setSelected]=useState<ConceptId>('shop');const [device,setDevice]=useState('desktop');
   const [playing,setPlaying]=useState(true);const [onScreen,setOnScreen]=useState(false);
@@ -85,7 +97,7 @@ export function WebsiteCinema(){
   return <div className="wc-page">
     <section className="sv-hero" aria-label="BYBO website studio">
       {/* A film made of the six concept worlds: each cover crossfades in with a slow push. Pure CSS, so it costs no video weight and stops under reduced motion. */}
-      <div className="sv-reel" aria-hidden>{concepts.map((c,i)=><div key={c.id} className="sv-frame" style={{animationDelay:`${i*5}s`}}><Image src={photo(c.image)} alt="" fill sizes="100vw" priority={i===0}/></div>)}</div>
+      <div className="sv-reel" aria-hidden>{concepts.map((c,i)=><div key={c.id} className="sv-frame" style={{animationDelay:`${i*5}s`}}><HeroFrame name={c.image} first={i===0}/></div>)}</div>
       <div className="sv-scrim" aria-hidden/>
       <div className="container sv-hero-inner">
         <p className="sv-over"><span>BYBO / WEBSITE STUDIO</span><span>STRATEGY · DESIGN · BUILD</span></p>
