@@ -3,6 +3,13 @@ import { SITE } from "./src/lib/seo";
 
 const nextConfig: NextConfig = {
   allowedDevOrigins: ["terminal.local"],
+  images: {
+    // AVIF first: noticeably lighter than WebP at the same quality, which is
+    // what phones on mobile data feel. The studio hero masters are 4K; the
+    // default deviceSizes (640 … 3840) give each screen a width it needs.
+    formats: ["image/avif", "image/webp"],
+    qualities: [75, 85],
+  },
   experimental: {
     optimizePackageImports: ["lucide-react", "framer-motion"],
   },

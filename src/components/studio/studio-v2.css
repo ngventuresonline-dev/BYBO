@@ -1,0 +1,72 @@
+/* Studio v2: film hero, one process strip, quieter system.
+   Everything is scoped under .wc-page because globals.css loads after
+   component CSS and would otherwise win the cascade. */
+
+/* ---------- film hero ---------- */
+.wc-page .sv-hero{position:relative;min-height:min(calc(100svh - 78px),900px);display:flex;align-items:flex-end;background:#0a0a0c;color:#f5f4f0;isolation:isolate;overflow:hidden}
+.wc-page .sv-reel{position:absolute;inset:0;z-index:-2}
+.wc-page .sv-frame{position:absolute;inset:0;opacity:0;animation:sv-film 30s linear infinite}
+.wc-page .sv-frame img{object-fit:cover}
+@keyframes sv-film{
+  0%{opacity:0;transform:scale(1.12)}
+  3%{opacity:1}
+  17%{opacity:1}
+  21%{opacity:0;transform:scale(1)}
+  100%{opacity:0;transform:scale(1)}
+}
+.wc-page .sv-scrim{position:absolute;inset:0;z-index:-1;background:
+  linear-gradient(180deg,#0a0a0ccc 0%,#0a0a0c33 30%,#0a0a0c55 60%,#0a0a0cf2 100%),
+  radial-gradient(ellipse at 20% 80%,#0a0a0caa,transparent 60%)}
+.wc-page .sv-hero-inner{flex:0 0 auto;padding-top:120px;padding-bottom:40px;display:grid;gap:34px}
+.wc-page .sv-over{display:flex;justify-content:space-between;gap:16px;font-size:12px;letter-spacing:.2em;color:#f5f4f0b3;border-bottom:1px solid #f5f4f033;padding-bottom:16px;margin:0}
+.wc-page .sv-hero h1{font-family:Arial,Helvetica,sans-serif;font-weight:600;font-size:clamp(3.2rem,7.2vw,7.6rem);line-height:.95;letter-spacing:-.055em;margin:0}
+.wc-page .sv-hero h1 em{display:block;font-family:Georgia,serif;font-style:italic;font-weight:400;letter-spacing:-.035em;color:#f5f4f0}
+.wc-page .sv-hero-foot{display:flex;justify-content:space-between;align-items:flex-end;gap:32px;flex-wrap:wrap}
+.wc-page .sv-hero-foot>p{font-size:19px;color:#f5f4f0cc;margin:0;max-width:34ch}
+.wc-page .sv-actions{display:flex;gap:22px;align-items:center;flex-wrap:wrap}
+.wc-page .sv-ticker{list-style:none;margin:0;padding:18px 0 0;border-top:1px solid #f5f4f033;display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+.wc-page .sv-ticker li{font-size:12px;letter-spacing:.14em;color:#f5f4f059;display:flex;gap:10px;animation:sv-tick 30s linear infinite;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wc-page .sv-ticker li span{color:inherit;opacity:.7}
+@keyframes sv-tick{0%,19.9%{color:#f5f4f0}20%,100%{color:#f5f4f059}}
+
+/* ---------- process strip ---------- */
+.wc-page .sv-strip{padding:140px 0;background:#f5f4f0;color:#111116}
+.wc-page .sv-strip .eyebrow{color:#111116a6}
+.wc-page .sv-strip-head{display:flex;justify-content:space-between;align-items:flex-end;gap:40px;margin-bottom:70px}
+.wc-page .sv-strip h2{font-family:Arial,Helvetica,sans-serif;font-weight:600;font-size:clamp(2.4rem,5vw,4.6rem);letter-spacing:-.05em;line-height:1;margin:0}
+.wc-page .sv-strip h2 em{font-family:Georgia,serif;font-style:italic;font-weight:400;color:#793cff}
+.wc-page .sv-strip ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,1fr);border-top:1px solid #11111626}
+.wc-page .sv-strip li{padding:28px 24px 0 0;position:relative}
+.wc-page .sv-strip li::before{content:"";position:absolute;top:-1px;left:0;width:36px;height:2px;background:#111116}
+.wc-page .sv-strip li span{font-size:12px;letter-spacing:.16em;color:#11111680}
+.wc-page .sv-strip h3{font:500 26px Georgia,serif;margin:18px 0 10px;color:#111116}
+.wc-page .sv-strip li p{font-size:15px;color:#111116a6;margin:0;max-width:22ch}
+.wc-page .sv-strip li[data-gate]::before{background:#f3b950;width:100%}
+.wc-page .sv-strip li[data-gate] h3::after{content:"Your sign-off";display:block;font:600 11px Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#a87412;margin-top:8px}
+
+/* ---------- quieter system: more air, one accent ---------- */
+.wc-page .wc-showcase,.wc-page .wc-cost,.wc-page .wc-brief,.wc-page .wc-faq{padding-block:130px}
+.wc-page .wc-section-top h2{font-size:clamp(2.4rem,5vw,4.6rem);letter-spacing:-.05em;line-height:1}
+.wc-page .eyebrow{letter-spacing:.2em}
+
+/* ---------- small screens ---------- */
+@media (max-width:860px){
+  .wc-page .sv-hero{min-height:88svh}
+  .wc-page .sv-hero-inner{padding-top:110px;gap:28px}
+  .wc-page .sv-over span:last-child{display:none}
+  .wc-page .sv-hero-foot>p{font-size:17px}
+  .wc-page .sv-ticker{grid-template-columns:repeat(3,1fr);row-gap:10px}
+  .wc-page .sv-strip{padding:90px 0}
+  .wc-page .sv-strip-head{display:block;margin-bottom:40px}
+  .wc-page .sv-strip ol{grid-template-columns:1fr;border-top:0}
+  .wc-page .sv-strip li{padding:22px 0;border-top:1px solid #11111626}
+  .wc-page .sv-strip li p{max-width:none}
+  .wc-page .wc-showcase,.wc-page .wc-cost,.wc-page .wc-brief,.wc-page .wc-faq{padding-block:84px}
+}
+
+/* ---------- reduced motion: hold on the first frame ---------- */
+@media (prefers-reduced-motion:reduce){
+  .wc-page .sv-frame,.wc-page .sv-ticker li{animation:none}
+  .wc-page .sv-frame:first-child{opacity:1}
+  .wc-page .sv-ticker li:first-child{color:#f5f4f0}
+}
