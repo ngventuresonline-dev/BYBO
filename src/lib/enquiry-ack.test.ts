@@ -38,29 +38,29 @@ describe('topicLine', () => {
 });
 
 describe('teamRecipients', () => {
-  it('always includes support@ and byboonline@', () => {
+  it('always includes the two Gmail inboxes', () => {
     assert.deepEqual(teamRecipients(''), [
-      'support@bybo.in',
       'byboonline@gmail.com',
+      'ngventuresonline@gmail.com',
     ]);
   });
-  it('keeps both when the env lists only support@', () => {
+  it('drops support@ even when the env lists only that address', () => {
     assert.deepEqual(teamRecipients('support@bybo.in'), [
-      'support@bybo.in',
       'byboonline@gmail.com',
+      'ngventuresonline@gmail.com',
     ]);
   });
   it('adds extra addresses from a comma-separated env', () => {
     assert.deepEqual(teamRecipients('support@bybo.in, ops@bybo.in'), [
-      'support@bybo.in',
       'byboonline@gmail.com',
+      'ngventuresonline@gmail.com',
       'ops@bybo.in',
     ]);
   });
-  it('dedupes case-insensitively', () => {
+  it('dedupes case-insensitively and still drops support@', () => {
     assert.deepEqual(teamRecipients('Support@bybo.in, BYBOONLINE@gmail.com'), [
-      'support@bybo.in',
       'byboonline@gmail.com',
+      'ngventuresonline@gmail.com',
     ]);
   });
 });

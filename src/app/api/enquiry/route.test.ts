@@ -64,7 +64,7 @@ describe('POST /api/enquiry', () => {
       const body = JSON.parse(String(init?.body));
       calls.push({ url: String(_url), body });
       if (body.template) return new Response('template missing', { status: 422 });
-      if (body.text && !body.to?.includes('support@bybo.in')) {
+      if (body.text && !body.to?.includes('byboonline@gmail.com')) {
         return new Response('fallback failed', { status: 500 });
       }
       return new Response(JSON.stringify({ id: 'team-ok' }), { status: 200 });
@@ -82,8 +82,8 @@ describe('POST /api/enquiry', () => {
     assert.deepEqual(await res.json(), { ok: true });
     assert.equal(calls.length, 3);
     assert.deepEqual((calls[0].body as { to: string[] }).to, [
-      'support@bybo.in',
       'byboonline@gmail.com',
+      'ngventuresonline@gmail.com',
     ]);
     assert.equal((calls[0].body as { reply_to: string }).reply_to, 'priya@example.com');
     assert.match((calls[0].body as { html: string }).html, /#111116/);
@@ -116,8 +116,8 @@ describe('POST /api/enquiry', () => {
     assert.deepEqual(await res.json(), { ok: true });
     assert.equal(calls.length, 2);
     assert.deepEqual((calls[0] as { to: string[] }).to, [
-      'support@bybo.in',
       'byboonline@gmail.com',
+      'ngventuresonline@gmail.com',
     ]);
     assert.deepEqual((calls[1] as { to: string[] }).to, ['priya@example.com']);
     assert.match((calls[0] as { html: string }).html, /#793cff/);
@@ -128,7 +128,7 @@ describe('POST /api/enquiry', () => {
     assert.equal((calls[1] as { template: { variables: { TOPIC_LINE: string } } }).template.variables.TOPIC_LINE, ' about Customer & Workforce AI');
   });
 
-  it('still delivers to both team inboxes when ENQUIRY_TO lists only support@', async () => {
+  it('still delivers to both Gmail inboxes and never to support@ when ENQUIRY_TO lists only support@', async () => {
     process.env.RESEND_API_KEY = 're_test';
     process.env.ENQUIRY_TO = 'support@bybo.in';
     const calls: unknown[] = [];
@@ -146,9 +146,10 @@ describe('POST /api/enquiry', () => {
 
     assert.equal(res.status, 200);
     assert.deepEqual((calls[0] as { to: string[] }).to, [
-      'support@bybo.in',
       'byboonline@gmail.com',
+      'ngventuresonline@gmail.com',
     ]);
+    assert.ok(!(calls[0] as { to: string[] }).to.includes('support@bybo.in'));
     assert.deepEqual((calls[1] as { to: string[] }).to, ['priya@example.com']);
   });
 
