@@ -15,7 +15,7 @@ export function HomeServices() {
         <div className="hs-head">
           <div>
             <p className="eyebrow">What we build</p>
-            <h2 id="hs-services-title">Seven systems and a website studio.</h2>
+            <h2 id="hs-services-title">Seven systems and two studios.</h2>
           </div>
           <p>Each one takes on a different shape of recurring work. Most businesses start with one.</p>
         </div>
