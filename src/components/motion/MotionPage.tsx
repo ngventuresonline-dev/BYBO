@@ -15,7 +15,8 @@ type Work = {
   tag?: 'Spec' | 'AI-generated';
 };
 
-/* Order matters: the first three are the hero reels. */
+/* Order matters: the first three are the hero reels. The hero plays a later
+   scene from each film (the *-hero files) so it never repeats the work grid. */
 const WORK: Work[] = [
   { id: 'campa', title: 'Campa', kind: 'Product ad', note: 'Heritage bottle to new range, in one continuous story.', tag: 'Spec' },
   { id: 'wowbus', title: 'WOWBUS', kind: 'Launch film', note: 'A mascot that stays the same character across every scene.' },
@@ -41,7 +42,7 @@ const STEPS: [string, string][] = [
 ];
 
 /** A muted loop that only plays while it is on screen. */
-function Loop({ id, className }: { id: string; className?: string }) {
+function Loop({ id, className, variant = 'loop' }: { id: string; className?: string; variant?: 'loop' | 'hero' }) {
   const ref = useRef<HTMLVideoElement>(null);
   useEffect(() => {
     const v = ref.current; if (!v) return;
@@ -49,7 +50,7 @@ function Loop({ id, className }: { id: string; className?: string }) {
     const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) v.play().catch(() => {}); else v.pause(); }, { threshold: .25 });
     io.observe(v); return () => io.disconnect();
   }, []);
-  return <video ref={ref} className={className} src={`/motion/${id}-loop.mp4`} poster={`/motion/${id}.jpg`} muted loop playsInline preload="metadata" aria-hidden />;
+  return <video ref={ref} className={className} src={`/motion/${id}-${variant}.mp4`} poster={`/motion/${id}${variant === 'hero' ? '-hero' : ''}.jpg`} muted loop playsInline preload="metadata" aria-hidden />;
 }
 
 export function MotionPage() {
@@ -66,7 +67,7 @@ export function MotionPage() {
     <div className="mo-page">
       {/* ---------- hero ---------- */}
       <section className="mo-hero">
-        <Loop id="campa" className="mo-hero-bg" />
+        <Loop id="campa" variant="hero" className="mo-hero-bg" />
         <div className="mo-hero-scrim" aria-hidden />
         <div className="container mo-hero-grid">
           <div className="mo-hero-copy">
@@ -80,7 +81,7 @@ export function MotionPage() {
           </div>
           <div className="mo-phones" aria-hidden>
             {WORK.slice(0, 3).map((w, i) => (
-              <div key={w.id} className={`mo-phone mo-phone-${i}`}><Loop id={w.id} /><span>{w.title}</span></div>
+              <div key={w.id} className={`mo-phone mo-phone-${i}`}><Loop id={w.id} variant="hero" /><span>{w.title}</span></div>
             ))}
           </div>
         </div>
@@ -115,9 +116,9 @@ export function MotionPage() {
             <h2 id="mo-proof-title">From a phone photo <em>to an ad.</em></h2>
           </div>
           <ol className="mo-steps3">
-            {[['A product photo', 'Taken on a phone, in a garden. Nothing staged.'], ['A written direction', 'The scene, the mood and what must not change.'], ['A finished ad', 'The same product, in a campaign it could run.']].map(([t, d], i) => (
+            {[['A product photo', 'Taken on a phone, in a garden. Nothing staged.'], ['A studio packshot', 'The same bottle, lit and staged like a studio shoot.'], ['A finished ad', 'The same product, in a campaign it could run.']].map(([t, d], i) => (
               <li key={t}>
-                <figure><Image src={`/motion/proof-${i + 1}.jpg`} alt="" width={720} height={1280} sizes="(max-width: 760px) 92vw, 30vw" /></figure>
+                <figure><Image src={`/motion/${['proof-1', 'proof-packshot', 'proof-3'][i]}.jpg`} alt="" width={720} height={1280} sizes="(max-width: 760px) 92vw, 30vw" /></figure>
                 <span>{String(i + 1).padStart(2, '0')}</span><h3>{t}</h3><p>{d}</p>
               </li>
             ))}
@@ -183,7 +184,7 @@ export function MotionPage() {
 
       {/* ---------- finale ---------- */}
       <section className="mo-finale" id="start">
-        <Loop id="wowbus" className="mo-hero-bg" />
+        <Loop id="wowbus" variant="hero" className="mo-hero-bg" />
         <div className="mo-hero-scrim" aria-hidden />
         <div className="container">
           <p className="mo-over">YOUR NEXT FILM, BY BYBO.</p>

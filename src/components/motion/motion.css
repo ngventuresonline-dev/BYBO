@@ -144,7 +144,3 @@
 @media (prefers-reduced-motion:reduce){
   .mo-page .mo-phone,.mo-page .mo-card-media{transition:none}
 }
-
-/* Step 02 is a screen recording; its subject (the written direction) sits in
-   the upper half, above the keyboard. */
-.mo-page .mo-steps3 li:nth-child(2) img{object-position:top}
