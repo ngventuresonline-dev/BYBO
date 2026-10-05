@@ -109,7 +109,7 @@ export function Navbar() {
             <div className="nav-panel" id="systems-panel" hidden={!mega}>
               <div className="container nav-panel-inner">
                 <div className="nav-panel-list">
-                  <p className="nav-panel-eyebrow">Seven systems and a website studio</p>
+                  <p className="nav-panel-eyebrow">Seven systems and two studios</p>
                   <ul>
                     {services.map((s, i) => (
                       <li key={s.slug}>

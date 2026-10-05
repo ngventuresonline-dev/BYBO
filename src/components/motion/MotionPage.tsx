@@ -13,19 +13,29 @@ type Work = {
   note: string;
   /** Shown on the card so nothing reads as more than it is. */
   tag?: 'Spec' | 'AI-generated';
+  /** Landscape (16:9) rather than vertical. */
+  wide?: boolean;
 };
 
-/* Order matters: the first three are the hero reels. The hero plays a later
-   scene from each film (the *-hero files) so it never repeats the work grid. */
+/* The featured landscape film, then the vertical films in grid order. */
 const WORK: Work[] = [
+  { id: 'leadmachine', title: 'AI Lead Machine', kind: 'Brand film', note: 'Every business has only ever needed one thing. A story told from the forest to the feed.', wide: true },
   { id: 'campa', title: 'Campa', kind: 'Product ad', note: 'Heritage bottle to new range, in one continuous story.', tag: 'Spec' },
   { id: 'wowbus', title: 'WOWBUS', kind: 'Launch film', note: 'A mascot that stays the same character across every scene.' },
   { id: 'scan2kare', title: 'Scan2Kare', kind: 'Platform promo', note: 'An app, an ecosystem and a reason to care, in sixty-five seconds.' },
+  { id: 'lokazen', title: 'Lokazen Connector', kind: 'App promo', note: 'The task, the check and the payout, shown on the phone it happens on.' },
   { id: 'parachute', title: 'Parachute', kind: 'Product to ad', note: 'A phone photo of the product becomes a finished campaign.', tag: 'Spec' },
   { id: 'proxe-health', title: 'PROXe for clinics', kind: 'UGC-style ad', note: 'A to-camera social ad for a healthcare product.', tag: 'AI-generated' },
 ];
+const FEATURED = WORK.filter(w => w.wide);
+const VERTICAL = WORK.filter(w => !w.wide);
+
+/* The hero plays a later scene from each of these (the *-hero files), so it
+   never repeats the work grid below it. */
+const HERO = ['campa', 'wowbus', 'scan2kare'].map(id => WORK.find(w => w.id === id)!);
 
 const FORMATS: [string, string, string][] = [
+  ['Brand films', 'A story about why the business exists, told like cinema.', 'leadmachine'],
   ['Product ads', 'The product, the mood and the moment it belongs in.', 'campa'],
   ['Platform & SaaS promos', 'Show the interface, explain the system, land the feeling.', 'scan2kare'],
   ['Launch films', 'A launch that looks like a campaign, not a post.', 'wowbus'],
@@ -80,7 +90,7 @@ export function MotionPage() {
             </div>
           </div>
           <div className="mo-phones" aria-hidden>
-            {WORK.slice(0, 3).map((w, i) => (
+            {HERO.map((w, i) => (
               <div key={w.id} className={`mo-phone mo-phone-${i}`}><Loop id={w.id} variant="hero" /><span>{w.title}</span></div>
             ))}
           </div>
@@ -94,8 +104,19 @@ export function MotionPage() {
             <p className="eyebrow">THE WORK</p>
             <h2 id="mo-work-title">Watch first. <em>Read later.</em></h2>
           </div>
+          {FEATURED.map(w => (
+            <button key={w.id} type="button" className="mo-feature" onClick={() => setOpen(w)} aria-label={`Play ${w.title}, ${w.kind}, with sound`}>
+              <span className="mo-card-media mo-feature-media"><Loop id={w.id} /><span className="mo-play"><Play size={24} fill="currentColor" /></span></span>
+              <span className="mo-feature-copy">
+                <span className="mo-card-kind">{w.kind}</span>
+                <strong>{w.title}</strong>
+                <span className="mo-card-note">{w.note}</span>
+                <span className="mo-feature-cta"><Play size={14} fill="currentColor" /> Watch with sound</span>
+              </span>
+            </button>
+          ))}
           <div className="mo-grid">
-            {WORK.map(w => (
+            {VERTICAL.map(w => (
               <button key={w.id} type="button" className="mo-card" onClick={() => setOpen(w)} aria-label={`Play ${w.title}, ${w.kind}, with sound`}>
                 <span className="mo-card-media"><Loop id={w.id} /><span className="mo-play"><Play size={20} fill="currentColor" /></span>{w.tag && <span className="mo-tag">{w.tag}</span>}</span>
                 <span className="mo-card-kind">{w.kind}</span>
@@ -131,7 +152,7 @@ export function MotionPage() {
         <div className="container">
           <div className="mo-head">
             <p className="eyebrow">WHAT WE MAKE</p>
-            <h2 id="mo-formats-title">Five kinds of film. <em>One way of making them.</em></h2>
+            <h2 id="mo-formats-title">Six kinds of film. <em>One way of making them.</em></h2>
           </div>
           <ul>
             {FORMATS.map(([t, d, poster], i) => (
@@ -194,7 +215,7 @@ export function MotionPage() {
       </section>
 
       {/* ---------- player ---------- */}
-      <dialog ref={dialog} className="mo-player" onClose={() => setOpen(null)} onClick={e => { if (e.target === e.currentTarget) setOpen(null); }} aria-label={open ? `${open.title}, ${open.kind}` : 'Film player'}>
+      <dialog ref={dialog} className={`mo-player${open?.wide ? ' mo-player-wide' : ''}`} onClose={() => setOpen(null)} onClick={e => { if (e.target === e.currentTarget) setOpen(null); }} aria-label={open ? `${open.title}, ${open.kind}` : 'Film player'}>
         {open && (
           <div className="mo-player-inner">
             <video key={open.id} src={`/motion/${open.id}.mp4`} poster={`/motion/${open.id}.jpg`} controls autoPlay playsInline />

@@ -23,7 +23,7 @@ export type OgPage = {
 export const ogPages: OgPage[] = [
   { key: 'home',        path: '/',             eyebrow: 'BYBO',                 title: 'AI systems built\naround your business.', art: 'reference-hero' },
   { key: 'solutions',   path: '/solutions',    eyebrow: 'Solutions',            title: 'The work you want\noff your plate.',        art: 'solutions-hero' },
-  { key: 'systems',     path: '/systems',      eyebrow: 'Systems',              title: 'Seven systems and\na website studio.',                 art: 'reference-build' },
+  { key: 'systems',     path: '/systems',      eyebrow: 'Systems',              title: 'Seven systems and\ntwo studios.',                 art: 'reference-build' },
   { key: 'blueprint',   path: '/blueprint',    eyebrow: 'The Blueprint',        title: 'Know what is worth\nbuilding first.',  art: 'blueprint-hero' },
   { key: 'how-we-work', path: '/how-we-work',  eyebrow: 'How we work',          title: 'Understand the work.\nBuild the system.',              art: 'method-hero' },
   { key: 'industries',  path: '/industries',   eyebrow: 'Industries',           title: 'Where the same work\ncomes back weekly.',    art: 'industries-hero' },
@@ -39,6 +39,7 @@ export const ogPages: OgPage[] = [
   { key: 'decision-intelligence',            path: '/systems/decision-intelligence',            eyebrow: 'Decision Intelligence',      title: 'Know what changed.\nDecide what is next.',     art: 'services/decision-intelligence' , desc: 'Connect your business data, agree the definitions, and surface the changes worth twenty minutes — with the drivers, the assumptions and the caveats shown.'},
   { key: 'ai-infrastructure-governance',     path: '/systems/ai-infrastructure-governance',     eyebrow: 'Infrastructure & Governance', title: 'The confidence to\nkeep it running.',         art: 'services/ai-infrastructure-governance' , desc: 'Access control, evaluations, logs, cost visibility and a tested response when something fails — the operating foundation an AI system needs to stay trusted.'},
   { key: 'website-design-development',       path: '/systems/website-design-development',       eyebrow: 'Website Design & Development', title: 'Make them stop.\nMake them stay.',            art: 'services/website-design-development' , desc: 'Strategy, copy, design and build for Indian businesses, brands and creators. One team from the first conversation to launch, and a site your team can edit.'},
+  { key: 'motion-studio',                    path: '/systems/motion-studio',                    eyebrow: 'Motion Studio',              title: 'Ideas, on film.\nWithout the film crew.',      art: 'services/motion-studio' , desc: 'Brand films, product ads, platform promos and launch reels, made by a production system and directed by people.' },
 ];
 
 export const ogPageByPath = Object.fromEntries(ogPages.map(p => [p.path, p]));
