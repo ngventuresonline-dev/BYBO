@@ -9,7 +9,7 @@ import './website-cinema.css';
 import './concept-worlds.css';
 import './studio-v2.css';
 
-const concepts = [
+export const concepts = [
   {id:'shop',label:'Commerce',brand:'FORME',tag:'A daily ritual. An extraordinary store.',description:'A premium Indian D2C storefront, with considered product discovery, rupee pricing and a delivery-pincode journey.',features:['Product discovery','Delivery pincodes','Shopping bag'],hint:'Choose a ritual. Check a pincode. Try the bag.',audience:'Brand / online store',image:'shop'},
   {id:'restaurant',label:'Hospitality',brand:'EMBER',tag:'Make the table feel worth booking.',description:'A contemporary Bengaluru dining concept, from a seasonal Indian menu to a direct table enquiry.',features:['Menu exploration','Reservation journey','Mobile discovery'],hint:'Explore the menu. Prepare a table request.',audience:'Restaurant / hospitality',image:'restaurant'},
   {id:'creator',label:'Creators',brand:'MIRA / FIELD NOTES',tag:'A world that could only be yours.',description:'An independent Indian creator’s home for editorial work, brand collaborations and a direct audience relationship.',features:['Editorial stories','Portfolio discovery','Audience signup'],hint:'Change the journal category. Open a story.',audience:'Creator / personal brand',image:'creator'},
@@ -17,7 +17,7 @@ const concepts = [
   {id:'saas',label:'SaaS & products',brand:'RELAY',tag:'Let people experience the product.',description:'A product experience for an Indian software business serving teams here and around the world.',features:['Interactive product','Pricing comparison','Product-led storytelling'],hint:'Move a task forward. Compare billing options.',audience:'SaaS / digital product',image:'saas'},
   {id:'advisory',label:'Services',brand:'NORTH / ADVISORY',tag:'Make expertise easy to understand.',description:'A premium advisory concept for India’s founder-led businesses, connecting ambition to a practical engagement.',features:['Service discovery','Clear positioning','Qualified enquiries'],hint:'Choose a business challenge to see the approach.',audience:'Business / professional services',image:'consulting'},
 ] as const;
-type ConceptId = typeof concepts[number]['id'];
+export type ConceptId = typeof concepts[number]['id'];
 const photo = (name:string) => `/images/web-${name}.webp`;
 
 function CommerceDemo(){
@@ -55,7 +55,7 @@ function AdvisoryDemo(){
   return <div className="wc-advisory"><nav className="wc-demo-nav"><strong>NORTH<span>INDEPENDENT ADVISORY</span></strong><span>Bengaluru / Mumbai · concept</span><button onClick={()=>setEnquiry(!enquiry)}>Let’s talk <ArrowUpRight size={16}/></button></nav><div className="wc-advisory-grid"><div><small>FOR WHAT COMES NEXT</small><h3>Good decisions.<br/><em>Lasting direction.</em></h3><p>Independent perspective for India’s founder-led businesses, from the next market to the next generation.</p><div className="wc-advisory-options" role="group" aria-label="Business challenge">{items.map((v,i)=><button aria-pressed={service===i} onClick={()=>{setService(i);setEnquiry(false)}} key={v[1]}>{v[1]}<ChevronRight size={16}/></button>)}</div><div className="wc-advisory-result" aria-live="polite"><h4>{items[service][0]}</h4><p>{items[service][2]}</p></div></div><Image src={photo('consulting')} alt="Sculptural architectural lines in natural light" width={1200} height={800} sizes="(max-width: 760px) 100vw, 50vw"/></div>{enquiry&&<div className="wc-demo-reveal" role="status"><span>Start with your {items[service][1].toLowerCase()} challenge. This is where a real site would open a tailored enquiry.</span><button aria-label="Close enquiry preview" onClick={()=>setEnquiry(false)}><X size={18}/></button></div>}</div>
 }
 
-function ConceptDemo({id}:{id:ConceptId}){switch(id){case 'shop':return <CommerceDemo/>;case 'restaurant':return <RestaurantDemo/>;case 'creator':return <CreatorDemo/>;case 'property':return <PropertyDemo/>;case 'saas':return <SaaSDemo/>;case 'advisory':return <AdvisoryDemo/>}}
+export function ConceptDemo({id}:{id:ConceptId}){switch(id){case 'shop':return <CommerceDemo/>;case 'restaurant':return <RestaurantDemo/>;case 'creator':return <CreatorDemo/>;case 'property':return <PropertyDemo/>;case 'saas':return <SaaSDemo/>;case 'advisory':return <AdvisoryDemo/>}}
 
 /* One hero frame, art-directed. Landscape screens get the 4K master; portrait
    screens get a portrait crop of it. Without the crop a phone scales the
