@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import nextConfig from "../../next.config.ts";
+import nextConfig from "../../next.config";
 import { SITE } from "./seo";
 
 describe("security headers", () => {
