@@ -1,10 +1,11 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import * as THREE from 'three';
 
 /* Aurora: four ribbons of light drifting on noise, with curtains falling beneath them,
-   bent toward the pointer. One full-screen triangle, capped pixel ratio, paused off screen. */
+   bent toward the pointer. Plain WebGL (no library): one full-screen triangle drawn at
+   reduced resolution and scaled up, since the light is soft. Paused off screen and in
+   background tabs, and capped at 30 fps on phones. */
 const frag = /* glsl */ `
 precision highp float;
 uniform float uTime; uniform vec2 uRes; uniform vec2 uMouse;
@@ -48,45 +49,59 @@ export default function AppShader() {
   useEffect(() => {
     const el = host.current; if (!el) return;
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    let renderer: THREE.WebGLRenderer;
-    try { renderer = new THREE.WebGLRenderer({ antialias: false, alpha: false, powerPreference: 'high-performance' }); }
-    catch { return; } // no WebGL: the CSS gradient underneath stays
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, window.innerWidth < 760 ? 1 : 1.5));
-    el.appendChild(renderer.domElement);
-    const scene = new THREE.Scene(), cam = new THREE.Camera();
-    const geo = new THREE.BufferGeometry();
-    geo.setAttribute('position', new THREE.Float32BufferAttribute([-1, -1, 0, 3, -1, 0, -1, 3, 0], 3));
-    const uni = { uTime: { value: 0 }, uRes: { value: new THREE.Vector2() }, uMouse: { value: new THREE.Vector2(.72, .62) } };
-    const mat = new THREE.ShaderMaterial({ vertexShader: 'void main(){ gl_Position = vec4(position,1.); }', fragmentShader: frag, uniforms: uni });
-    scene.add(new THREE.Mesh(geo, mat));
+    const phone = window.innerWidth < 760;
+    const canvas = document.createElement('canvas');
+    const gl = canvas.getContext('webgl', { antialias: false, alpha: false, depth: false, stencil: false, powerPreference: phone ? 'low-power' : 'high-performance' });
+    if (!gl) return; // no WebGL: the CSS gradient underneath stays
+    const shader = (type: number, src: string) => { const sh = gl.createShader(type)!; gl.shaderSource(sh, src); gl.compileShader(sh); return sh; };
+    const prog = gl.createProgram()!;
+    gl.attachShader(prog, shader(gl.VERTEX_SHADER, 'attribute vec2 p; void main(){ gl_Position = vec4(p, 0., 1.); }'));
+    gl.attachShader(prog, shader(gl.FRAGMENT_SHADER, frag));
+    gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return;
+    gl.useProgram(prog);
+    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+    const loc = gl.getAttribLocation(prog, 'p');
+    gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+    const uTime = gl.getUniformLocation(prog, 'uTime'), uRes = gl.getUniformLocation(prog, 'uRes'), uMouse = gl.getUniformLocation(prog, 'uMouse');
+    el.appendChild(canvas);
 
-    const target = new THREE.Vector2(.72, .62);
-    const resize = () => { const w = el.clientWidth, h = el.clientHeight; renderer.setSize(w, h, false); uni.uRes.value.set(w * renderer.getPixelRatio(), h * renderer.getPixelRatio()); };
-    const move = (e: PointerEvent) => { const b = el.getBoundingClientRect(); target.set((e.clientX - b.left) / b.width, 1 - (e.clientY - b.top) / b.height); };
+    const scale = phone ? .5 : .75; // soft light survives being drawn small and scaled up
+    const mouse = { x: .72, y: .62 }, target = { x: .72, y: .62 };
+    const resize = () => {
+      const w = Math.max(1, Math.round(el.clientWidth * scale)), h = Math.max(1, Math.round(el.clientHeight * scale));
+      canvas.width = w; canvas.height = h; gl.viewport(0, 0, w, h); gl.uniform2f(uRes, w, h);
+    };
+    const move = (e: PointerEvent) => { const b = el.getBoundingClientRect(); target.x = (e.clientX - b.left) / b.width; target.y = 1 - (e.clientY - b.top) / b.height; };
     resize();
     window.addEventListener('resize', resize);
     window.addEventListener('pointermove', move, { passive: true });
 
-    let visible = true, raf = 0; const start = performance.now();
-    const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible && !raf && !reduce) raf = requestAnimationFrame(loop); });
-    io.observe(el);
+    let visible = true, raf = 0, last = 0; const start = performance.now();
+    const frame = (now: number) => {
+      gl.uniform1f(uTime, (now - start) / 1000);
+      mouse.x += (target.x - mouse.x) * .04; mouse.y += (target.y - mouse.y) * .04;
+      gl.uniform2f(uMouse, mouse.x, mouse.y);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+    };
     function loop(now: number) {
       raf = 0;
-      uni.uTime.value = (now - start) / 1000;
-      uni.uMouse.value.lerp(target, .04);
-      renderer.render(scene, cam);
+      if (!phone || now - last > 32) { last = now; frame(now); }
       if (visible && !document.hidden) raf = requestAnimationFrame(loop);
     }
+    const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible && !raf && !reduce) raf = requestAnimationFrame(loop); });
+    io.observe(el);
     const onVis = () => { if (!document.hidden && visible && !raf && !reduce) raf = requestAnimationFrame(loop); };
     document.addEventListener('visibilitychange', onVis);
-    if (reduce) { uni.uTime.value = 9; renderer.render(scene, cam); } else raf = requestAnimationFrame(loop);
+    if (reduce) frame(start + 9000); else raf = requestAnimationFrame(loop);
     requestAnimationFrame(() => el.classList.add('is-ready'));
 
     return () => {
       cancelAnimationFrame(raf); io.disconnect();
       window.removeEventListener('resize', resize); window.removeEventListener('pointermove', move);
       document.removeEventListener('visibilitychange', onVis);
-      geo.dispose(); mat.dispose(); renderer.dispose(); renderer.domElement.remove();
+      gl.getExtension('WEBGL_lose_context')?.loseContext(); canvas.remove();
     };
   }, []);
 
