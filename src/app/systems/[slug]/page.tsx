@@ -1,6 +1,8 @@
 import { notFound, redirect } from 'next/navigation';
 import { ogFor, ogPageByPath } from '@/lib/og-pages';
 import { WebsiteStudio } from '@/components/website-studio/WebsiteStudio';
+import { AppStudio } from '@/components/app-studio/AppStudio';
+import { AppSchema } from '@/components/app-studio/AppSchema';
 import { MotionPage } from '@/components/motion/MotionPage';
 import { WebsiteSchema } from '@/components/studio/WebsiteSchema';
 import { SystemLanding } from '@/components/system-landing/SystemLanding';
@@ -33,8 +35,9 @@ export default async function Service({ params }: Props) {
   if (legacy[slug]) redirect(`/systems/${legacy[slug]}`);
   if (!services.some(s => s.slug === slug)) notFound();
 
-  // The two studios keep their own cinematic layouts; the seven systems share one.
+  // The three studios keep their own cinematic layouts; the seven systems share one.
   if (slug === 'website-design-development') return <><WebsiteSchema /><WebsiteStudio /></>;
+  if (slug === 'app-design-development') return <><AppSchema /><AppStudio /></>;
   if (slug === 'motion-studio') return <MotionPage />;
   return <SystemLanding slug={slug} />;
 }
