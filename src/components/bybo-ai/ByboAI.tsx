@@ -15,7 +15,19 @@ type Brief = { title: string; business: string; problem: string; goals: string[]
 type Turn = { role: 'user' | 'assistant'; text: string; brief?: Brief; actions?: string[] };
 type Slot = { id: string; label: string };
 /** Guided mode: when the model is unreachable, B still qualifies and books. */
-type Guide = { step: 'business' | 'name' | 'email' | 'phone' | 'slot' | 'done'; need: string; company?: string; name?: string; email?: string; phone?: string; slots?: Slot[] };
+type Guide = { step: 'business' | 'detail' | 'name' | 'email' | 'phone' | 'slot' | 'done'; need: string; topic: Topic; company?: string; notes?: string[]; name?: string; email?: string; phone?: string; slots?: Slot[] };
+
+type Topic = 'website' | 'leads' | 'app' | 'film' | 'ops';
+
+/** Guided mode still asks about the business, shaped by what they came for. */
+const TOPICS: { topic: Topic; match: RegExp; open: string; detail: string }[] = [
+  { topic: 'website', match: /web ?site|landing|page|redesign|seo/i, open: 'A website, great. What does your business do, and who are your customers?', detail: 'Do you have a website today? What should a new one do better: more enquiries, more sales, a sharper brand?' },
+  { topic: 'leads', match: /lead|enquir|inquir|whatsapp|reply|respond|sales|book/i, open: "Let's fix that. What does your business do, and where do most of your enquiries come from?", detail: 'Roughly how many enquiries a week, and what happens to the ones that come in after hours?' },
+  { topic: 'app', match: /app|android|ios|iphone|mobile|saas|portal/i, open: 'An app, nice. What does your business do, and who would use the app?', detail: 'What should people be able to do in it on day one?' },
+  { topic: 'film', match: /film|video|reel|ad|ads|motion|promo/i, open: 'Films, love it. What does your business do, and what are you launching or promoting?', detail: 'Where will the film run (Instagram, ads, your site), and what should viewers do after watching?' },
+  { topic: 'ops', match: /.*/, open: 'Happy to help. What does your business do, and roughly how big is the team?', detail: 'Which task eats the most time each week, and how is it handled today?' },
+];
+const topicOf = (t: string) => TOPICS.find((x) => x.match.test(t)) ?? TOPICS.at(-1)!;
 
 const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
@@ -94,7 +106,7 @@ export function ByboAI() {
       const res = await fetch('/api/bybo-ai/book', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...g, slot: slot.id, page: window.location.pathname, transcript: next }),
+        body: JSON.stringify({ ...g, need: [g.need, ...(g.notes ?? [])].join(' · ').slice(0, 300), slot: slot.id, page: window.location.pathname, transcript: next }),
       });
       const data = await res.json().catch(() => ({}));
       if (res.ok && data.ok) {
@@ -114,7 +126,9 @@ export function ByboAI() {
   }, []);
 
   const guided = useCallback(async (g: Guide, t: string, next: Turn[]) => {
-    if (g.step === 'business') { setGuide({ ...g, company: t, step: 'name' }); return say(next, 'Thanks. What should we call you?'); }
+    const T = TOPICS.find((x) => x.topic === g.topic) ?? TOPICS.at(-1)!;
+    if (g.step === 'business') { setGuide({ ...g, company: t, step: 'detail' }); return say(next, `Got it. ${T.detail}`); }
+    if (g.step === 'detail') { setGuide({ ...g, notes: [...(g.notes ?? []), t], step: 'name' }); return say(next, "Perfect, that's exactly what we build. Next step is a free 30-minute call where the team maps it out for your business. What's your name?"); }
     if (g.step === 'name') { setGuide({ ...g, name: t, step: 'email' }); return say(next, `Nice to meet you, ${t.split(' ')[0]}. What's your email? We'll send the confirmation there.`); }
     if (g.step === 'email') {
       if (!EMAIL.test(t)) return say(next, "That email doesn't look right. Could you type it again?");
@@ -133,8 +147,9 @@ export function ByboAI() {
 
   // The model is unreachable: carry on as a guided booking, never a dead end.
   const startGuide = useCallback((next: Turn[], t: string) => {
-    setGuide({ step: 'business', need: next.filter((m) => m.role === 'user').map((m) => m.text).join(' · ').slice(0, 300) || t });
-    say(next, "Happy to help with that. Let's get you a free 30-minute call with the team so they can map it with you. What's your business called, and what does it do?");
+    const T = topicOf(t);
+    setGuide({ step: 'business', topic: T.topic, need: next.filter((m) => m.role === 'user').map((m) => m.text).join(' · ').slice(0, 300) || t });
+    say(next, T.open);
   }, []);
 
   const send = useCallback(async (text: string) => {
