@@ -51,7 +51,9 @@ describe('POST /api/bybo-ai', () => {
     const calls = mock([{ content: [{ type: 'text', text: 'What does your business do?' }], stop_reason: 'end_turn' }]);
     const { POST } = await import('./route');
     const res = await POST(chat([{ role: 'user', text: 'I want more leads' }], '10.0.0.3'));
-    assert.deepEqual(await res.json(), { ok: true, reply: 'What does your business do?', booked: null });
+    const d = await res.json();
+    assert.equal(d.reply, 'What does your business do?');
+    assert.equal(d.booked, null);
     assert.equal(calls.length, 1);
     assert.match(String(calls[0].body.system), /AVAILABLE SLOTS/);
   });
@@ -86,5 +88,51 @@ describe('POST /api/bybo-ai', () => {
     const data = await (await POST(chat([{ role: 'user', text: 'book it' }], '10.0.0.5'))).json();
     assert.equal(data.booked, null);
     assert.equal(calls.filter((c) => c.url.includes('resend')).length, 0);
+  });
+
+  const brief = { title: 'A Night Desk for Smile Dental', business: 'Dental clinic, 3 branches', problem: 'Night enquiries wait till morning.', goals: ['Reply in seconds'], solution: 'An agent that replies and books.', steps: [{ step: 'Reply', detail: 'In seconds' }], deliverables: ['Live agent'], next_step: 'A 30-minute call' };
+
+  it('shows a brief and emails it only to an address the visitor typed', async () => {
+    process.env.ANTHROPIC_API_KEY = 'test';
+    process.env.RESEND_API_KEY = 'test';
+    const calls = mock([
+      { content: [{ type: 'tool_use', id: 't1', name: 'create_brief', input: { ...brief, name: 'Priya', email: 'priya@clinic.in' } }], stop_reason: 'tool_use' },
+      { content: [{ type: 'text', text: 'Sent. Shall we book?' }], stop_reason: 'end_turn' },
+    ]);
+    const { POST } = await import('./route');
+    const data = await (await POST(chat([{ role: 'user', text: 'send it to priya@clinic.in' }], '10.0.0.6'))).json();
+    assert.equal(data.brief.title, brief.title);
+    assert.deepEqual(data.actions, ['Brief emailed to priya@clinic.in']);
+    const mails = calls.filter((c) => c.url.includes('resend'));
+    assert.deepEqual(mails[0].body.to, ['priya@clinic.in']);
+    assert.ok((mails[1].body.to as string[]).includes('byboonline@gmail.com'));
+  });
+
+  it('never emails an address the visitor did not type', async () => {
+    process.env.ANTHROPIC_API_KEY = 'test';
+    process.env.RESEND_API_KEY = 'test';
+    const calls = mock([
+      { content: [{ type: 'tool_use', id: 't1', name: 'create_brief', input: { ...brief, email: 'someone@else.com' } }], stop_reason: 'tool_use' },
+      { content: [{ type: 'text', text: 'What email should I use?' }], stop_reason: 'end_turn' },
+    ]);
+    const { POST } = await import('./route');
+    const data = await (await POST(chat([{ role: 'user', text: 'make me a brief' }], '10.0.0.7'))).json();
+    assert.equal(data.brief.title, brief.title);
+    assert.equal(calls.filter((c) => c.url.includes('resend')).length, 0);
+  });
+
+  it('alerts the team about a hot lead', async () => {
+    process.env.ANTHROPIC_API_KEY = 'test';
+    process.env.RESEND_API_KEY = 'test';
+    const calls = mock([
+      { content: [{ type: 'text', text: 'Love it.' }, { type: 'tool_use', id: 't1', name: 'alert_team', input: { temperature: 'hot', name: 'Ravi', need: 'App for 40 stores', summary: 'Owner, wants to start this month.' } }], stop_reason: 'tool_use' },
+      { content: [{ type: 'text', text: 'When can you talk?' }], stop_reason: 'end_turn' },
+    ]);
+    const { POST } = await import('./route');
+    const data = await (await POST(chat([{ role: 'user', text: 'We have 40 stores and need an app now' }], '10.0.0.8'))).json();
+    assert.equal(data.reply, 'Love it.\n\nWhen can you talk?');
+    const mails = calls.filter((c) => c.url.includes('resend'));
+    assert.equal(mails.length, 1);
+    assert.match(String(mails[0].body.subject), /^HOT lead: Ravi/);
   });
 });
