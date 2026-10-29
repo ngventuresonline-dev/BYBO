@@ -26,3 +26,17 @@
 .pay-check{display:flex!important;align-items:center;gap:10px!important;grid-template-columns:none!important}
 .pay-check input{width:18px;height:18px}
 @media (max-width:520px){.pay-card{padding:22px}.pay-form .pay-row{grid-template-columns:1fr}}
+.pay-products{display:grid;gap:14px;margin-top:22px}
+.pay-product{padding:20px;border-radius:20px;background:linear-gradient(160deg,#ffffff12,#ffffff05);border:1px solid #ffffff1c;transition:border-color .2s,box-shadow .2s}
+.pay-product.is-on{border-color:#b794ff88;box-shadow:0 0 40px -16px #7a3cffaa}
+.pay-product-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.pay-product h2{margin:0;font-size:22px;letter-spacing:-.02em;color:#fff}
+.pay-product-lead{margin:2px 0 0;color:#ffb38f;font-size:14px;font-weight:600}
+.pay-price{margin:0;font-size:26px;font-weight:800;letter-spacing:-.03em;background:linear-gradient(90deg,#fff,#d4c2ff);-webkit-background-clip:text;background-clip:text;color:transparent;white-space:nowrap}
+.pay-product-desc{margin:12px 0 0;color:#ffffffc0;font-size:14.5px;line-height:1.5}
+.pay-product ul{margin:12px 0 0;padding:0;list-style:none;display:grid;gap:6px}
+.pay-product li{font-size:14px;color:#f1edff;padding-left:22px;position:relative}
+.pay-product li:before{content:"✓";position:absolute;left:0;color:#3ee08f;font-weight:700}
+.pay-product .pay-btn{margin-top:18px}
+.pay-link{display:block;margin:16px auto 0;padding:6px;border:0;background:none;color:#b794ff;font:inherit;font-size:14px;font-weight:600;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.pay-step{margin:6px 0 0;font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#b794ff}

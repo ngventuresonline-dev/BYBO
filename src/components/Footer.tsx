@@ -72,6 +72,7 @@ export function Footer() {
             {` is the enterprise AI and website practice of N&G Ventures, Bengaluru, India. © ${year} N&G Ventures. All rights reserved.`}
           </p>
           <nav aria-label="Legal">
+            <Link href="/pay">Make a payment</Link>
             <Link href="/privacy">Privacy</Link>
             <Link href="/terms">Terms</Link>
             <MeasurementSettings />
