@@ -3,7 +3,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { SeoJsonLd } from "@/components/SeoJsonLd";
 import { MarketingPixels } from "@/components/MarketingPixels";
-import ProxeWidget from "@/components/ProxeWidget";
+import { ByboAI } from "@/components/bybo-ai/ByboAI";
 import { SITE } from "@/lib/seo";
 import "./globals.css";
 import "./desktop-heroes.css";
@@ -74,7 +74,7 @@ export default function RootLayout({ children, }: {
           {children}
         </main>
         <Footer />
-        <ProxeWidget />
+        <ByboAI />
       </body>
     </html>);
 }

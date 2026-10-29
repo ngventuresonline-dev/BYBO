@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { pageMetadata } from '@/lib/seo';
-import { CONTACT } from '@/lib/site';
 import { ChatButton } from './ChatButton';
 import './night-desk.css';
 
@@ -71,7 +70,6 @@ const METRICS = [
   ['Handover rate', 'Share of chats passed to a person, and why'],
 ];
 
-const WA = `https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent('Hi BYBO, I saw the Night Desk flow. I want it for my business. Our leads come from: ')}`;
 const BRIEF = `/apply?interest=${encodeURIComponent('AI systems')}&message=${encodeURIComponent('I want the Night Desk lead response system for my business. Our leads come from: ')}`;
 
 function Cta({ compact }: { compact?: boolean }) {
@@ -81,7 +79,7 @@ function Cta({ compact }: { compact?: boolean }) {
       <h2>{compact ? 'Rather have it built for you?' : 'Want your Night Desk built and running?'}</h2>
       <p>We connect your channels, train the agent on your business, wire your calendar and CRM, and keep a person in the loop from day one. Tell us where your leads come from and we&apos;ll map your flow with you. The first conversation is free.</p>
       <div className="nd-cta-row">
-        <ChatButton className="nd-btn" fallback={WA} />
+        <ChatButton className="nd-btn" />
         <Link className="nd-btn is-ghost" href={BRIEF}>Send a 2-minute brief</Link>
       </div>
     </section>

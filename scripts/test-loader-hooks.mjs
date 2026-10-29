@@ -9,6 +9,10 @@ function hasKnownExt(specifier) {
 }
 
 export async function resolve(specifier, context, nextResolve) {
+  // next ships CommonJS entry points without an exports map, so Node's ESM
+  // resolver needs the file extension spelled out.
+  if (specifier === "next/server") return nextResolve("next/server.js", context);
+
   if (specifier.startsWith("@/")) {
     const abs = join(srcRoot, specifier.slice(2));
     const file = hasKnownExt(abs) ? abs : `${abs}.ts`;

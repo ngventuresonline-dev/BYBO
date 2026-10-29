@@ -53,11 +53,4 @@
 .nd-btn{padding:13px 22px;border-radius:99px;background:var(--nd-acc);color:#fff;font-weight:600;font-size:15px;text-decoration:none}
 .nd-btn.is-ghost{background:transparent;border:1px solid #ffffff40}
 .nd-btn:hover{filter:brightness(1.1)}
-.nd-hint{position:fixed;inset:0;z-index:2147483000;pointer-events:none;background:#0e0b1833;animation:nd-fade .2s ease-out}
-.nd-hint p{position:fixed;right:24px;bottom:120px;max-width:280px;padding:14px 16px;border-radius:16px;background:#17141f;color:#fff;font-size:15px;line-height:1.45;box-shadow:0 18px 40px -12px #0008}
-.nd-hint p:after{content:"";position:absolute;right:30px;bottom:-8px;border:8px solid transparent;border-bottom:0;border-top-color:#17141f}
-.nd-hint b{color:#b9a0ff}
-.nd-hint-ring{position:fixed;right:var(--nd-ring-r,22px);bottom:var(--nd-ring-b,22px);width:64px;height:64px;border-radius:50%;border:3px solid #b9a0ff;animation:nd-pulse 1.2s ease-out infinite}
-@keyframes nd-pulse{0%{transform:scale(.9);opacity:1}100%{transform:scale(1.6);opacity:0}}
-@keyframes nd-fade{from{opacity:0}}
 @media (max-width:720px){.nd{padding:112px 16px 72px}.nd-side,.nd-scripts,.nd-metrics{grid-template-columns:1fr}.nd-cta{padding:28px 22px}}
