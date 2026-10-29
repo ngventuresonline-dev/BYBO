@@ -3,8 +3,8 @@
  *
  * Same API pattern as Lokazen's integration. Credentials come from the
  * environment and never reach the browser:
- *   PHONEPE_CLIENT_ID, PHONEPE_CLIENT_SECRET, PHONEPE_CLIENT_VERSION,
- *   PHONEPE_SANDBOX ("true" for the test environment).
+ *   PHONEPE_CLIENT_ID and PHONEPE_CLIENT_SECRET (required),
+ *   PHONEPE_CLIENT_VERSION (defaults to 1), PHONEPE_SANDBOX ("true" for the test environment).
  *
  * Payment state is always confirmed with PhonePe's status API, never taken
  * from the redirect, so a visitor can't fake a successful payment.
@@ -14,8 +14,7 @@ const sandbox = () => process.env.PHONEPE_SANDBOX === 'true';
 const baseUrl = () => (sandbox() ? 'https://api-preprod.phonepe.com/apis/pg-sandbox' : 'https://api.phonepe.com/apis/pg');
 const authUrl = () => (sandbox() ? 'https://api-preprod.phonepe.com/apis/pg-sandbox/v1/oauth/token' : 'https://api.phonepe.com/apis/identity-manager/v1/oauth/token');
 
-export const phonepeConfigured = () =>
-  !!(process.env.PHONEPE_CLIENT_ID?.trim() && process.env.PHONEPE_CLIENT_SECRET?.trim() && process.env.PHONEPE_CLIENT_VERSION?.trim());
+export const phonepeConfigured = () => !!(process.env.PHONEPE_CLIENT_ID?.trim() && process.env.PHONEPE_CLIENT_SECRET?.trim());
 
 let token: string | null = null;
 let tokenExpires = 0;
@@ -25,7 +24,7 @@ async function accessToken() {
   const params = new URLSearchParams({
     client_id: process.env.PHONEPE_CLIENT_ID!.trim(),
     // PhonePe wants the version as an integer ("1", not "1.0").
-    client_version: String(parseInt(process.env.PHONEPE_CLIENT_VERSION!.trim(), 10) || 1),
+    client_version: String(parseInt(process.env.PHONEPE_CLIENT_VERSION?.trim() ?? '1', 10) || 1),
     client_secret: process.env.PHONEPE_CLIENT_SECRET!.trim(),
     grant_type: 'client_credentials',
   });
