@@ -5,19 +5,21 @@ import { PRODUCTS } from '@/lib/payments/products';
 import './pay.css';
 
 export const metadata: Metadata = pageMetadata({
-  title: 'Buy a Blueprint or pay BYBO',
-  description: 'Buy a BYBO Blueprint or pay an invoice securely through PhonePe with UPI, cards or netbanking. A receipt is emailed to you straight away.',
+  title: 'Buy a BYBO package',
+  description: 'Buy a BYBO Blueprint, AI system, website, app or film package, or pay an invoice, securely through PhonePe. A receipt is emailed to you straight away.',
   path: '/pay',
 });
 
-export default function Pay() {
+export default async function Pay({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+  const sp = await searchParams;
+  const initial = typeof sp.product === 'string' ? sp.product : undefined;
   return (
     <main className="pay">
       <section className="pay-card">
         <p className="pay-kick">Pay BYBO</p>
-        <h1>Start with a Blueprint</h1>
+        <h1>Buy a BYBO package</h1>
         <p className="pay-sub">Pick what you&apos;re buying, add your details and pay on PhonePe. Your receipt arrives by email.</p>
-        <PayNow products={PRODUCTS} />
+        <PayNow products={PRODUCTS} initial={initial} />
       </section>
     </main>
   );

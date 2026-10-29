@@ -6,6 +6,7 @@ import { AppSchema } from '@/components/app-studio/AppSchema';
 import { MotionPage } from '@/components/motion/MotionPage';
 import { WebsiteSchema } from '@/components/studio/WebsiteSchema';
 import { SystemLanding } from '@/components/system-landing/SystemLanding';
+import { BuyStrip } from '@/components/payments/BuyStrip';
 import { services } from '@/lib/redesign';
 import { pageMetadata } from '@/lib/seo';
 
@@ -36,8 +37,9 @@ export default async function Service({ params }: Props) {
   if (!services.some(s => s.slug === slug)) notFound();
 
   // The three studios keep their own cinematic layouts; the seven systems share one.
-  if (slug === 'website-design-development') return <><WebsiteSchema /><WebsiteStudio /></>;
-  if (slug === 'app-design-development') return <><AppSchema /><AppStudio /></>;
-  if (slug === 'motion-studio') return <MotionPage />;
-  return <SystemLanding slug={slug} />;
+  const page = slug === 'website-design-development' ? <><WebsiteSchema /><WebsiteStudio /></>
+    : slug === 'app-design-development' ? <><AppSchema /><AppStudio /></>
+    : slug === 'motion-studio' ? <MotionPage />
+    : <SystemLanding slug={slug} />;
+  return <>{page}<BuyStrip slug={slug} /></>;
 }
