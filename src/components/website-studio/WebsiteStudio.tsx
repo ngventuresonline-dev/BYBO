@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { motion, useScroll, useTransform, useSpring, useVelocity, useMotionValue, useAnimationFrame, useMotionValueEvent, useReducedMotion, type MotionValue } from 'framer-motion';
 import { ArrowRight, ArrowDown, Plus, Smartphone, Gauge, PenLine, Search, MousePointerClick, Settings2, Check } from 'lucide-react';
 import { QuickBrief } from './QuickBrief';
+import { Showcase } from './Showcase';
 import './website-studio.css';
 
 // WebGL loads after first paint; the CSS gradient underneath is the poster.
@@ -359,6 +360,7 @@ export function WebsiteStudio() {
       <Hero />
       <VelocityMarquee text="Strategy ✦ Copy ✦ Design ✦ Build ✦ Launch ✦ " />
       <BuildSequence />
+      <Showcase />
       <Statement />
       <Track />
       <Stack />
