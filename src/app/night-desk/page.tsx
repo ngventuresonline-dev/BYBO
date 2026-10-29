@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { pageMetadata } from '@/lib/seo';
+import { CONTACT } from '@/lib/site';
 import './night-desk.css';
 
 export const metadata = pageMetadata({
@@ -68,6 +69,23 @@ const METRICS = [
   ['Show rate', 'Share of booked slots that turned up'],
   ['Handover rate', 'Share of chats passed to a person, and why'],
 ];
+
+const WA = `https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent('Hi BYBO, I saw the Night Desk flow. I want it for my business. Our leads come from: ')}`;
+const BRIEF = `/apply?interest=${encodeURIComponent('AI systems')}&message=${encodeURIComponent('I want the Night Desk lead response system for my business. Our leads come from: ')}`;
+
+function Cta({ compact }: { compact?: boolean }) {
+  return (
+    <section className={compact ? 'nd-cta is-compact' : 'nd-cta'}>
+      <p className="nd-cta-kick">Done for you</p>
+      <h2>{compact ? 'Rather have it built for you?' : 'Want your Night Desk built and running?'}</h2>
+      <p>We connect your channels, train the agent on your business, wire your calendar and CRM, and keep a person in the loop from day one. Tell us where your leads come from and we&apos;ll map your flow with you. The first conversation is free.</p>
+      <div className="nd-cta-row">
+        <a className="nd-btn" href={WA} target="_blank" rel="noopener noreferrer">Map my Night Desk on WhatsApp</a>
+        <Link className="nd-btn is-ghost" href={BRIEF}>Send a 2-minute brief</Link>
+      </div>
+    </section>
+  );
+}
 
 const PROMPT = `You are the Night Desk for [Business name], a [type of business] in [city].
 You reply to new enquiries on Instagram, WhatsApp and the website when the team is offline or busy.
@@ -148,6 +166,8 @@ export default function NightDesk() {
         </div>
       </section>
 
+      <Cta compact />
+
       <section id="stack" className="nd-sec">
         <h2>Components and stack</h2>
         <p className="nd-p">Six parts. Any tool that does the job works; these are common choices, not requirements.</p>
@@ -216,14 +236,7 @@ export default function NightDesk() {
         <div className="nd-metrics">{METRICS.map(([a, b]) => <div key={a}><strong>{a}</strong><span>{b}</span></div>)}</div>
       </section>
 
-      <section className="nd-cta">
-        <h2>Want it built for you?</h2>
-        <p>BYBO builds and runs the Night Desk: channels connected, the agent trained on your business, calendar and CRM wired, and a person in the loop from day one.</p>
-        <div className="nd-cta-row">
-          <a className="nd-btn" href="https://www.instagram.com/byboindia/" target="_blank" rel="noopener noreferrer">Reply FLOW on Instagram</a>
-          <Link className="nd-btn is-ghost" href="/apply">Tell us about your business</Link>
-        </div>
-      </section>
+      <Cta />
     </main>
   );
 }
