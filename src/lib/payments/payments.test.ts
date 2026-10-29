@@ -24,6 +24,12 @@ describe('signed payment details', () => {
     assert.equal(readLink(`${forged}.${mac}`), null);
   });
 
+  it('signs with a key derived from the PhonePe secret when no link secret is set', () => {
+    delete process.env.PAYMENTS_LINK_SECRET;
+    process.env.PHONEPE_CLIENT_SECRET = 'pp-secret';
+    assert.deepEqual(readLink(signLink(base)), base);
+  });
+
   it('rejects expired details', () => {
     assert.equal(readLink(signLink({ ...base, exp: Math.floor(Date.now() / 1000) - 1 })), null);
   });
@@ -32,7 +38,7 @@ describe('signed payment details', () => {
 describe('POST /api/pay/checkout', () => {
   const bodies: Record<string, unknown>[] = [];
   const phonepe = () => {
-    process.env.PHONEPE_CLIENT_ID = 'id'; process.env.PHONEPE_CLIENT_SECRET = 's'; process.env.PHONEPE_CLIENT_VERSION = '1';
+    process.env.PHONEPE_CLIENT_ID = 'id'; process.env.PHONEPE_CLIENT_SECRET = 's';
     bodies.length = 0;
     globalThis.fetch = (async (url: string | URL, init?: RequestInit) => {
       if (String(url).includes('oauth')) return new Response(JSON.stringify({ access_token: 't', expires_at: Date.now() / 1000 + 3600 }));

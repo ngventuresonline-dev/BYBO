@@ -2,7 +2,7 @@ import { createHmac, timingSafeEqual } from 'node:crypto';
 
 /**
  * Signed payment details, no database: who is paying, for what and how much,
- * signed with PAYMENTS_LINK_SECRET and carried in PhonePe's return URL, so the
+ * signed (see secretKey) and carried in PhonePe's return URL, so the
  * result page can check PhonePe's confirmed amount against what was asked for.
  */
 
@@ -23,17 +23,28 @@ export const MAX_INR = 5_000_000;
 const b64 = (s: string) => Buffer.from(s).toString('base64url');
 const sign = (body: string, secret: string) => createHmac('sha256', secret).update(body).digest('base64url');
 
-export const linksConfigured = () => (process.env.PAYMENTS_LINK_SECRET?.length ?? 0) >= 16;
+/**
+ * PAYMENTS_LINK_SECRET if set; otherwise a key derived from the PhonePe client
+ * secret, so payments work with just the two PhonePe credentials.
+ */
+function secretKey() {
+  const own = process.env.PAYMENTS_LINK_SECRET;
+  if (own && own.length >= 16) return own;
+  const pp = process.env.PHONEPE_CLIENT_SECRET?.trim();
+  return pp ? createHmac('sha256', 'bybo-payment-links-v1').update(pp).digest('hex') : null;
+}
+
+export const linksConfigured = () => !!secretKey();
 
 export function signLink(link: PayLink) {
-  const secret = process.env.PAYMENTS_LINK_SECRET!;
+  const secret = secretKey()!;
   const body = b64(JSON.stringify(link));
   return `${body}.${sign(body, secret)}`;
 }
 
 export function readLink(token: string): PayLink | null {
-  const secret = process.env.PAYMENTS_LINK_SECRET;
-  if (!secret || secret.length < 16) return null;
+  const secret = secretKey();
+  if (!secret) return null;
   const [body, mac] = token.split('.');
   if (!body || !mac) return null;
   const expected = Buffer.from(sign(body, secret));
