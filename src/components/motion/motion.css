@@ -185,7 +185,7 @@
 @media (min-width:760px){
   .mo-page .mo-hero-copy{padding-block:150px 90px}
   .mo-page .mo-lede{font-size:19px}
-  .mo-page .mo-feature-media{aspect-ratio:16/9}
+  .mo-page .mo-feature-media{aspect-ratio:21/9}
   .mo-page .mo-feature-copy{left:40px;bottom:36px}
   .mo-page .mo-grid{grid-template-columns:repeat(3,1fr);gap:18px}
   .mo-page .mo-series-item{width:240px}
