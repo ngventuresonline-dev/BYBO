@@ -87,4 +87,3 @@ export const PRODUCTS: Product[] = [
 ];
 
 export const productById = (id: string) => PRODUCTS.find((p) => p.id === id) ?? null;
-export const productForService = (slug: string) => PRODUCTS.find((p) => p.service === slug) ?? null;
