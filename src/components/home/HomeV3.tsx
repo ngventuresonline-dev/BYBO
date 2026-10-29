@@ -263,6 +263,9 @@ const FOR: [string, string][] = [
   ['Enterprise teams', 'A department proving a system before it scales across the company.'],
 ];
 
+// [client, partner brand the work came through]
+const CLIENTS: [string, string?][] = [['Lokazen'], ['PROXe'], ['Scan2Kare'], ['WOWBUS'], ['Bcon Club'], ['Wind Chasers', 'Bcon Club'], ['Laptop Store', 'Bcon Club'], ['Jamaican Kitchen', 'Bcon Club']];
+
 function Principles() {
   const items: [string, string][] = [
     ['People decide', 'Money, commitments and anything sensitive wait for a named person. The system prepares; your team approves.'],
@@ -278,7 +281,12 @@ function Principles() {
         </div>
         <div className="h3-clients">
           <p className="h3-kicker">Work for</p>
-          <ul>{['Lokazen', 'PROXe', 'Scan2Kare', 'WOWBUS'].map(c => <li key={c}>{c}</li>)}</ul>
+          <div className="h3-clients-track">
+            {/* the list twice, so the scroll loops without a gap */}
+            <ul className="h3-clients-row">
+              {[0, 1].map(k => CLIENTS.map(([c, via]) => <li key={k + c} aria-hidden={k === 1 || undefined}>{c}{via && <small>via {via}</small>}</li>))}
+            </ul>
+          </div>
         </div>
         <div className="h3-head h3-head-tight"><p className="h3-kicker">How we build</p><h2>Automation <em>with judgement.</em></h2></div>
         <div className="h3-pr-grid">

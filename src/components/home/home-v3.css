@@ -195,10 +195,14 @@
 .h3 .h3-for article{padding:22px 24px;border-radius:20px;border:1px solid var(--line);background:#ffffff06}
 .h3 .h3-for h3{font:700 20px Arial,Helvetica,sans-serif;letter-spacing:-.02em;color:#fff}
 .h3 .h3-for p{margin-top:6px;font-size:14.5px;line-height:1.5;color:#f4f2eeb3}
-.h3 .h3-clients{display:flex;flex-wrap:wrap;align-items:center;gap:14px 28px;margin:36px 0 90px;padding:22px 0;border-block:1px solid var(--line)}
-.h3 .h3-clients .h3-kicker{margin:0}
-.h3 .h3-clients ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:12px 34px}
-.h3 .h3-clients li{font:700 clamp(1.3rem,5vw,1.8rem) Arial,Helvetica,sans-serif;letter-spacing:-.03em;color:#f4f2eeb3}
+.h3 .h3-clients{display:flex;align-items:center;gap:24px;margin:36px 0 90px;padding:22px 0;border-block:1px solid var(--line)}
+.h3 .h3-clients .h3-kicker{flex:none;margin:0}
+.h3 .h3-clients-track{flex:1;min-width:0;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.h3 .h3-clients-row{list-style:none;margin:0;padding:0;display:flex;width:max-content;animation:h3-marq 30s linear infinite}
+.h3 .h3-clients-track:hover .h3-clients-row{animation-play-state:paused}
+.h3 .h3-clients li{display:flex;align-items:baseline;gap:8px;padding-right:44px;white-space:nowrap;font:700 clamp(1.3rem,4.6vw,1.8rem) Arial,Helvetica,sans-serif;letter-spacing:-.03em;color:#f4f2eeb3}
+.h3 .h3-clients li small{font-size:12px;font-weight:700;letter-spacing:.04em;color:var(--mint);opacity:.85}
+@media (prefers-reduced-motion:reduce){.h3 .h3-clients-row{animation:none;flex-wrap:wrap}}
 .h3 .h3-head-tight{margin-bottom:28px}
 .h3 .h3-close-actions{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:18px 28px}
 
