@@ -40,7 +40,7 @@ export const privacy: Section[] = [
     ],
     list: [
       'When you send an enquiry: your name, work email, and whatever you choose to put in the message. Company, phone, industry, role and website are optional, and the form works without them. We use this to understand your request, reply to it, and if you go ahead, to run the resulting engagement.',
-      'When you use the chat widget: whatever you type into it, so that we can answer. The widget is our own software, running on proxe.bybo.in.',
+      'When you use the chat widget: whatever you type into it, so that we can answer. The assistant (BYBO AI) is our own software on bybo.in; your messages are processed by our AI model provider, Anthropic, to generate replies. If you book a call, we use the name, email and phone you give to confirm it.',
       'When you allow measurement: how pages on this site are used, so that we can tell which are useful. This is off unless you turn it on, and the site works identically either way.',
       'Automatically, as with any website: your browser sends an IP address and user-agent with each request, which our host records in server logs for security and reliability.',
     ],

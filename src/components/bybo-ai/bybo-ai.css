@@ -1,0 +1,60 @@
+.bai{--bai-acc:#7a3cff;--bai-hot:#ff6a3d;--bai-soft:#b794ff;position:fixed;right:20px;bottom:20px;z-index:60;font-family:inherit;display:flex;flex-direction:column;align-items:flex-end;gap:14px}
+
+/* Launcher: a slowly turning orb with the B at its centre */
+.bai-launch{position:relative;isolation:isolate;width:46px;height:46px;border-radius:50%;border:0;padding:0;display:grid;place-items:center;cursor:pointer;color:#fff;font-size:20px;line-height:1;background:#0b0914;box-shadow:0 0 0 1px #ffffff1f,0 10px 24px -8px #6d3df5aa;transition:transform .25s cubic-bezier(.2,.9,.3,1.3),box-shadow .25s}
+.bai-launch:before{content:"";position:absolute;inset:-6px;border-radius:50%;z-index:-2;background:conic-gradient(from 0deg,#7a3cff,#ff6a3d,#2fd5ff,#b794ff,#7a3cff);filter:blur(10px);opacity:.55;animation:bai-spin 9s linear infinite}
+.bai-launch:after{content:"";position:absolute;inset:0;border-radius:50%;z-index:-1;background:radial-gradient(circle at 32% 26%,#ffffff55 0,#ffffff00 32%),radial-gradient(circle at 70% 78%,#ff6a3d99 0,#ff6a3d00 45%),radial-gradient(circle at 24% 72%,#2fd5ff66 0,#2fd5ff00 42%),conic-gradient(from 90deg,#3a1d8f,#7a3cff,#c06bff,#ff6a3d,#7a3cff,#3a1d8f);box-shadow:inset 0 -6px 14px #0b091499,inset 0 2px 6px #ffffff40;animation:bai-spin 14s linear infinite}
+.bai-launch:hover{transform:translateY(-2px) scale(1.06);box-shadow:0 0 0 1px #ffffff33,0 14px 30px -8px #6d3df5cc}
+.bai-launch>*{position:relative}
+.bai-glow-b{display:block;filter:drop-shadow(0 0 4px #ffffffaa) drop-shadow(0 0 10px #b794ff)}
+.bai-b{flex:none}
+@keyframes bai-spin{to{transform:rotate(1turn)}}
+
+/* Panel: dark glass over an aurora */
+.bai-panel{position:relative;isolation:isolate;width:min(392px,calc(100vw - 32px));height:min(620px,calc(100dvh - 104px));display:flex;flex-direction:column;border-radius:26px;overflow:hidden;color:#f4f1ff;background:#0d0a17;box-shadow:0 0 0 1px #ffffff14,0 40px 90px -24px #000c,0 0 60px -20px #7a3cff66;transform-origin:bottom right;animation:bai-pop .36s cubic-bezier(.2,.9,.3,1.15)}
+.bai-panel:before{content:"";position:absolute;inset:-30% -20% auto;height:70%;z-index:-1;background:radial-gradient(40% 50% at 25% 40%,#7a3cff55,transparent 70%),radial-gradient(35% 45% at 80% 30%,#ff6a3d33,transparent 70%),radial-gradient(30% 40% at 55% 70%,#2fd5ff22,transparent 70%);filter:blur(10px);animation:bai-drift 14s ease-in-out infinite alternate}
+.bai-panel:after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,transparent 0,#0d0a17 52%);pointer-events:none}
+@keyframes bai-pop{from{opacity:0;transform:translateY(16px) scale(.92)}}
+@keyframes bai-drift{to{transform:translate3d(6%,4%,0) rotate(6deg)}}
+
+.bai-head{display:flex;align-items:center;gap:12px;padding:16px 14px 12px 16px}
+.bai-head .bai-b{filter:drop-shadow(0 0 10px #7a3cff88)}
+.bai-title{display:flex;flex-direction:column;line-height:1.25;flex:1}
+.bai-title b{font-size:15px;letter-spacing:-.01em}
+.bai-title small{display:flex;align-items:center;gap:6px;font-size:12px;color:#ffffff9a}
+.bai-title small:before{content:"";width:7px;height:7px;border-radius:50%;background:#3ee08f;box-shadow:0 0 8px #3ee08f}
+.bai-x{width:34px;height:34px;border-radius:50%;border:1px solid #ffffff1a;background:#ffffff0d;color:#fff;font-size:18px;cursor:pointer;transition:background .15s}
+.bai-x:hover{background:#ffffff1f}
+
+.bai-list{flex:1;overflow-y:auto;padding:8px 16px 16px;display:flex;flex-direction:column;gap:10px;scrollbar-width:thin;scrollbar-color:#ffffff22 transparent}
+.bai-msg{max-width:86%;padding:11px 14px;border-radius:18px;font-size:14px;line-height:1.55;white-space:pre-wrap;word-wrap:break-word;margin:0;animation:bai-msg .28s cubic-bezier(.2,.9,.3,1.1)}
+.bai-msg.is-ai{align-self:flex-start;color:#f1edff;background:#ffffff0f;border:1px solid #ffffff17;border-bottom-left-radius:6px;backdrop-filter:blur(12px)}
+.bai-msg.is-me{align-self:flex-end;color:#fff;background:linear-gradient(135deg,#7a3cff,#a35bff 60%,#ff6a3d);border-bottom-right-radius:6px;box-shadow:0 8px 22px -10px #7a3cffcc}
+@keyframes bai-msg{from{opacity:0;transform:translateY(8px) scale(.98)}}
+.bai-typing{display:flex;gap:5px;padding:14px 16px}
+.bai-typing i{width:7px;height:7px;border-radius:50%;background:linear-gradient(135deg,#b794ff,#ff9a6b);animation:bai-dot 1s infinite}
+.bai-typing i:nth-child(2){animation-delay:.15s}.bai-typing i:nth-child(3){animation-delay:.3s}
+@keyframes bai-dot{50%{transform:translateY(-4px);opacity:.5}}
+
+.bai-starters{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
+.bai-starters button{padding:12px;border-radius:14px;border:1px solid #ffffff1a;background:#ffffff0a;color:#f1edff;font-size:13px;font-weight:600;text-align:left;line-height:1.3;cursor:pointer;transition:transform .15s,border-color .15s,background .15s}
+.bai-starters button:hover{transform:translateY(-1px);border-color:#b794ff88;background:#7a3cff1f}
+.bai-starters button:disabled{opacity:.5;cursor:default;transform:none}
+.bai-booked{align-self:stretch;margin:4px 0 0;padding:12px 14px;border-radius:14px;background:linear-gradient(135deg,#3ee08f22,#3ee08f0a);border:1px solid #3ee08f55;color:#bff5d6;font-size:13px;font-weight:600}
+
+.bai-form{display:flex;align-items:flex-end;gap:8px;margin:0 12px 8px;padding:6px 6px 6px 14px;border-radius:20px;background:#ffffff0d;border:1px solid #ffffff1c;transition:border-color .2s,box-shadow .2s}
+.bai-form:focus-within{border-color:#b794ff99;box-shadow:0 0 0 4px #7a3cff22,0 0 24px -6px #7a3cff88}
+.bai-form textarea{flex:1;resize:none;max-height:96px;border:0;padding:9px 0;font:inherit;font-size:14px;line-height:1.4;color:#fff;background:transparent;outline:none}
+.bai-form textarea::placeholder{color:#ffffff66}
+.bai-form button{width:38px;height:38px;border-radius:50%;border:0;background:linear-gradient(135deg,#7a3cff,#ff6a3d);color:#fff;font-size:17px;font-weight:700;cursor:pointer;flex:none;box-shadow:0 6px 16px -6px #7a3cffcc;transition:transform .15s,opacity .15s}
+.bai-form button:hover:not(:disabled){transform:scale(1.06)}
+.bai-form button:disabled{opacity:.35;cursor:default;box-shadow:none}
+.bai-foot{margin:0;padding:0 12px 12px;font-size:11px;color:#ffffff55;text-align:center}
+
+@media (prefers-reduced-motion:reduce){.bai-launch:before,.bai-panel:before{animation:none}.bai-panel,.bai-msg{animation:none}}
+@media (max-width:640px){
+  .bai{right:14px;bottom:14px}
+  .bai.is-open{inset:0;right:0;bottom:0;gap:0}
+  .bai.is-open .bai-panel{width:100%;height:100dvh;border-radius:0}
+  .bai.is-open .bai-launch{display:none}
+}
