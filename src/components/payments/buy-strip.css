@@ -1,0 +1,16 @@
+.buy{padding:72px 16px;background:radial-gradient(50% 60% at 85% 20%,#7a3cff2a,transparent 70%),#0d0a17;color:#f4f1ff}
+.buy-inner{max-width:1080px;margin:0 auto;display:grid;grid-template-columns:1.3fr 1fr;gap:32px;align-items:center}
+.buy-kick{margin:0;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#b794ff;font-weight:700}
+.buy h2{margin:8px 0 0;font-size:clamp(28px,4vw,42px);line-height:1.08;letter-spacing:-.03em;color:#fff}
+.buy-lead{margin:14px 0 0;color:#ffffffbb;font-size:16px;line-height:1.55;max-width:34em}
+.buy ul{margin:18px 0 0;padding:0;list-style:none;display:grid;gap:8px}
+.buy li{position:relative;padding-left:24px;font-size:15px;color:#f1edff}
+.buy li:before{content:"✓";position:absolute;left:0;color:#3ee08f;font-weight:700}
+.buy-card{padding:28px;border-radius:24px;background:linear-gradient(160deg,#ffffff14,#ffffff05);border:1px solid #b794ff44;box-shadow:0 0 60px -24px #7a3cffaa;display:grid;gap:10px}
+.buy-from{margin:0;font-size:13px;color:#ffffff88;font-weight:600}
+.buy-price{margin:0;font-size:clamp(38px,5vw,52px);font-weight:800;letter-spacing:-.04em;background:linear-gradient(90deg,#fff,#d4c2ff 60%,#ffb38f);-webkit-background-clip:text;background-clip:text;color:transparent}
+.buy-btn{display:flex;justify-content:center;padding:15px 20px;border-radius:16px;background:linear-gradient(135deg,#7a3cff,#a35bff 55%,#ff6a3d);color:#fff;font-weight:700;font-size:16px;text-decoration:none;box-shadow:0 14px 34px -12px #7a3cffcc;transition:transform .15s}
+.buy-btn:hover{transform:translateY(-1px)}
+.buy-alt{font-size:14px;color:#b794ff;text-align:center;text-decoration:underline;text-underline-offset:3px}
+.buy-note{margin:0;font-size:12px;color:#ffffff66;text-align:center}
+@media (max-width:820px){.buy-inner{grid-template-columns:1fr}.buy{padding:56px 16px}}
