@@ -1,22 +1,40 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { CONTACT } from '@/lib/site';
 import './bybo-ai.css';
 
 /**
- * BYBO AI on every page. The agent itself runs in /api/bybo-ai; this is the
+ * B, BYBO's AI, on every page. The agent itself runs in /api/bybo-ai; this is the
  * launcher and the conversation. Any element can open it with a starting
  * message: window.dispatchEvent(new CustomEvent('bybo-ai:open', { detail: { prompt } })).
  */
 
-type Turn = { role: 'user' | 'assistant'; text: string };
+type Brief = { title: string; business: string; problem: string; goals: string[]; solution: string; steps: { step: string; detail: string }[]; deliverables: string[]; next_step: string };
+type Turn = { role: 'user' | 'assistant'; text: string; brief?: Brief; actions?: string[] };
 type Slot = { id: string; label: string };
-/** Guided mode: when the model is unreachable, BYBO AI still qualifies and books. */
+/** Guided mode: when the model is unreachable, B still qualifies and books. */
 type Guide = { step: 'business' | 'name' | 'email' | 'phone' | 'slot' | 'done'; need: string; company?: string; name?: string; email?: string; phone?: string; slots?: Slot[] };
 
 const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+
+/** A brief B built for this visitor, shown in the conversation. */
+function BriefCard({ b }: { b: Brief }) {
+  return (
+    <article className="bai-brief">
+      <p className="bai-brief-kick">BYBO brief</p>
+      <h4>{b.title}</h4>
+      <p className="bai-brief-sub">{b.business}</p>
+      <h5>The problem</h5><p>{b.problem}</p>
+      {b.goals.length > 0 && <><h5>Goals</h5><ul>{b.goals.map((g) => <li key={g}>{g}</li>)}</ul></>}
+      <h5>What we&apos;d build</h5><p>{b.solution}</p>
+      {b.steps.length > 0 && <ol>{b.steps.map((s) => <li key={s.step}><b>{s.step}</b> {s.detail}</li>)}</ol>}
+      {b.deliverables.length > 0 && <><h5>What you get</h5><ul>{b.deliverables.map((d) => <li key={d}>{d}</li>)}</ul></>}
+      <p className="bai-brief-next">{b.next_step}</p>
+    </article>
+  );
+}
 
 /** The launcher's B: the logo's letterform in the brand gradient. */
 function GlowB() {
@@ -42,8 +60,8 @@ function Mark({ size = 36 }: { size?: number }) {
   );
 }
 
-const GREETING = "Hi, I'm BYBO AI. We build AI systems, websites, apps and films around how your business works. What would you like to improve?";
-const STARTERS = ['Answer my leads 24/7', 'Automate a workflow', 'Build a website', 'Book a call'];
+const GREETING = "I'm B, BYBO's AI. Tell me what your business does and where it's losing time, leads or money, and I'll show you exactly what we'd build for you.";
+const STARTERS = ["I'm losing leads after hours", 'My team does too much manual work', 'I need a website that sells', 'Build me an app'];
 const KEY = 'bybo-ai:v1';
 
 export function ByboAI() {
@@ -131,7 +149,7 @@ export function ByboAI() {
       const res = await fetch('/api/bybo-ai', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: next, page: window.location.pathname }),
+        body: JSON.stringify({ messages: next.map(({ role, text }) => ({ role, text })), page: window.location.pathname }),
       });
       const data = await res.json().catch(() => ({}));
       if (data.reason === 'rate_limited') {
@@ -139,7 +157,7 @@ export function ByboAI() {
       } else if (!res.ok || !data.ok) {
         startGuide(next, t);
       } else {
-        setTurns([...next, { role: 'assistant', text: data.reply }]);
+        setTurns([...next, { role: 'assistant', text: data.reply, brief: data.brief ?? undefined, actions: data.actions?.length ? data.actions : undefined }]);
         if (data.booked) setBooked(data.booked);
       }
     } catch {
@@ -174,16 +192,22 @@ export function ByboAI() {
   return (
     <div className={open ? 'bai is-open' : 'bai'}>
       {open && (
-        <section className="bai-panel" role="dialog" aria-label="BYBO AI">
+        <section className="bai-panel" role="dialog" aria-label="B, BYBO's AI">
           <header className="bai-head">
             <Mark />
-            <span className="bai-title"><b>BYBO AI</b><small>{busy ? 'Thinking…' : 'Replies in seconds · books calls'}</small></span>
-            <button type="button" className="bai-x" onClick={() => setOpen(false)} aria-label="Close BYBO AI">×</button>
+            <span className="bai-title"><b>B</b><small>{busy ? 'Working on it…' : "BYBO's AI · briefs, plans, bookings"}</small></span>
+            <button type="button" className="bai-x" onClick={() => setOpen(false)} aria-label="Close B">×</button>
           </header>
           <div className="bai-list" ref={list} aria-live="polite">
             <p className="bai-msg is-ai">{GREETING}</p>
-            {turns.map((m, i) => <p key={i} className={m.role === 'user' ? 'bai-msg is-me' : 'bai-msg is-ai'}>{m.text}</p>)}
-            {busy && <p className="bai-msg is-ai bai-typing" aria-label="BYBO AI is typing"><i /><i /><i /></p>}
+            {turns.map((m, i) => (
+              <Fragment key={i}>
+                <p className={m.role === 'user' ? 'bai-msg is-me' : 'bai-msg is-ai'}>{m.text}</p>
+                {m.brief && <BriefCard b={m.brief} />}
+                {m.actions?.map((a) => <p key={a} className="bai-action">{a}</p>)}
+              </Fragment>
+            ))}
+            {busy && <p className="bai-msg is-ai bai-typing" aria-label="B is typing"><i /><i /><i /></p>}
             {booked && <p className="bai-booked">Call booked · {booked}. Check your email for the invite.</p>}
             {!turns.length && (
               <div className="bai-starters">
@@ -203,16 +227,16 @@ export function ByboAI() {
               value={draft}
               maxLength={1500}
               placeholder="Type your message…"
-              aria-label="Message BYBO AI"
+              aria-label="Message B"
               onChange={(e) => setDraft(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); void send(draft); } }}
             />
             <button type="submit" disabled={busy || !draft.trim()} aria-label="Send">↑</button>
           </form>
-          <p className="bai-foot">AI assistant · a person follows up on every booking</p>
+          <p className="bai-foot">B is an AI by BYBO · a person follows up on every lead</p>
         </section>
       )}
-      <button type="button" className="bai-launch" onClick={() => setOpen((o) => !o)} aria-label={open ? 'Close BYBO AI' : 'Open BYBO AI'} aria-expanded={open}>
+      <button type="button" className="bai-launch" onClick={() => setOpen((o) => !o)} aria-label={open ? 'Close B' : "Talk to B, BYBO's AI"} aria-expanded={open}>
         {open ? <span aria-hidden="true">×</span> : <GlowB />}
       </button>
     </div>

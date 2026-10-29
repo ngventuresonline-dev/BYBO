@@ -40,6 +40,17 @@
 .bai-starters button{padding:12px;border-radius:14px;border:1px solid #ffffff1a;background:#ffffff0a;color:#f1edff;font-size:13px;font-weight:600;text-align:left;line-height:1.3;cursor:pointer;transition:transform .15s,border-color .15s,background .15s}
 .bai-starters button:hover{transform:translateY(-1px);border-color:#b794ff88;background:#7a3cff1f}
 .bai-starters button:disabled{opacity:.5;cursor:default;transform:none}
+.bai-action{align-self:flex-start;margin:0;padding:6px 12px;border-radius:99px;background:#3ee08f1a;border:1px solid #3ee08f55;color:#bff5d6;font-size:12px;font-weight:600;animation:bai-msg .3s ease-out}
+.bai-action:before{content:"✓ "}
+.bai-brief{align-self:stretch;margin:2px 0;padding:16px;border-radius:18px;background:linear-gradient(160deg,#ffffff14,#ffffff06);border:1px solid #b794ff44;box-shadow:0 0 30px -12px #7a3cff88;font-size:13px;line-height:1.5;animation:bai-msg .35s ease-out}
+.bai-brief-kick{margin:0;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#b794ff;font-weight:700}
+.bai-brief h4{margin:4px 0 2px;font-size:17px;letter-spacing:-.01em;color:#fff}
+.bai-brief-sub{margin:0 0 10px;color:#ffffff99}
+.bai-brief h5{margin:10px 0 3px;font-size:12px;color:#ffb38f;text-transform:uppercase;letter-spacing:.06em}
+.bai-brief p{margin:0;color:#f1edff}
+.bai-brief ul,.bai-brief ol{margin:0;padding-left:18px;color:#f1edff}
+.bai-brief li{margin:2px 0}
+.bai-brief-next{margin-top:12px!important;padding:10px 12px;border-radius:12px;background:linear-gradient(135deg,#7a3cff44,#ff6a3d33);font-weight:600}
 .bai-booked{align-self:stretch;margin:4px 0 0;padding:12px 14px;border-radius:14px;background:linear-gradient(135deg,#3ee08f22,#3ee08f0a);border:1px solid #3ee08f55;color:#bff5d6;font-size:13px;font-weight:600}
 
 .bai-form{display:flex;align-items:flex-end;gap:8px;margin:0 12px 8px;padding:6px 6px 6px 14px;border-radius:20px;background:#ffffff0d;border:1px solid #ffffff1c;transition:border-color .2s,box-shadow .2s}
