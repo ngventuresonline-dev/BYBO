@@ -56,7 +56,7 @@ export default async function PayResult({ searchParams }: { searchParams: Promis
             <p className="pay-kick">Payment didn&apos;t go through</p>
             <h1>No money was taken.</h1>
             <p className="pay-sub">If your bank shows a debit, it is usually reversed automatically. You can try again below.</p>
-            <a className="pay-btn" href={`/pay/${token}`}>Try again</a>
+            <Link className="pay-btn" href="/pay">Try again</Link>
           </>
         ) : (
           <>

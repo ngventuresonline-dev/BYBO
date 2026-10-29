@@ -1,9 +1,9 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
 
 /**
- * Payment links without a database: the link carries its own details
- * (who, what, how much), signed with PAYMENTS_LINK_SECRET so nobody can
- * change the amount. Links expire after LINK_DAYS.
+ * Signed payment details, no database: who is paying, for what and how much,
+ * signed with PAYMENTS_LINK_SECRET and carried in PhonePe's return URL, so the
+ * result page can check PhonePe's confirmed amount against what was asked for.
  */
 
 export type PayLink = {
@@ -17,7 +17,6 @@ export type PayLink = {
   exp: number;       // unix seconds
 };
 
-export const LINK_DAYS = 30;
 export const MIN_INR = 1;
 export const MAX_INR = 5_000_000;
 
@@ -47,15 +46,6 @@ export function readLink(token: string): PayLink | null {
   } catch {
     return null;
   }
-}
-
-/** True when the admin key matches PAYMENTS_ADMIN_KEY, compared in constant time. */
-export function adminOk(key: string) {
-  const real = process.env.PAYMENTS_ADMIN_KEY ?? '';
-  if (real.length < 8) return false;
-  const a = Buffer.from(createHmac('sha256', 'k').update(key).digest('hex'));
-  const b = Buffer.from(createHmac('sha256', 'k').update(real).digest('hex'));
-  return timingSafeEqual(a, b);
 }
 
 export const inr = (n: number) => `₹${n.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
