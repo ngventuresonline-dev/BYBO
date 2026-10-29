@@ -118,9 +118,18 @@
 .h3 .h3-pr-grid span{font:700 12px Arial,sans-serif;letter-spacing:.14em;color:var(--mint)}
 .h3 .h3-pr-grid h3{margin-top:24px;font:700 24px Arial,Helvetica,sans-serif;letter-spacing:-.03em;color:#fff}
 .h3 .h3-pr-grid p{margin-top:8px;font-size:15px;line-height:1.55;color:#f4f2eeb3}
-.h3 .h3-inds{margin-top:56px;display:grid;gap:16px}
-.h3 .h3-inds ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
-.h3 .h3-inds li{padding:9px 16px;border-radius:999px;border:1px solid var(--line);background:#ffffff08;font-size:14px;font-weight:700;color:#f4f2eecc}
+
+.h3 .h3-inds-head{margin-top:90px}
+.h3 .h3-inds{display:grid;gap:12px}
+.h3 .h3-ind{display:grid;align-content:start;gap:8px;padding:22px;border-radius:20px;background:linear-gradient(170deg,#10141d,#0a0d13);border:1px solid var(--line);text-decoration:none;color:#fff;transition:border-color .3s,transform .3s}
+.h3 .h3-ind:hover{border-color:#7cf2d455;transform:translateY(-3px)}
+.h3 .h3-ind small{font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--mint)}
+.h3 .h3-ind strong{font:700 21px/1.15 Arial,Helvetica,sans-serif;letter-spacing:-.02em}
+.h3 .h3-ind span{font-size:14.5px;line-height:1.5;color:#f4f2eea6}
+.h3 .h3-ind i{display:flex;align-items:center;gap:6px;margin-top:8px;padding-top:12px;border-top:1px solid var(--line);font-style:normal;font-size:13.5px;font-weight:700;color:#f4f2eee0}
+.h3 .h3-ind i svg{flex:none;color:var(--mint);margin-left:auto}
+@media (min-width:760px){.h3 .h3-inds{grid-template-columns:1fr 1fr}}
+@media (min-width:1100px){.h3 .h3-inds{grid-template-columns:repeat(3,1fr)}}
 
 /* ================= faq ================= */
 .h3 .h3-faq{padding:90px 0}
@@ -139,6 +148,70 @@
 @keyframes h3-drift{to{transform:translate(5%,-4%) scale(1.1)}}
 .h3 .h3-close .container{display:grid;justify-items:center;gap:22px}
 .h3 .h3-close h2{font-size:clamp(2.8rem,12vw,7rem);max-width:13ch}
+
+
+/* offering chips in the hero */
+.h3 .h3-offer-chips{display:flex;flex-wrap:wrap;gap:8px}
+.h3 .h3-offer-chips a{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:#ffffff0d;backdrop-filter:blur(8px);font-size:13.5px;font-weight:700;color:#f4f2eed9;text-decoration:none;transition:border-color .2s,background .2s}
+.h3 .h3-offer-chips a:hover{border-color:#7cf2d466;background:#7cf2d414}
+.h3 .h3-offer-chips svg{color:var(--mint)}
+
+/* four offerings */
+.h3 .h3-offers{display:grid;gap:16px}
+.h3 .h3-offer{display:grid;border-radius:26px;overflow:hidden;background:#0c0f16;border:1px solid var(--line);text-decoration:none;color:#fff;transition:border-color .3s,transform .4s cubic-bezier(.16,1,.3,1)}
+.h3 .h3-offer:hover{border-color:#7cf2d455;transform:translateY(-4px)}
+.h3 .h3-offer-art{position:relative;display:block;height:220px;overflow:hidden}
+.h3 .h3-offer-art img,.h3 .h3-offer-art video{display:block;width:100%;height:100%;object-fit:cover;transition:transform 1.4s cubic-bezier(.16,1,.3,1)}
+.h3 .h3-offer:hover .h3-offer-art img,.h3 .h3-offer:hover .h3-offer-art video{transform:scale(1.06)}
+.h3 .h3-offer-art::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#0c0f16 0%,#0c0f1600 60%)}
+.h3 .h3-offer-body{display:grid;gap:12px;padding:6px 22px 24px}
+.h3 .h3-offer-top{display:flex;justify-content:space-between;align-items:center;color:#ffffff99}
+.h3 .h3-offer-top small{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--mint)}
+.h3 .h3-offer-film .h3-offer-top small{color:var(--amber)}
+.h3 .h3-offer strong{font:700 clamp(1.5rem,6vw,2.2rem)/1.05 Arial,Helvetica,sans-serif;letter-spacing:-.04em;max-width:18ch}
+.h3 .h3-offer-text{font-size:15px;line-height:1.55;color:#f4f2eeb3}
+.h3 .h3-offer-get{display:grid;gap:8px;padding:14px 0;border-block:1px solid var(--line)}
+.h3 .h3-offer-get span{display:flex;align-items:flex-start;gap:9px;font-size:14px;line-height:1.4;color:#f4f2eee0}
+.h3 .h3-offer-get svg{flex:none;margin-top:2px;color:var(--mint)}
+.h3 .h3-offer-best{font-size:13.5px;line-height:1.5;color:#f4f2ee99}
+.h3 .h3-offer-best b{color:#fff}
+.h3 .h3-sys-head{display:flex;justify-content:space-between;align-items:center;margin-top:56px}
+
+/* ways to work with us */
+.h3 .h3-engage{padding:90px 0}
+.h3 .h3-engage-grid{display:grid;gap:14px}
+.h3 .h3-engage-grid article{position:relative;padding:28px;border-radius:24px;background:linear-gradient(170deg,#121827,#0b0e15);border:1px solid var(--line);overflow:hidden}
+.h3 .h3-engage-grid article::before{content:"";position:absolute;inset:0 0 auto;height:2px;background:linear-gradient(90deg,var(--mint),var(--blue),transparent)}
+.h3 .h3-engage-n{font:700 12px Arial,sans-serif;letter-spacing:.14em;color:var(--mint)}
+.h3 .h3-engage-grid h3{margin-top:22px;font:700 clamp(1.8rem,7vw,2.6rem)/1 Arial,Helvetica,sans-serif;letter-spacing:-.04em;color:#fff}
+.h3 .h3-engage-lead{margin-top:8px;font-family:Georgia,serif;font-style:italic;font-size:19px;color:var(--mint)}
+.h3 .h3-engage-grid p{margin-top:10px;font-size:15px;line-height:1.55;color:#f4f2eeb3}
+.h3 .h3-engage-grid ul{list-style:none;margin:18px 0 0;padding:16px 0 0;border-top:1px solid var(--line);display:grid;gap:9px}
+.h3 .h3-engage-grid li{display:flex;gap:9px;font-size:14px;color:#f4f2eee0}
+.h3 .h3-engage-grid li svg{flex:none;margin-top:2px;color:var(--mint)}
+
+/* who we work with */
+.h3 .h3-for{display:grid;gap:12px}
+.h3 .h3-for article{padding:22px 24px;border-radius:20px;border:1px solid var(--line);background:#ffffff06}
+.h3 .h3-for h3{font:700 20px Arial,Helvetica,sans-serif;letter-spacing:-.02em;color:#fff}
+.h3 .h3-for p{margin-top:6px;font-size:14.5px;line-height:1.5;color:#f4f2eeb3}
+.h3 .h3-clients{display:flex;flex-wrap:wrap;align-items:center;gap:14px 28px;margin:36px 0 90px;padding:22px 0;border-block:1px solid var(--line)}
+.h3 .h3-clients .h3-kicker{margin:0}
+.h3 .h3-clients ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:12px 34px}
+.h3 .h3-clients li{font:700 clamp(1.3rem,5vw,1.8rem) Arial,Helvetica,sans-serif;letter-spacing:-.03em;color:#f4f2eeb3}
+.h3 .h3-head-tight{margin-bottom:28px}
+.h3 .h3-close-actions{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:18px 28px}
+
+@media (min-width:760px){
+  .h3 .h3-offers{grid-template-columns:1fr 1fr}
+  .h3 .h3-engage-grid{grid-template-columns:repeat(3,1fr)}
+  .h3 .h3-for{grid-template-columns:1fr 1fr}
+  .h3 .h3-engage{padding:130px 0}
+}
+@media (min-width:1100px){
+  .h3 .h3-offer-art{height:280px}
+  .h3 .h3-for{grid-template-columns:repeat(4,1fr)}
+}
 
 /* ================= tablet ================= */
 @media (min-width:760px){

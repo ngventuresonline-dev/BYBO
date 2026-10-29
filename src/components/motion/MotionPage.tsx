@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
-import { ArrowUpRight, Play, X, Check, ChevronLeft, ChevronRight, Volume2 } from 'lucide-react';
+import { ArrowUpRight, Play, X, Check, ChevronLeft, ChevronRight, Volume2, VolumeX } from 'lucide-react';
 import './motion.css';
 
 type Kind = 'Brand films' | 'Product ads' | 'Social series' | 'Explainers & 3D' | 'Launch & promos';
@@ -63,6 +63,65 @@ const STEPS: [string, string][] = [
   ['Review', 'You see the cut before anything is final.'],
   ['Deliver', 'Every ratio and length you need, ready to post.'],
 ];
+
+// chapters of the PROXe launch film, in seconds
+const CHAPTERS: [number, string, string][] = [
+  [0, 'Launch', 'The reveal'],
+  [14, 'Every channel', 'Calls, WhatsApp, Instagram and bookings in one stream'],
+  [29, 'It reaches you', 'A real number, a real voice, a calm caller'],
+  [58, 'One place', 'The dashboard behind every conversation'],
+  [72, 'Audiences', 'People like your booked leads, sent back to your ads'],
+];
+
+/** The PROXe launch film in a phone, with chapters that jump to each part. */
+function Spotlight({ onOpen }: { onOpen: () => void }) {
+  const ref = useRef<HTMLVideoElement>(null);
+  const [t, setT] = useState(0);
+  const [muted, setMuted] = useState(true);
+  useEffect(() => {
+    const v = ref.current; if (!v) return;
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { if (!v.src) v.src = '/motion/proxe-launch.mp4'; if (!still) v.play().catch(() => {}); } else v.pause();
+    }, { rootMargin: '200px 0px', threshold: .01 });
+    io.observe(v); return () => io.disconnect();
+  }, []);
+  const at = CHAPTERS.reduce((k, c, i) => (t >= c[0] ? i : k), 0);
+  const jump = (sec: number) => { const v = ref.current; if (!v) return; v.currentTime = sec; v.play().catch(() => {}); };
+  return (
+    <section className="mo-spot" aria-labelledby="mo-spot-title">
+      <div className="mo-spot-glow" aria-hidden />
+      <div className="container mo-spot-grid">
+        <div className="mo-spot-copy">
+          <p className="mo-eyebrow">Product launch · PROXe</p>
+          <h2 id="mo-spot-title">A launch told <em>through the product.</em></h2>
+          <p className="mo-sub">Ninety seconds that show what the product does, on the screens it does it on. Pick a chapter to jump to it.</p>
+          <ol className="mo-chapters">
+            {CHAPTERS.map(([sec, name, d], i) => (
+              <li key={name}>
+                <button type="button" data-on={i === at ? '' : undefined} onClick={() => jump(sec)}>
+                  <time>{`${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`}</time>
+                  <span><b>{name}</b><small>{d}</small></span>
+                </button>
+              </li>
+            ))}
+          </ol>
+          <div className="mo-actions">
+            <button type="button" className="mo-btn" onClick={onOpen}><Play size={18} fill="currentColor" /> Watch full screen</button>
+          </div>
+        </div>
+        <div className="mo-spot-stage">
+          <div className="mo-device">
+            <video ref={ref} poster="/motion/proxe-launch.jpg" muted={muted} loop playsInline preload="none" onTimeUpdate={e => setT(e.currentTarget.currentTime)} aria-label="PROXe launch film" />
+            <span className="mo-device-island" />
+            <button type="button" className="mo-device-sound" onClick={() => setMuted(m => !m)} aria-label={muted ? 'Turn sound on' : 'Mute'}>{muted ? <VolumeX size={18} /> : <Volume2 size={18} />}</button>
+            <span className="mo-device-bar"><i style={{ width: `${Math.min(100, t / 87.3 * 100)}%` }} /></span>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
 
 /** A muted loop that loads only when it nears the screen and plays only while on it. */
 function Loop({ id, className, eager = false }: { id: string; className?: string; eager?: boolean }) {
@@ -156,6 +215,8 @@ export function MotionPage() {
           </button>
         </div>
       </section>
+
+      <Spotlight onOpen={() => setOpen(byId('proxe-launch'))} />
 
       {/* ---------- the work ---------- */}
       <section className="mo-work" id="work" aria-labelledby="mo-work-title">

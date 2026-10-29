@@ -52,6 +52,34 @@
 .mo-page .mo-feature-cta{display:flex;align-items:center;gap:14px;margin-top:6px;font-weight:700;color:#fff}
 .mo-page .mo-feature:hover .mo-play{transform:scale(1.1)}
 
+/* ================= spotlight: the PROXe launch ================= */
+.mo-page .mo-spot{position:relative;padding:110px 0 40px;overflow:hidden;isolation:isolate}
+.mo-page .mo-spot-glow{position:absolute;inset:0;z-index:-1;background:radial-gradient(ellipse 45% 50% at 70% 50%,#7b5cff40,transparent 70%),radial-gradient(ellipse 35% 40% at 85% 70%,#ff7ad926,transparent 70%)}
+.mo-page .mo-spot-grid{display:grid;gap:40px}
+.mo-page .mo-spot-copy{display:grid;gap:18px;align-content:start}
+.mo-page .mo-chapters{list-style:none;margin:8px 0 0;padding:0;display:grid;border-top:1px solid var(--line)}
+.mo-page .mo-chapters button{all:unset;box-sizing:border-box;display:grid;grid-template-columns:52px 1fr;gap:12px;width:100%;padding:14px 4px;border-bottom:1px solid var(--line);cursor:pointer;color:#f5f4f080;transition:color .3s,background .3s}
+.mo-page .mo-chapters button:hover{color:#fff}
+.mo-page .mo-chapters button[data-on]{color:#fff;background:linear-gradient(90deg,#ffb5470f,transparent)}
+.mo-page .mo-chapters time{font:13px ui-monospace,SFMono-Regular,Menlo,monospace;padding-top:3px;color:inherit}
+.mo-page .mo-chapters button[data-on] time{color:var(--amber)}
+.mo-page .mo-chapters span{display:grid;gap:3px}
+.mo-page .mo-chapters b{font:700 18px Arial,Helvetica,sans-serif;letter-spacing:-.02em}
+.mo-page .mo-chapters small{font-size:13.5px;line-height:1.45;color:#f5f4f080}
+.mo-page .mo-spot-stage{display:flex;justify-content:center;perspective:1400px}
+.mo-page .mo-device{position:relative;width:min(70vw,330px);aspect-ratio:478/850;padding:10px;border-radius:44px;background:linear-gradient(150deg,#424855 0%,#171a21 20%,#0a0b0f 58%,#2b303a 100%);box-shadow:inset 0 0 0 1px #ffffff47,inset 0 0 0 3px #040507,0 60px 120px -40px #000,0 0 160px -30px #7b5cffaa;transform:rotateY(-10deg) rotateX(4deg);transition:transform .8s cubic-bezier(.16,1,.3,1)}
+.mo-page .mo-device:hover{transform:none}
+.mo-page .mo-device video{border-radius:34px;background:#000}
+.mo-page .mo-device-island{position:absolute;top:20px;left:50%;width:30%;height:22px;translate:-50% 0;border-radius:99px;background:#000}
+.mo-page .mo-device-sound{position:absolute;right:22px;bottom:30px;display:grid;place-items:center;width:42px;height:42px;border:0;border-radius:50%;background:#ffffffe0;color:#07070a;cursor:pointer}
+.mo-page .mo-device-bar{position:absolute;left:28px;right:76px;bottom:49px;height:3px;border-radius:3px;background:#ffffff33;overflow:hidden}
+.mo-page .mo-device-bar i{display:block;height:100%;background:var(--amber);transition:width .25s linear}
+@media (min-width:1100px){
+  .mo-page .mo-spot{padding:150px 0 60px}
+  .mo-page .mo-spot-grid{grid-template-columns:1fr 1fr;align-items:center;gap:80px}
+  .mo-page .mo-device{width:360px}
+}
+
 /* ================= the work ================= */
 .mo-page .mo-work{padding:110px 0 90px}
 .mo-page .mo-filters{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:0 16px}

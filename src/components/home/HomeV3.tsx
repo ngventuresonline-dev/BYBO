@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence, useInView, useScroll, useTransform, useReducedMotion } from 'framer-motion';
-import { ArrowRight, ArrowUpRight, Check, Plus, UserCheck, Play } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, Check, Plus, UserCheck, Play, Cpu, Globe, Smartphone, Clapperboard } from 'lucide-react';
 import { services, industries } from '@/lib/redesign';
 import './home-v3.css';
 
@@ -74,16 +74,19 @@ function Hero() {
       <Aurora />
       <motion.div className="container h3-hero-grid" style={reduce ? undefined : { y, opacity: o }}>
         <div className="h3-hero-copy">
-          <p className="h3-pill h3-in"><span className="h3-dot" /> AI SYSTEMS · WEBSITES · APPS · FILMS</p>
+          <p className="h3-pill h3-in"><span className="h3-dot" /> BYBO · AI SYSTEMS & DIGITAL STUDIO · BENGALURU</p>
           <h1>
             <span className="h3-line"><span className="h3-in" style={{ animationDelay: '.05s' }}>Your team has</span></span>
             <span className="h3-line"><em className="h3-in" style={{ animationDelay: '.15s' }}>better things to do.</em></span>
           </h1>
-          <p className="h3-lede h3-in" style={{ animationDelay: '.3s' }}>We build the systems that handle the recurring work, connect your tools and bring the right decisions back to your people. Plus the websites, apps and films that bring the customers in.</p>
+          <p className="h3-lede h3-in" style={{ animationDelay: '.3s' }}>BYBO designs and builds AI systems, websites, apps and brand films for growing Indian businesses. The systems take recurring work off your team. The rest brings the customers in.</p>
           <div className="h3-actions h3-in" style={{ animationDelay: '.42s' }}>
-            <Link className="h3-btn" href="/apply">Talk to BYBO <ArrowRight size={19} /></Link>
-            <a className="h3-link" href="#build">See what we build</a>
+            <Link className="h3-btn" href="/apply">Start a project <ArrowRight size={19} /></Link>
+            <a className="h3-link" href="#build">What we do</a>
           </div>
+          <nav className="h3-offer-chips h3-in" style={{ animationDelay: '.52s' }} aria-label="Our offerings">
+            {OFFERS.map(o => <Link key={o.k} href={o.href}><o.Icon size={16} />{o.chip}</Link>)}
+          </nav>
         </div>
         <div className="h3-in" style={{ animationDelay: '.35s' }}><Feed /></div>
       </motion.div>
@@ -102,33 +105,67 @@ function Marquee() {
   );
 }
 
-/* ---------------- what we build ---------------- */
+/* ---------------- what we do ---------------- */
+
+const OFFERS = [
+  {
+    k: 'ai', chip: 'AI systems', Icon: Cpu, href: '/systems', kicker: 'AI Systems',
+    title: 'Systems that take recurring work off your team.',
+    body: 'Enquiries answered, documents read, approvals routed, reports built and knowledge on tap, connected to the tools you already run.',
+    get: ['A Blueprint of the work and where AI helps', 'The system built, connected and tested on your data', 'Approval steps for anything that matters', 'Monitoring, logs and a team that keeps it running'],
+    best: 'Operations, sales and support teams carrying repeat work at volume.',
+  },
+  {
+    k: 'web', chip: 'Websites', Icon: Globe, href: '/systems/website-design-development', kicker: 'Website Studio',
+    title: 'Websites that win the enquiry.',
+    body: 'Strategy, copy, design and build from one studio, mobile first and made to convert.',
+    get: ['Positioning and page structure', 'Copy written with you', 'Design for every screen', 'Build, launch and handover'],
+    best: 'Brands and businesses whose website should sell, not just exist.',
+  },
+  {
+    k: 'app', chip: 'Apps', Icon: Smartphone, href: '/systems/app-design-development', kicker: 'App Studio',
+    title: 'Apps your teams and customers run on.',
+    body: 'iPhone, Android and web apps for field teams, operations and customers, from prototype to store.',
+    get: ['Product scoping and prototype', 'Design and engineering', 'Back office and admin', 'Store submission and support'],
+    best: 'Companies digitising field work, operations or a customer service.',
+  },
+  {
+    k: 'film', chip: 'Films', Icon: Clapperboard, href: '/systems/motion-studio', kicker: 'Motion Studio',
+    title: 'Brand films without the film crew.',
+    body: 'Launch films, product ads, platform promos and social series, made by a production system and directed by people.',
+    get: ['Script and style frames', 'Production and edit', 'Every ratio and cut-down', 'Series for the feed'],
+    best: 'Launches, campaigns and brands that need to be seen.',
+  },
+];
 
 function Build() {
   return (
     <section className="h3-build" id="build" aria-labelledby="h3-build-title">
       <div className="container">
         <div className="h3-head">
-          <p className="h3-kicker">What we build</p>
-          <h2 id="h3-build-title">Seven systems. <em>Three studios.</em></h2>
-          <p className="h3-sub">Systems that take the recurring work off your team, and studios that make the business impossible to ignore.</p>
+          <p className="h3-kicker">What we do</p>
+          <h2 id="h3-build-title">One studio. <em>Four ways to grow.</em></h2>
+          <p className="h3-sub">Most companies hire four vendors for this. BYBO is one team that builds the systems behind the business and the experiences in front of it, so they work together.</p>
         </div>
 
-        <div className="h3-studios">
-          <Link href="/systems/website-design-development" className="h3-studio h3-st-web">
-            <span className="h3-st-art"><Image src="/images/studio/site.webp" alt="" fill sizes="(max-width: 1100px) 92vw, 33vw" /></span>
-            <span className="h3-st-copy"><small>Website Studio</small><strong>Websites people can’t scroll past.</strong><i>Explore <ArrowUpRight size={16} /></i></span>
-          </Link>
-          <Link href="/systems/app-design-development" className="h3-studio h3-st-app">
-            <span className="h3-st-art"><Image src="/images/app-studio/e-warehouse.webp" alt="" fill sizes="(max-width: 1100px) 92vw, 33vw" /></span>
-            <span className="h3-st-copy"><small>App Studio</small><strong>Apps that run the business.</strong><i>Explore <ArrowUpRight size={16} /></i></span>
-          </Link>
-          <Link href="/systems/motion-studio" className="h3-studio h3-st-motion">
-            <span className="h3-st-art"><HoverLoop id="noor" /></span>
-            <span className="h3-st-copy"><small>Motion Studio</small><strong>Ideas, on film. Without the crew.</strong><i>Explore <ArrowUpRight size={16} /></i></span>
-          </Link>
+        <div className="h3-offers">
+          {OFFERS.map((o, i) => (
+            <Link key={o.k} href={o.href} className={`h3-offer h3-offer-${o.k}`}>
+              <span className="h3-offer-art">
+                {o.k === 'film' ? <HoverLoop id="noor" /> : <Image src={['/images/services/custom-ai-platforms.webp', '/images/studio/site.webp', '/images/app-studio/cover.webp'][i]} alt="" fill sizes="(max-width: 1100px) 92vw, 50vw" />}
+              </span>
+              <span className="h3-offer-body">
+                <span className="h3-offer-top"><small><o.Icon size={15} /> {o.kicker}</small><ArrowUpRight size={20} /></span>
+                <strong>{o.title}</strong>
+                <span className="h3-offer-text">{o.body}</span>
+                <span className="h3-offer-get">{o.get.map(g => <span key={g}><Check size={14} />{g}</span>)}</span>
+                <span className="h3-offer-best"><b>Best for</b> {o.best}</span>
+              </span>
+            </Link>
+          ))}
         </div>
 
+        <div className="h3-sys-head"><p className="h3-kicker">The seven AI systems</p><Link className="h3-link" href="/systems">Compare them <ArrowUpRight size={16} /></Link></div>
         <div className="h3-systems">
           {SYSTEMS.map((s, i) => (
             <Link key={s.slug} href={`/systems/${s.slug}`} className="h3-system">
@@ -184,28 +221,31 @@ function Work() {
   );
 }
 
-/* ---------------- how it works ---------------- */
+/* ---------------- ways to work with us ---------------- */
 
-const STEPS: [string, string][] = [
-  ['Blueprint', 'We map the work, pick the first system worth building and agree the scope and quote in writing.'],
-  ['Build', 'Your tools connected, your rules encoded, tested on real cases from your business.'],
-  ['Review', 'Your people try it and decide what it may do alone and what must come to them.'],
-  ['Run', 'Launched, monitored and improved. Every action recorded, every exception routed.'],
+const ENGAGE: { t: string; lead: string; d: string; gets: string[] }[] = [
+  { t: 'Blueprint', lead: 'Know before you commit.', d: 'We study the work, the tools and the numbers, then show you where a system or product pays back first.', gets: ['Process and opportunity map', 'Recommended first build', 'Fixed scope and quote in writing'] },
+  { t: 'Build', lead: 'One accountable team.', d: 'Design, engineering, AI and content under one roof, tested on real cases from your business, with demos as we go.', gets: ['A named lead and team', 'Regular working demos', 'Your sign-off before anything goes live'] },
+  { t: 'Run', lead: 'Keep it getting better.', d: 'We operate, monitor and improve what we built, so it keeps pace with the business.', gets: ['Monitoring and support', 'Monthly improvements', 'Reports on what changed'] },
 ];
 
-function Steps() {
+function Engage() {
   return (
-    <section className="h3-steps" aria-labelledby="h3-steps-title">
+    <section className="h3-engage" aria-labelledby="h3-engage-title">
       <div className="container">
         <div className="h3-head">
-          <p className="h3-kicker">How it works</p>
-          <h2 id="h3-steps-title">Start with one problem. <em>Keep it working.</em></h2>
+          <p className="h3-kicker">Ways to work with us</p>
+          <h2 id="h3-engage-title">Start small. <em>Scale what works.</em></h2>
+          <p className="h3-sub">From a single website or system to a programme across teams. Every engagement starts with a written scope, so the budget is agreed before the work begins.</p>
         </div>
-        <div className="h3-step-cards">
-          {STEPS.map(([t, d], i) => (
-            <article key={t} className="h3-step" style={{ top: `calc(96px + ${i * 22}px)` }} data-gate={i === 2 ? '' : undefined}>
-              <span className="h3-step-n">{String(i + 1).padStart(2, '0')}</span>
-              <div><h3>{t}{i === 2 && <small>Your sign-off</small>}</h3><p>{d}</p></div>
+        <div className="h3-engage-grid">
+          {ENGAGE.map((e, i) => (
+            <article key={e.t}>
+              <span className="h3-engage-n">{String(i + 1).padStart(2, '0')}</span>
+              <h3>{e.t}</h3>
+              <p className="h3-engage-lead">{e.lead}</p>
+              <p>{e.d}</p>
+              <ul>{e.gets.map(g => <li key={g}><Check size={15} />{g}</li>)}</ul>
             </article>
           ))}
         </div>
@@ -214,24 +254,49 @@ function Steps() {
   );
 }
 
-/* ---------------- principles, industries, faq ---------------- */
+/* ---------------- who we work with, and how we build ---------------- */
+
+const FOR: [string, string][] = [
+  ['Growing companies', 'Teams of 20 to 2,000 where manual work is slowing growth.'],
+  ['Funded startups', 'Founders who need product, site and launch film from one team.'],
+  ['Multi-location brands', 'Outlets, clinics and stores that need one way of working.'],
+  ['Enterprise teams', 'A department proving a system before it scales across the company.'],
+];
 
 function Principles() {
   const items: [string, string][] = [
     ['People decide', 'Money, commitments and anything sensitive wait for a named person. The system prepares; your team approves.'],
     ['Everything is recorded', 'What arrived, what the system did and who approved it, kept where you can check it.'],
-    ['Built on your tools', 'We connect what you already use: accounts, WhatsApp, CRM, spreadsheets and your own software.'],
+    ['Built on your tools', 'Accounts, WhatsApp, CRM, spreadsheets and your own software. We connect what you already run.'],
   ];
   return (
     <section className="h3-principles">
       <div className="container">
-        <div className="h3-head"><p className="h3-kicker">How we build</p><h2>Automation <em>with judgement.</em></h2></div>
+        <div className="h3-head"><p className="h3-kicker">Who we work with</p><h2>Businesses with <em>serious ambitions.</em></h2></div>
+        <div className="h3-for">
+          {FOR.map(([t, d]) => <article key={t}><h3>{t}</h3><p>{d}</p></article>)}
+        </div>
+        <div className="h3-clients">
+          <p className="h3-kicker">Work for</p>
+          <ul>{['Lokazen', 'PROXe', 'Scan2Kare', 'WOWBUS'].map(c => <li key={c}>{c}</li>)}</ul>
+        </div>
+        <div className="h3-head h3-head-tight"><p className="h3-kicker">How we build</p><h2>Automation <em>with judgement.</em></h2></div>
         <div className="h3-pr-grid">
           {items.map(([t, d], i) => <article key={t}><span>{String(i + 1).padStart(2, '0')}</span><h3>{t}</h3><p>{d}</p></article>)}
         </div>
+        <div className="h3-head h3-head-tight h3-head-row h3-inds-head">
+          <div><p className="h3-kicker">Industries</p><h2>Built for how <em>your sector works.</em></h2></div>
+          <Link className="h3-link" href="/industries">All industries <ArrowUpRight size={16} /></Link>
+        </div>
         <div className="h3-inds">
-          <p className="h3-kicker">Built for</p>
-          <ul>{industries.map(x => <li key={x.name}>{x.name}</li>)}</ul>
+          {industries.map(x => (
+            <Link key={x.name} href="/industries" className="h3-ind">
+              <small>{x.group}</small>
+              <strong>{x.name}</strong>
+              <span>{x.pain}</span>
+              <i>{x.uses[0]} <ArrowUpRight size={14} /></i>
+            </Link>
+          ))}
         </div>
       </div>
     </section>
@@ -239,11 +304,12 @@ function Principles() {
 }
 
 const FAQ: [string, string][] = [
-  ['Where do we start?', 'With one recurring problem. We map it in a Blueprint, agree whether it is worth a system, and quote the first build in writing.'],
+  ['What exactly is BYBO?', 'An AI systems and digital studio in Bengaluru. We build AI systems that handle recurring business work, and the websites, apps and films that bring customers in. One team, from strategy to launch and beyond.'],
+  ['What size of project do you take on?', 'Focused projects with a clear owner, from a single website or system to multi-system programmes across teams. We scope each one with you and quote once, in writing, before any paid work starts.'],
+  ['Where do we start?', 'With a Blueprint, or with one clear problem. We map the work, recommend the first build and agree a fixed scope.'],
   ['Will AI make decisions for our business?', 'Only the routine ones you allow. Anything involving money, commitments or sensitive information waits for a named person.'],
   ['Do we have to change our tools?', 'No. We build around what you already use and agree exactly what the system may read, change and escalate.'],
-  ['How much does it cost?', 'It depends on the work. We scope it with you and quote once, in writing, before any paid work starts.'],
-  ['Do you also build websites, apps and films?', 'Yes. The Website, App and Motion studios sit alongside the systems, so the same team can bring customers in and handle what follows.'],
+  ['Who owns what you build?', 'Ownership, accounts and handover are agreed in writing in the scope, before work starts.'],
 ];
 
 function Faq() {
@@ -264,16 +330,16 @@ export function HomeV3() {
       <Marquee />
       <Build />
       <Work />
-      <Steps />
+      <Engage />
       <Principles />
       <Faq />
       <section className="h3-close">
         <div className="h3-close-glow" aria-hidden />
         <div className="container">
           <p className="h3-kicker">Start here</p>
-          <h2>Bring us one <em>recurring problem.</em></h2>
-          <p className="h3-sub">We will help you decide whether it needs a system, a website, an app or a film. The first conversation is free.</p>
-          <Link className="h3-btn" href="/apply">Talk to BYBO <ArrowRight size={19} /></Link>
+          <h2>Let’s build what <em>moves your business.</em></h2>
+          <p className="h3-sub">Tell us what you are trying to change. You will hear back from a person within one working day, with an honest view of whether we are the right team.</p>
+          <div className="h3-close-actions"><Link className="h3-btn" href="/apply">Start a project <ArrowRight size={19} /></Link><Link className="h3-link" href="/blueprint">About the Blueprint</Link></div>
         </div>
       </section>
     </div>
