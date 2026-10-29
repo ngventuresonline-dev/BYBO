@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { pageMetadata } from '@/lib/seo';
 import { CONTACT } from '@/lib/site';
+import { ChatButton } from './ChatButton';
 import './night-desk.css';
 
 export const metadata = pageMetadata({
@@ -80,7 +81,7 @@ function Cta({ compact }: { compact?: boolean }) {
       <h2>{compact ? 'Rather have it built for you?' : 'Want your Night Desk built and running?'}</h2>
       <p>We connect your channels, train the agent on your business, wire your calendar and CRM, and keep a person in the loop from day one. Tell us where your leads come from and we&apos;ll map your flow with you. The first conversation is free.</p>
       <div className="nd-cta-row">
-        <a className="nd-btn" href={WA} target="_blank" rel="noopener noreferrer">Map my Night Desk on WhatsApp</a>
+        <ChatButton className="nd-btn" fallback={WA} />
         <Link className="nd-btn is-ghost" href={BRIEF}>Send a 2-minute brief</Link>
       </div>
     </section>
