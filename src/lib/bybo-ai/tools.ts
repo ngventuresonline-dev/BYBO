@@ -29,8 +29,8 @@ export const TOOLS = [
     input_schema: {
       type: 'object',
       properties: {
-        title: { type: 'string', description: 'e.g. "A Night Desk for Smile Dental"' },
-        business: { type: 'string', description: 'Who they are, in one line' },
+        title: { type: 'string', description: 'Use the business name only if the visitor gave it, e.g. "A Night Desk for your clinics"' },
+        business: { type: 'string', description: 'Who they are, in one line, using only what they said' },
         problem: { type: 'string', description: 'The problem and what it costs them, in their words and numbers' },
         goals: { type: 'array', items: { type: 'string' }, description: '2 to 4 goals' },
         solution: { type: 'string', description: 'The system BYBO would build, 2 sentences' },
