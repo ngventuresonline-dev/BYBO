@@ -1,0 +1,16 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/instant-call",
+      "schedule": "30,45 4 * * 1-6"
+    },
+    {
+      "path": "/api/cron/instant-call",
+      "schedule": "*/15 5-13 * * 1-6"
+    },
+    {
+      "path": "/api/cron/instant-call",
+      "schedule": "0 14 * * 1-6"
+    }
+  ]
+}

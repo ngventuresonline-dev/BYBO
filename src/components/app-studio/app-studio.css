@@ -457,6 +457,9 @@
 .as .as-fields input::placeholder{color:#ffffff4d}
 .as .as-fields select option{color:#111116}
 .as .as-fields input:focus,.as .as-fields select:focus{outline:none;border-color:var(--mint);box-shadow:0 0 0 4px #7cf2d433}
+.as .as-consent{display:flex;align-items:flex-start;gap:10px;margin:4px 0 12px;font-size:13px;line-height:1.45;color:#f4f2eecc}
+.as .as-consent input{width:18px;min-width:18px;height:18px;margin-top:2px;accent-color:#7cf2d4}
+.as .as-fields em{font-style:normal;font-weight:400;color:#f4f2ee66}
 .as .as-platforms{margin:0;padding:0;border:0;min-width:0}
 .as .as-platforms legend{padding:0;margin-bottom:6px}
 .as .as-platforms div{display:flex;flex-wrap:wrap;gap:8px}

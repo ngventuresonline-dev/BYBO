@@ -46,7 +46,9 @@ export function QuickBrief({ id }: { id: string }) {
         <label><span>Work email</span><input name="email" type="email" required autoComplete="email" inputMode="email" placeholder="priya@company.in" /></label>
         <label><span>The site needs to…</span><select name="goal" defaultValue="Get more enquiries">{GOALS.map(g => <option key={g}>{g}</option>)}</select></label>
         <label><span>Current website <em>(optional)</em></span><input name="website" inputMode="url" autoComplete="url" placeholder="yourbusiness.in" /></label>
+        <label><span>Phone <em>(optional)</em></span><input name="phone" type="tel" autoComplete="tel" inputMode="tel" placeholder="+91 98765 43210" maxLength={30} /></label>
       </div>
+      <label className="ws-consent"><input type="checkbox" name="call_consent" value="yes" /><span>BYBO may call or WhatsApp me about this enquiry</span></label>
       <input type="text" name="company_website" tabIndex={-1} autoComplete="off" aria-hidden className="ws-trap" />
       <button className="ws-btn ws-btn-full" disabled={state === 'sending'}>{state === 'sending' ? 'Sending…' : <>Start my website <ArrowRight size={19} /></>}</button>
       <p className="ws-form-note"><ShieldCheck size={14} /> Free to talk. We reply within one working day.</p>

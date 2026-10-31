@@ -12,7 +12,7 @@
  * lawyers. Have it reviewed before relying on it, and see LAST_REVIEW below.
  */
 
-export const LAST_UPDATED = '16 September 2026';
+export const LAST_UPDATED = '31 October 2026';
 
 /** Where the law currently stands, stated plainly rather than overclaimed. */
 export const DPDP_STATUS = {
@@ -39,7 +39,7 @@ export const privacy: Section[] = [
       'We ask for as little as will let us answer you properly. Nothing on this site asks for a payment card number, a government identifier such as Aadhaar or PAN, or any special category of data, and you should never send those to us through this website.',
     ],
     list: [
-      'When you send an enquiry: your name, work email, and whatever you choose to put in the message. Company, phone, industry, role and website are optional, and the form works without them. We use this to understand your request, reply to it, and if you go ahead, to run the resulting engagement.',
+      'When you send an enquiry: your name, work email, and whatever you choose to put in the message. Company, phone, industry, role and website are optional, and the form works without them. If you tick the box that says BYBO may call or WhatsApp you about this enquiry, we use the phone number for that call or message. We use this to understand your request, reply to it, and if you go ahead, to run the resulting engagement.',
       'When you use the chat widget: whatever you type into it, so that we can answer. The assistant (BYBO AI) is our own software on bybo.in; your messages are processed by our AI model provider, Anthropic, to generate replies. If you book a call, we use the name, email and phone you give to confirm it.',
       'When you allow measurement: how pages on this site are used, so that we can tell which are useful. This is off unless you turn it on, and the site works identically either way.',
       'Automatically, as with any website: your browser sends an IP address and user-agent with each request, which our host records in server logs for security and reliability.',
@@ -49,7 +49,7 @@ export const privacy: Section[] = [
     id: 'lawful',
     heading: 'The basis on which we handle it',
     paras: [
-      'For an enquiry, we rely on your consent, given by submitting the form, and afterwards on the legitimate purpose of answering you and managing the relationship you asked to start.',
+      'For an enquiry, we rely on your consent, given by submitting the form, and afterwards on the legitimate purpose of answering you and managing the relationship you asked to start. A phone call or a WhatsApp message is a separate consent: it happens only if you tick that box. You can withdraw it by writing to support@bybo.in.',
       'For measurement, we rely only on consent, which you give or withhold using the banner on this site. Declining costs you nothing.',
       'Consent given here is meant to be as easy to withdraw as it was to give. Write to support@bybo.in, or use the measurement settings link in the footer, and it is done.',
     ],
@@ -58,9 +58,11 @@ export const privacy: Section[] = [
     id: 'form',
     heading: 'What happens to the enquiry form',
     paras: [
-      'When you press Send enquiry, the form posts to a BYBO server, which emails the contents to our team inboxes and does not store them in a database. One of those inboxes is a Google Workspace address, so Google receives the enquiry as our email provider. This is a change from an earlier version of this site, where the form only prepared a draft in your own email or WhatsApp app; that notice no longer describes how the site works, and this paragraph replaces it.',
+      'When you press Send enquiry, the form posts to a BYBO server, which emails the contents to our team inboxes. One of those inboxes is a Google Workspace address, so Google receives the enquiry as our email provider. This is a change from an earlier version of this site, where the form only prepared a draft in your own email or WhatsApp app; that notice no longer describes how the site works, and this paragraph replaces it.',
       'We also send you an acknowledgement, to the address you gave, so that you have a record that it arrived and know when to expect a reply.',
-      'The email is delivered by Resend, a transactional email provider, acting on our instructions. Your email address is set as the reply-to so that a reply from us reaches you directly.',
+      'If you tick “BYBO may call or WhatsApp me about this enquiry” and you give a phone number, BYBO may call you, or message you on WhatsApp, about that enquiry. The automated step is a phone call. Calls are placed only on Monday to Saturday, between 10:00 and 19:30 India time, and only to numbers on an allowlist we control. A missed call may be tried once more on the next such day. After two misses we stop calling; someone may then follow up on WhatsApp. WhatsApp is not sent automatically by the website. We do not call if you leave the box unticked.',
+      'So that we can place that call, avoid calling the same number twice in a day, and keep the outcome, the server stores the enquiry — name, email, phone, what you wrote, and afterwards a short summary of the call — in a private file store on Vercel. It is not a public database and it is not a marketing list.',
+      'The email is delivered by Resend, a transactional email provider, acting on our instructions. Your email address is set as the reply-to so that a reply from us reaches you directly. The call, when you have agreed to it, is placed through ElevenLabs, which receives the number and a short brief of your enquiry in order to make the call and returns a transcript summary to us.',
       'A hidden field and a per-address rate limit are used to reject automated submissions. Nothing about that involves tracking you.',
     ],
   },
@@ -69,8 +71,9 @@ export const privacy: Section[] = [
     heading: 'Who else touches it',
     paras: ['We keep this list short on purpose, and it is complete as of the date above.'],
     list: [
-      'Vercel — hosting and server logs, so that this site is served at all.',
-      'Resend — delivery of the enquiry email described above.',
+      'Vercel — hosting, server logs, and the private store that holds the enquiry record described above.',
+      'Resend — delivery of the enquiry email described above, and of the short call summary sent to our team when a call finishes.',
+      'ElevenLabs — placing the phone call described above, only when you have ticked the consent box. They receive the number you gave and a short brief of the enquiry.',
       'Google — as our email provider, one of the team inboxes an enquiry is delivered to; and separately, through Analytics and Tag Manager, website measurement, which happens only if you allow it.',
       'Meta — advertising measurement, only if you allow it.',
       'WhatsApp and your email provider — if you choose to contact us that way, that conversation is also handled under their own terms.',

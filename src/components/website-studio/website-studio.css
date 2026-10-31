@@ -170,6 +170,8 @@
 .ws .ws-fields select option{color:#111116}
 .ws .ws-fields input:focus,.ws .ws-fields select:focus{outline:none;border-color:var(--lilac);box-shadow:0 0 0 4px #793cff40}
 .ws .ws-form-note{display:flex;align-items:center;justify-content:center;gap:6px;font-size:13px;color:#f4f2ee80}
+.ws .ws-consent{display:flex;align-items:flex-start;gap:10px;margin:4px 0 12px;font-size:13px;line-height:1.45;color:#f4f2eecc}
+.ws .ws-consent input{width:18px;min-width:18px;height:18px;margin-top:2px;accent-color:#793cff}
 .ws .ws-form-error{font-size:14px;color:#ffb4ab}
 .ws .ws-form-error a{color:inherit;font-weight:700}
 .ws .ws-trap{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}

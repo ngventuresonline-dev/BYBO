@@ -7,9 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint src",
-    "test": "node --experimental-strip-types --import ./scripts/test-loader.mjs --test src/**/*.test.ts"
+    "test": "bash -c 'shopt -s globstar && node --experimental-strip-types --import ./scripts/test-loader.mjs --test src/**/*.test.ts'"
   },
   "dependencies": {
+    "@vercel/blob": "^2.8.2",
     "framer-motion": "^12.4.7",
     "lucide-react": "^0.475.0",
     "next": "^16.4.1",

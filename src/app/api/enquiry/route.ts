@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { CONTACT } from '@/lib/site';
 import { teamRecipients, visitorAck } from '@/lib/enquiry-ack';
 import { teamEnquiry, visitorAckFallback } from '@/lib/enquiry-mail';
+import { scheduleLeadCapture } from '@/lib/instant-call/schedule';
 
 /**
  * Receives an enquiry from /apply and emails it to the team inboxes
@@ -111,6 +112,23 @@ export async function POST(request: Request) {
     website: str(form.get('website'), 200),
     message,
   };
+
+  // Persist the enquiry and, only when every gate passes, dial after this
+  // response. The team email and the visitor acknowledgement below are unchanged.
+  const consent = ['yes', 'on', 'true', '1'].includes(str(form.get('call_consent'), 12).toLowerCase());
+  scheduleLeadCapture({
+    name,
+    email,
+    phone: details.phone,
+    company: details.company,
+    message,
+    services,
+    industry: details.industry,
+    role: details.role,
+    website: details.website,
+    consent,
+    interest: str(form.get('interest'), 120),
+  });
 
   const key = process.env.RESEND_API_KEY;
   if (!key) return NextResponse.json({ ok: false, reason: 'not_configured' }, { status: 503 });
