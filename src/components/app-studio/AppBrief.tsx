@@ -60,7 +60,9 @@ export function AppBrief({ id }: { id: string }) {
           </div>
         </fieldset>
         <label><span>Where is it today?</span><select name="stage" defaultValue="Just an idea">{STAGES.map(s => <option key={s}>{s}</option>)}</select></label>
+        <label><span>Phone <em>(optional)</em></span><input name="phone" type="tel" autoComplete="tel" inputMode="tel" placeholder="+91 98765 43210" maxLength={30} /></label>
       </div>
+      <label className="as-consent"><input type="checkbox" name="call_consent" value="yes" /><span>BYBO may call or WhatsApp me about this enquiry</span></label>
       <input type="text" name="company_website" tabIndex={-1} autoComplete="off" aria-hidden className="as-trap" />
       <button className="as-btn as-btn-full" disabled={state === 'sending'}>{state === 'sending' ? 'Sending…' : <>Start my app <ArrowRight size={19} /></>}</button>
       <p className="as-form-note"><ShieldCheck size={14} /> Free to talk. We reply within one working day.</p>

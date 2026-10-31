@@ -61,6 +61,11 @@ export function ReferenceEnquiry({initialSystem='',initialIndustry='',initialInt
       <input type="text" name="company_website" tabIndex={-1} autoComplete="off" aria-hidden className="fr-trap"/>
       <input type="hidden" name="interest" value={initialInterest}/>
 
+      <label className="fr-consent">
+        <input type="checkbox" name="call_consent" value="yes" />
+        <span>BYBO may call or WhatsApp me about this enquiry</span>
+      </label>
+
       <button className="button" type="submit" disabled={state==='sending'}>{state==='sending'?'Sending…':'Send enquiry'} <ArrowRight size={17}/></button>
       <p className="fr-form-note">We reply within one working day. No newsletter, no sales sequence.</p>
 
