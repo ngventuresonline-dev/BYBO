@@ -79,3 +79,24 @@ body :is(.sl-measure-card span,.bp-after-card span,.sl-bring-list li>span){color
 body .bp-suit.is-no{background:var(--na-card-2)!important}
 body .bp-suit.is-no :is(h3,li,p){color:var(--na-text)!important}
 body :is(.sd-faq-list,.sl-faq-list) summary span{color:var(--na-lilac)!important;background:none!important}
+
+/* ---- insights: same surfaces, type set for long reading, no motion on articles ---- */
+body .ii-chips a{background:#ffffff0f;border:1px solid var(--na-line);border-radius:999px;color:var(--na-text)!important}
+body .ii-chips a span{background:none;color:var(--na-faint)!important}
+body .ii-chips a:is([aria-current],.is-active,.is-on,.on){background:#fff;border-color:#fff;color:#08070c!important}
+body .ii-chips a:is([aria-current],.is-active,.is-on,.on) span{color:#08070cb3!important}
+body :is(.ga,.ga-main){background:var(--na-ink);color:var(--na-text)}
+body .ga :is(h1,h2,h3,h4){font-family:Arial,Helvetica,sans-serif;font-weight:700;letter-spacing:-.03em}
+body .ga-hero h1{letter-spacing:-.045em}
+body .ga-main :is(.ga-brief,.ga-table,.ga-note,.ga-limits,.ga-faqs details,.ga-bybo-link){background:var(--na-card);border:1px solid var(--na-line);border-radius:var(--na-radius);box-shadow:none}
+body .ga-main :is(h2,h3,h4,strong,b,summary,th){color:var(--na-text)!important}
+body .ga-main :is(p,li,td,dd,span){color:#f4f2eedb!important;border-color:var(--na-line)}
+body .ga-main a:not(.button,.ga-bybo-link){color:var(--na-lilac)}
+body .ga-main th{background:var(--na-card-2);border-color:var(--na-line)}
+body .ga-main :is(td,tr,hr){border-color:var(--na-line)}
+body .ga-main .ga-bybo-link :is(strong,span){color:var(--na-text)!important}
+body .ga details{background:var(--na-card)!important;border:1px solid var(--na-line);border-radius:var(--na-radius);color:var(--na-text)}
+body .ga details :is(summary,span,a,li){color:var(--na-text)!important}
+body .ga th,body .ga thead th{background:var(--na-card-2)!important;color:var(--na-text)!important}
+body .ga caption{color:var(--na-soft)!important}
+body :is(.ic-link,.ic-card,.ii) :is(h2,h3,h4){font-family:Arial,Helvetica,sans-serif;font-weight:700;letter-spacing:-.022em}
