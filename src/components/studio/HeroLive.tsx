@@ -24,7 +24,7 @@ export function HeroLive() {
     };
     const ask = () => { if (!raf && onScreen) raf = requestAnimationFrame(paint); };
     const move = (e: PointerEvent) => { const b = hero.getBoundingClientRect(); live.x = (e.clientX - b.left) / b.width; live.y = (e.clientY - b.top) / b.height; ask(); };
-    const io = new IntersectionObserver(([e]) => { onScreen = e.isIntersecting; });
+    const io = new IntersectionObserver(([e]) => { onScreen = e.isIntersecting; ask(); });
     const begin = () => {
       if (dead) return;
       paint(); hero.dataset.live = '';

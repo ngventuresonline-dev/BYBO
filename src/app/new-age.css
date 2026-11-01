@@ -1,0 +1,61 @@
+﻿/* The site-wide design language, one layer over the older page styles: ink surfaces,
+   tight bold headings, soft cards and pill buttons, matching the home and studio pages.
+   Colour and shape only live here, never copy or behaviour. Loaded after every other
+   stylesheet; `body` in the selectors lets it win without !important where it can. */
+
+:root{--na-ink:#08070c;--na-ink-2:#100e16;--na-card:#16131f;--na-card-2:#1d1929;--na-line:#ffffff1f;--na-text:#f4f2ee;--na-soft:#f4f2eec7;--na-faint:#f4f2ee9e;--na-lilac:#c4a8ff;--na-violet:#793cff;--na-amber:#f3b950;--na-head:700 1em/1.04 Arial,Helvetica,sans-serif;--na-radius:18px}
+
+/* ---- shell: header and footer ---- */
+body{background:var(--na-ink)}
+body .site-header{background:#08070cd9;border-bottom:1px solid var(--na-line);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+body .site-header a.button,body .site-header .button{border-radius:999px}
+body footer{background:var(--na-ink);border-top:1px solid var(--na-line)}
+
+/* ---- shared parts ---- */
+body :is(.button,.button-secondary){border-radius:999px;transition:background .25s,box-shadow .25s,transform .25s}
+body .button:not(.button-secondary){background:#fff;color:#08070c;box-shadow:0 0 0 1px #ffffff40,0 16px 44px -14px #793cffaa}
+body .button:not(.button-secondary):hover{background:var(--na-lilac)}
+body .button:not(.button-secondary) svg{color:inherit}
+body .button-secondary{background:transparent;border:1px solid #ffffff59;color:var(--na-text)}
+body .button-secondary:hover{background:#ffffff14}
+body .eyebrow{color:var(--na-lilac);font-weight:700;letter-spacing:.18em}
+:is(.hero,.sl-hero,.rp-hero){position:relative;isolation:isolate;overflow:hidden}
+body :is(input,select,textarea){border-radius:12px}
+
+/* Sections rise in once, set up by SiteMotion. Without it everything is simply there. */
+.na-rise{opacity:0;transform:translate3d(0,26px,0);transition:opacity .8s ease,transform .9s cubic-bezier(.2,.7,.2,1)}
+.na-rise.is-in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.na-rise{opacity:1;transform:none;transition:none}}
+
+/* The hero depth from HeroLive, for each hero family. */
+.rp-hero-light{position:absolute;inset:0;z-index:-1;width:100%;height:100%;pointer-events:none;mix-blend-mode:screen;opacity:0;transition:opacity 1s ease}
+.rp-hero-light.is-on{opacity:1}
+[data-live] :is(.rp-hero-image,.sl-hero-art,.hero-image){transform:translate3d(calc(var(--hx,0)*-16px),calc(var(--hy,0)*-10px + var(--hs,0)*60px),0) scale(calc(1.05 + var(--hs,0)*.1));transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+[data-live] :is(.rp-hero-copy,.hero-copy){transform:translate3d(calc(var(--hx,0)*10px),calc(var(--hy,0)*6px + var(--hs,0)*-70px),0);opacity:calc(1 - var(--hs,0)*1.4);transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+
+/* ---- the layer's scopes ---- */
+body :is(.hero,.section,.reference-page,.rp-hero,.sl,.sl-hero) :is(h1,h2){font:var(--na-head);letter-spacing:-.045em}
+body :is(.hero,.reference-page,.sl) h1{font-size:clamp(2.7rem,6.2vw,5.6rem);line-height:1}
+body :is(.section,.reference-page,.sl) h2{font-size:clamp(2rem,4.6vw,4rem)}
+
+/* ---- reference pages, service detail, /systems: paper becomes ink ---- */
+body :is(.reference-page,.rp-light,.section,.section.light,.sd,.closing){background:var(--na-ink);color:var(--na-text)}
+body .rp-light+.rp-light,body .section.light+.section.light{background:var(--na-ink-2)}
+body :is(.sd-fit-grid>div,.sd-cards article,.sd-panel,.sd-faq-list details,.sd-chips li,.ic-link,.fr-apply form,.rp-light .rp-pattern){background:var(--na-card);border:1px solid var(--na-line);border-radius:var(--na-radius);color:var(--na-text);box-shadow:none}
+body .sd-chips li{border-radius:999px}
+body :is(.rp-light,.section.light,.sd,.closing) :is(h2,h3,h4,h5,b,strong,summary,dt,th):not(.button,.button *){color:var(--na-text)}
+body :is(.rp-light,.section.light,.sd,.closing) :is(p,li,small,dd,td,span,label):not(.eyebrow,.button,.button *){color:var(--na-soft)}
+body :is(.rp-light,.section.light,.sd,.closing) a:not(.button,.button *,.ic-link){color:var(--na-lilac)}
+body :is(.rp-light,.section.light,.sd,.closing) .eyebrow{color:var(--na-lilac)}
+body :is(.rp-light,.section.light,.sd) :is(hr,td,th,tr,li,details){border-color:var(--na-line)}
+body .rp-light :is(input,select,textarea),body .fr-apply :is(input,select,textarea){background:#ffffff0f;border-color:var(--na-line);color:var(--na-text)}
+body .sd :is(.sd-copy p,.sd-open-cols p){color:var(--na-soft)!important}
+body .sd .is-gate .sd-step-no{background:var(--na-amber)!important;color:#14101f!important}
+body .sd .sd-chips span,body .fr-next span{background:#ffffff14!important;color:var(--na-text)!important}
+body .ic-link .ic-meta{color:var(--na-faint)!important}
+body :is(.section,.reference-page,.sd,.closing,.sl) :is(h3,h4){font-family:Arial,Helvetica,sans-serif;font-weight:700;letter-spacing:-.022em}
+body .xr-industries button{background:#ffffff0f;border:1px solid var(--na-line);color:var(--na-text);border-radius:999px}
+body .xr-industries button:is([aria-pressed=true],[aria-selected=true],.is-active,.active){background:#fff;color:#08070c}
+body .xr-stage-number{color:var(--na-lilac)}
+body .xr-tuesday em{color:var(--na-lilac)}
+body .fr-contact-copy h1 br{display:inline}
