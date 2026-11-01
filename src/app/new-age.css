@@ -126,3 +126,11 @@ body .lg-toc a{color:var(--na-soft)!important}
 body .lg-toc :is(span,.eyebrow){color:var(--na-lilac)!important}
 body :is(.lg-note,.lg-review){background:var(--na-card)!important;border:1px solid var(--na-line);border-radius:var(--na-radius);color:var(--na-text)}
 body .lg-body :is(hr,li,td,th,section){border-color:var(--na-line)}
+
+/* ---- last details ---- */
+body .nd-cta-row .nd-btn.is-ghost{background:transparent!important;border:1px solid #ffffff59;color:var(--na-text)!important}
+body .closing .button:not(.button-secondary){background:#fff!important;color:#08070c!important;border-radius:999px}
+body .closing h2{font:var(--na-head);font-size:clamp(1.8rem,3.6vw,3rem);letter-spacing:-.04em}
+body .ga-faqs summary span{background:none!important;color:var(--na-lilac)!important}
+body .nav-cta{background:#fff!important;color:#08070c!important;border-radius:999px!important;box-shadow:0 0 0 1px #ffffff40}
+body .nav-cta:hover{background:var(--na-lilac)!important}
