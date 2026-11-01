@@ -1,5 +1,5 @@
 import { deliveryKind, type IgPost, type MediaItem, type PublishOutcome } from './types';
-import { InstagramError, readId, readPermalink, readQuota, readStatus, type GraphClient } from './graph';
+import { InstagramError, publishingLimitPath, readId, readPermalink, readQuota, readStatus, type GraphClient } from './graph';
 import { parseDraft } from './validate';
 
 export type PublishDeps = {
@@ -56,7 +56,7 @@ export async function publishInstagram(post: IgPost, deps: PublishDeps): Promise
     };
   }
 
-  const quota = readQuota(await deps.graph.request('GET', `/${deps.graph.userId}/content_publishing_limit`));
+  const quota = readQuota(await deps.graph.request('GET', publishingLimitPath(deps.graph.userId)));
   if (quota.usage >= quota.total) {
     throw new InstagramError(`Instagram publishing limit reached (${quota.usage} of ${quota.total} in the last 24 hours).`);
   }
