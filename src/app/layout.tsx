@@ -4,9 +4,11 @@ import { Footer } from "@/components/Footer";
 import { SeoJsonLd } from "@/components/SeoJsonLd";
 import { MarketingPixels } from "@/components/MarketingPixels";
 import { ByboAI } from "@/components/bybo-ai/ByboAI";
+import { SiteMotion } from "@/components/SiteMotion";
 import { SITE } from "@/lib/seo";
 import "./globals.css";
 import "./desktop-heroes.css";
+import "./new-age.css";
 export const metadata: Metadata = {
     metadataBase: new URL(SITE.url),
     title: {
@@ -75,6 +77,7 @@ export default function RootLayout({ children, }: {
         </main>
         <Footer />
         <ByboAI />
+        <SiteMotion />
       </body>
     </html>);
 }

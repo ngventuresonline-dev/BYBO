@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { ArrowRight, AlertCircle, FileText, SlidersHorizontal, UserRound, GitBranch, IndianRupee, ChartNoAxesColumnIncreasing, Settings, CalendarDays, Folder, Users, Clock, RefreshCw, Coins } from 'lucide-react';
 import { Button } from './Shared';
 import { DocumentDemo } from './DocumentDemo';
+import { HeroLive } from './HeroLive';
 import './reference-pages.css';
 
 const documentHref = '/apply?system=document-multimodal-intelligence';
@@ -14,6 +15,7 @@ export function ReferenceHero({ page, title, body, art, label, href, cta, second
       <nav className="rp-crumb" aria-label="Breadcrumb"><Link href="/">Home</Link><span aria-hidden="true">›</span><span>{page}</span></nav>
       <div className="rp-hero-copy">{label && <p className="eyebrow">{label}</p>}<h1>{title}</h1><p className="lede">{body}</p><div className="actions"><Button href={href}>{cta}</Button>{secondary && <Link href="#workflow" className="rp-secondary">See how it works</Link>}</div></div>
     </div>
+    <HeroLive />
   </section>;
 }
 

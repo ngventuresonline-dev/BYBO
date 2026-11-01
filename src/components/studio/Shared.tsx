@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { ArrowRight, ArrowUpRight, Check, ShieldCheck } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { services } from '@/lib/redesign';
+import { HeroLive } from './HeroLive';
 export function Button({ href, children, secondary = false }: {
     href: string;
     children: ReactNode;
@@ -35,7 +36,7 @@ export function Hero({ label, title, body, primary = 'Talk to BYBO', href = '/ap
     };
     art?: 'flow' | 'knowledge' | 'none';
     children?: ReactNode;
-}) { return <section className={`hero ${art === 'none' ? 'hero-editorial' : ''}`}><div className="container hero-grid"><div className="hero-copy"><p className="eyebrow">{label}</p><h1>{title}</h1><p className="lede">{body}</p><div className="actions"><Button href={href}>{primary}</Button>{secondary && <Button href={secondary.href} secondary>{secondary.label}</Button>}</div></div>{art !== 'none' && <div className="hero-art"><Image src={`/images/studio-${art}.webp`} alt={art === 'flow' ? 'Violet glass ribbon following a continuous path through a dark architectural frame' : 'Layers of violet glass with an amber layer representing human review'} width={1536} height={1024} sizes="(max-width: 760px) 100vw, 55vw" priority/><div className="art-caption"><span>Built around your business.</span><span>BYBO / Bengaluru</span></div>{children}</div>}</div></section>; }
+}) { return <section className={`hero ${art === 'none' ? 'hero-editorial' : ''}`}><HeroLive /><div className="container hero-grid"><div className="hero-copy"><p className="eyebrow">{label}</p><h1>{title}</h1><p className="lede">{body}</p><div className="actions"><Button href={href}>{primary}</Button>{secondary && <Button href={secondary.href} secondary>{secondary.label}</Button>}</div></div>{art !== 'none' && <div className="hero-art"><Image src={`/images/studio-${art}.webp`} alt={art === 'flow' ? 'Violet glass ribbon following a continuous path through a dark architectural frame' : 'Layers of violet glass with an amber layer representing human review'} width={1536} height={1024} sizes="(max-width: 760px) 100vw, 55vw" priority/><div className="art-caption"><span>Built around your business.</span><span>BYBO / Bengaluru</span></div>{children}</div>}</div></section>; }
 export function Flow({ steps, gate = 3, note }: {
     steps: [
         string,

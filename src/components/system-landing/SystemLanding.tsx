@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { HeroLive } from '@/components/studio/HeroLive';
 import { ArrowRight, Check, CircleAlert } from 'lucide-react';
 import { Button } from '@/components/studio/Shared';
 import { RichText } from '@/components/insights/RichText';
@@ -48,6 +49,7 @@ export function SystemLanding({ slug }: { slug: string }) {
 
       {/* 1 — hero */}
       <header className="sl-hero">
+        <HeroLive />
         <Image src={`/images/services/${slug}.webp`} alt="" fill priority sizes="100vw" className="sl-hero-art" />
         <div className="container">
           <nav className="sl-crumb" aria-label="Breadcrumb"><Link href="/">Home</Link><span>›</span><Link href="/systems">Systems</Link><span>›</span><span>{s.name}</span></nav>
