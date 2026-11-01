@@ -40,7 +40,7 @@ export default function HeroShader() {
     let renderer: THREE.WebGLRenderer;
     try { renderer = new THREE.WebGLRenderer({ antialias: false, alpha: false, powerPreference: 'high-performance' }); }
     catch { return; } // no WebGL: the CSS gradient underneath stays
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, window.innerWidth < 760 ? 1 : 1.5));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     el.appendChild(renderer.domElement);
     const scene = new THREE.Scene(), cam = new THREE.Camera();
     const geo = new THREE.BufferGeometry();

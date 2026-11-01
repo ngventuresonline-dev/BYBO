@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, ShoppingBag, Minus, Plus, X, MapPin, Stethoscope, Clock, Users, ArrowRight, ArrowDown, Lock } from 'lucide-react';
 
-/* The four concept sites. Each sits on the shared canvas (ShowcaseStage) and is one
+/* The eight concept sites. Each sits on the shared canvas (ShowcaseStage) and is one
    continuous film: a kinetic hero, pinned scenes scrubbed by scroll, then the working
    booking or checkout. Scroll progress arrives as the CSS variables --s (scene) and
    --p (page), so scrubbing never re-renders React. What the visitor picks is sent to
@@ -303,6 +303,173 @@ export function Store() {
         </AnimatePresence>
       </Over>
       <Confirm over={over} show={done} title="Order placed" note="This is a concept store, so nothing was charged." onBack={() => { setDone(false); setCart({}); }} />
+    </div>
+  );
+}
+
+/* ---------------- 5 · Lantern Academy ---------------- */
+
+const SUBJECTS = ['Maths', 'Physics', 'Chemistry', 'Biology'];
+
+export function School() {
+  const [subject, setSubject] = useState('Maths');
+  const [batch, setBatch] = useState('Evening');
+  const [done, setDone] = useState(false);
+  const { over, pulse } = useStage(SUBJECTS.indexOf(subject));
+  return (
+    <div className="sc-site sc-school">
+      <nav className="sc-nav"><b>Lantern Academy</b><span>Courses</span><span>Teachers</span><button type="button">Demo class</button></nav>
+      <header className="sc-hero" data-scene>
+        <Fallback src={img('store')} />
+        <small className="sc-tag">Coaching · Classes 9 to 12</small>
+        <Title lines={['Learn the', 'hard things', ['properly.']]} />
+        <p className="sc-lede">Small batches, patient teachers and a clear plan for every chapter.</p>
+        <Cue />
+      </header>
+      <Pin length={2.1} className="sc-mid"><Words text="Every idea connects to the next. Miss one, and we go back and draw the line again." /></Pin>
+      <Marquee text="Doubt by doubt" />
+      <section className="sc-book" {...D('book')}>
+        <form className="sc-panel" onSubmit={e => { e.preventDefault(); pulse(); setDone(true); }}>
+          <h4>Sit in on a <em>{subject}</em> class.</h4>
+          <div className="sc-seg wrap">{SUBJECTS.map(s => <button type="button" key={s} className={s === subject ? 'on' : ''} onClick={() => setSubject(s)} {...D('sub-' + s)}>{s}</button>)}</div>
+          <div className="sc-seg">{['Morning', 'Evening', 'Weekend'].map(b => <button type="button" key={b} className={b === batch ? 'on' : ''} onClick={() => setBatch(b)} {...D('batch-' + b)}>{b}</button>)}</div>
+          <input placeholder="Student name" required aria-label="Student name" {...D('student')} />
+          <input placeholder="Parent mobile number" inputMode="tel" required aria-label="Parent mobile number" {...D('parent')} />
+          <button type="submit" className="sc-go" {...D('submit')}>Book a demo class <ArrowRight size={16} /></button>
+        </form>
+      </section>
+      <Confirm over={over} show={done} title="Demo class booked" note={`${subject}, ${batch.toLowerCase()} batch. We will call to confirm the day.`} onBack={() => setDone(false)} dark />
+    </div>
+  );
+}
+
+/* ---------------- 6 · Ironline ---------------- */
+
+const CLASSES = [
+  { t: 'Strength', d: 'Barbells, coached form' },
+  { t: 'Conditioning', d: 'Short, hard, over quickly' },
+  { t: 'Boxing', d: 'Pads, footwork, breath' },
+  { t: 'Mobility', d: 'Move better tomorrow' },
+];
+
+export function Gym() {
+  const [cls, setCls] = useState('Strength');
+  const [time, setTime] = useState('6:30');
+  const [done, setDone] = useState(false);
+  const { over, pulse } = useStage(CLASSES.findIndex(c => c.t === cls));
+  return (
+    <div className="sc-site sc-gym">
+      <nav className="sc-nav"><b>IRONLINE</b><span>Classes</span><span>Coaches</span><button type="button">Trial</button></nav>
+      <header className="sc-hero" data-scene>
+        <Fallback src={img('store')} />
+        <small className="sc-tag">Strength and conditioning studio</small>
+        <Title lines={['Train like', ['you mean it.']]} />
+        <Cue />
+      </header>
+      <Marquee text="Lift. Move. Recover" />
+      <Pin length={2.6} className="sc-railpin">
+        <p className="sc-eyebrow">Classes</p>
+        <div className="sc-rail">
+          {CLASSES.map(c => (
+            <button type="button" key={c.t} className={c.t === cls ? 'sc-card plain on' : 'sc-card plain'} onClick={() => setCls(c.t)}>
+              <b>{c.t}</b><small>{c.d}</small>
+            </button>
+          ))}
+        </div>
+      </Pin>
+      <section className="sc-book" {...D('book')}>
+        <form className="sc-panel" onSubmit={e => { e.preventDefault(); pulse(); setDone(true); }}>
+          <h4>Your first <em>{cls}</em> session.</h4>
+          <div className="sc-seg wrap">{CLASSES.map(c => <button type="button" key={c.t} className={c.t === cls ? 'on' : ''} onClick={() => setCls(c.t)} {...D('cls-' + c.t)}>{c.t}</button>)}</div>
+          <div className="sc-seg"><Clock size={15} />{['6:30', '7:30', '18:00', '19:00'].map(t => <button type="button" key={t} className={t === time ? 'on' : ''} onClick={() => setTime(t)} {...D('gt-' + t)}>{t}</button>)}</div>
+          <input placeholder="Your name" required aria-label="Your name" {...D('name')} />
+          <button type="submit" className="sc-go" {...D('submit')}>Book a trial session <ArrowRight size={16} /></button>
+        </form>
+      </section>
+      <Confirm over={over} show={done} title="You are on the floor" note={`${cls} at ${time}. Bring water and arrive ten minutes early.`} onBack={() => setDone(false)} dark />
+    </div>
+  );
+}
+
+/* ---------------- 7 · Stillwater ---------------- */
+
+const THERAPIES = ['Deep tissue', 'Aromatherapy', 'Hot stone', 'Facial'];
+
+export function Spa() {
+  const [therapy, setTherapy] = useState('Aromatherapy');
+  const [day, setDay] = useState('Today');
+  const [time, setTime] = useState('4:00');
+  const [done, setDone] = useState(false);
+  const { over, pulse } = useStage(THERAPIES.indexOf(therapy));
+  return (
+    <div className="sc-site sc-spa">
+      <nav className="sc-nav"><b>Stillwater</b><span>Therapies</span><span>The rooms</span><button type="button">Book</button></nav>
+      <header className="sc-hero" data-scene>
+        <Fallback src={img('clinic')} />
+        <small className="sc-tag">Spa and salon</small>
+        <Title lines={['Slow down.', ['Breathe out.']]} />
+        <Cue />
+      </header>
+      <Pin length={2.1} className="sc-mid"><Words text="Leave the phone at the door. Everything else can wait an hour." /></Pin>
+      <Marquee text="Quiet hands, warm rooms" />
+      <section className="sc-book" {...D('book')}>
+        <form className="sc-panel" onSubmit={e => { e.preventDefault(); pulse(); setDone(true); }}>
+          <h4>An hour of <em>{therapy.toLowerCase()}.</em></h4>
+          <div className="sc-seg wrap">{THERAPIES.map(t => <button type="button" key={t} className={t === therapy ? 'on' : ''} onClick={() => setTherapy(t)} {...D('th-' + t.split(' ')[0])}>{t}</button>)}</div>
+          <div className="sc-seg">{['Today', 'Tomorrow', 'Saturday'].map(d => <button type="button" key={d} className={d === day ? 'on' : ''} onClick={() => setDay(d)} {...D('sd-' + d)}>{d}</button>)}</div>
+          <div className="sc-seg"><Clock size={15} />{['11:00', '2:30', '4:00', '6:00'].map(t => <button type="button" key={t} className={t === time ? 'on' : ''} onClick={() => setTime(t)} {...D('st-' + t)}>{t}</button>)}</div>
+          <input placeholder="Your name" required aria-label="Your name" {...D('name')} />
+          <button type="submit" className="sc-go" {...D('submit')}>Reserve my hour <ArrowRight size={16} /></button>
+        </form>
+      </section>
+      <Confirm over={over} show={done} title="Your hour is held" note={`${therapy}, ${day.toLowerCase()} at ${time}. Come a little early and settle in.`} onBack={() => setDone(false)} />
+    </div>
+  );
+}
+
+/* ---------------- 8 · Ridgeline Retreat ---------------- */
+
+const ROOMS = [
+  { t: 'Valley room', d: 'Morning light over the terraces' },
+  { t: 'Ridge suite', d: 'A deck facing the long view' },
+  { t: 'Forest cabin', d: 'Alone among the trees' },
+];
+
+export function Hotel() {
+  const [room, setRoom] = useState('Ridge suite');
+  const [nights, setNights] = useState(2);
+  const [done, setDone] = useState(false);
+  const { over, pulse } = useStage(nights);
+  return (
+    <div className="sc-site sc-hotel">
+      <nav className="sc-nav"><b>Ridgeline</b><span>Rooms</span><span>The valley</span><button type="button">Stay</button></nav>
+      <header className="sc-hero" data-scene>
+        <Fallback src={img('estate')} />
+        <small className="sc-tag">A mountain retreat</small>
+        <Title lines={['Wake up', ['above the clouds.']]} />
+        <Cue />
+      </header>
+      <Pin length={2.1} className="sc-mid"><Words text="Stay until the sun goes behind the last ridge. Then stay for the stars." /></Pin>
+      <Pin length={2.6} className="sc-railpin">
+        <p className="sc-eyebrow">Rooms</p>
+        <div className="sc-rail">
+          {ROOMS.map(r => (
+            <button type="button" key={r.t} className={r.t === room ? 'sc-card plain on' : 'sc-card plain'} onClick={() => setRoom(r.t)}>
+              <b>{r.t}</b><small>{r.d}</small>
+            </button>
+          ))}
+        </div>
+      </Pin>
+      <section className="sc-book" {...D('book')}>
+        <form className="sc-panel" onSubmit={e => { e.preventDefault(); pulse(); setDone(true); }}>
+          <h4>Hold the <em>{room.toLowerCase()}.</em></h4>
+          <div className="sc-seg wrap">{ROOMS.map(r => <button type="button" key={r.t} className={r.t === room ? 'on' : ''} onClick={() => setRoom(r.t)} {...D('room-' + r.t.split(' ')[0])}>{r.t}</button>)}</div>
+          <div className="sc-guests"><Clock size={15} /><button type="button" onClick={() => setNights(n => Math.max(1, n - 1))} aria-label="Fewer nights"><Minus size={13} /></button><b>{nights}</b><button type="button" onClick={() => setNights(n => Math.min(7, n + 1))} aria-label="More nights" {...D('nights+')}><Plus size={13} /></button><span>{nights === 1 ? 'night' : 'nights'}, and more stars</span></div>
+          <input placeholder="Your name" required aria-label="Your name" {...D('name')} />
+          <button type="submit" className="sc-go" {...D('submit')}>Request my stay <ArrowRight size={16} /></button>
+        </form>
+      </section>
+      <Confirm over={over} show={done} title="Request received" note={`${room}, ${nights} ${nights === 1 ? 'night' : 'nights'}. We will write back to confirm your dates.`} onBack={() => setDone(false)} dark />
     </div>
   );
 }

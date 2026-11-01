@@ -1,14 +1,17 @@
 'use client';
 
 import { useEffect, useRef, type RefObject } from 'react';
-import { SHADERS } from './showcase-shaders';
+import { SHADERS, STORE_SCENE } from './showcase-shaders';
 
-/* The one canvas behind all four concept sites. Plain WebGL, one context, one program
-   per site. Programs compile in the background where the browser allows it, so a
-   heavy shader never freezes the page. Stops off screen and in background tabs, runs
-   at 30 fps on phones and drops resolution on slow GPUs. This file only loads when
-   the section comes near the viewport. Until a scene is ready, and on any device
-   without WebGL, the CSS poster and the photo underneath stay in place. */
+/* The one canvas behind all eight concept sites. Plain WebGL, one context, one program
+   per site, and only the active one draws. The buffer always matches the canvas pixel
+   for pixel (device pixel ratio, capped at 2), because anything less shows as blocks.
+   Only if a device sustains slow frames does it step down, and never below one buffer
+   pixel per CSS pixel. Programs compile in the background where the browser allows it,
+   so a heavy shader never freezes the page. Stops off screen and in background tabs,
+   runs at 30 fps on phones. This file only loads when the section comes near the
+   viewport. Until a scene is ready, and on any device without WebGL, the CSS poster
+   and the photo underneath stay in place. */
 
 export type StageSignal = { pick: number; pulse: number; demo: { x: number; y: number } | null };
 
@@ -16,6 +19,19 @@ type Prog = { p: WebGLProgram; ready: boolean; u: Record<string, WebGLUniformLoc
 
 const NAMES = ['uTime', 'uRes', 'uMouse', 'uScroll', 'uPick', 'uPulse'];
 const COMPLETION_STATUS_KHR = 0x91B1;
+
+/* The serum label: real type on a canvas, so it can be mipmapped and stay crisp. */
+function drawLabel(font: string) {
+  const c = document.createElement('canvas'); c.width = c.height = 1024;
+  const x = c.getContext('2d')!;
+  x.fillStyle = '#f5ebdc'; x.fillRect(0, 0, 1024, 1024);
+  x.fillStyle = '#2b1320'; x.textAlign = 'center';
+  x.font = `600 230px ${font}`; x.fillText('lumen', 512, 470);
+  x.fillRect(372, 540, 280, 5);
+  x.font = `italic 400 84px ${font}`; x.fillText('Clear Day', 512, 660);
+  x.fillText('Serum', 512, 755);
+  return c;
+}
 
 export default function ShowcaseStage({ site, signal, frame, view }: { site: number; signal: RefObject<StageSignal>; frame: RefObject<HTMLDivElement | null>; view: RefObject<HTMLDivElement | null> }) {
   const host = useRef<HTMLDivElement>(null);
@@ -27,7 +43,7 @@ export default function ShowcaseStage({ site, signal, frame, view }: { site: num
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const phone = window.innerWidth < 760;
     const canvas = document.createElement('canvas');
-    const gl = canvas.getContext('webgl', { antialias: false, alpha: false, depth: false, stencil: false, powerPreference: phone ? 'low-power' : 'high-performance' });
+    const gl = canvas.getContext('webgl', { antialias: false, alpha: false, depth: false, stencil: false, powerPreference: 'high-performance' });
     if (!gl) return;
     const parallel = gl.getExtension('KHR_parallel_shader_compile');
     const compile = (type: number, src: string) => { const sh = gl.createShader(type)!; gl.shaderSource(sh, src); gl.compileShader(sh); return sh; };
@@ -57,20 +73,51 @@ export default function ShowcaseStage({ site, signal, frame, view }: { site: num
       return true;
     };
 
-    let scale = phone ? .7 : .8, w = 1, h = 1;
-    const resize = () => {
-      w = Math.max(1, Math.round(fr.clientWidth * scale)); h = Math.max(1, Math.round(fr.clientHeight * scale));
-      canvas.width = w; canvas.height = h; gl.viewport(0, 0, w, h);
+    let label: WebGLTexture | null = null;
+    const loadLabel = () => {
+      const family = getComputedStyle(fr).getPropertyValue('--sc-display').trim();
+      const paint = () => {
+        label = label ?? gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, label);
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, drawLabel(family ? `${family}, Georgia, serif` : 'Georgia, serif'));
+        gl.generateMipmap(gl.TEXTURE_2D);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        const ani = gl.getExtension('EXT_texture_filter_anisotropic');
+        if (ani) gl.texParameterf(gl.TEXTURE_2D, ani.TEXTURE_MAX_ANISOTROPY_EXT, 8);
+      };
+      paint();
+      document.fonts?.ready.then(() => { if (!gl.isContextLost()) paint(); });
     };
-    resize();
+
+    // Buffer size follows the canvas exactly. tier 0 is full resolution.
+    const TIERS = [1, .75, .5];
+    let tier = 0, w = 1, h = 1, cssW = 1, cssH = 1, exact: [number, number] | null = null;
+    const fit = () => {
+      const dpr = window.devicePixelRatio || 1, cap = Math.min(dpr, 2);
+      const ratio = Math.max(1, cap * TIERS[tier]);
+      const tw = Math.round(cssW * ratio), th = Math.round(cssH * ratio);
+      // Trust the exact device size only when it agrees, so a fractional scale lands on real pixels.
+      const sure = exact && Math.abs(exact[0] - tw) <= 2 && Math.abs(exact[1] - th) <= 2;
+      w = Math.max(1, sure ? exact![0] : tw); h = Math.max(1, sure ? exact![1] : th);
+      if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; gl.viewport(0, 0, w, h); }
+      drawn = -1;
+    };
+    const ro = new ResizeObserver(([e]) => {
+      cssW = e.contentRect.width; cssH = e.contentRect.height;
+      const px = e.devicePixelContentBoxSize?.[0];
+      exact = px ? [px.inlineSize, px.blockSize] : null;
+      fit(); kick();
+    });
 
     const mouse = { x: .5, y: .5 }, target = { x: .5, y: .5 };
     const point = (x: number, y: number) => { const b = fr.getBoundingClientRect(); target.x = x / b.width; target.y = 1 - y / b.height; };
     const move = (e: PointerEvent) => { const b = fr.getBoundingClientRect(); point(e.clientX - b.left, e.clientY - b.top); };
     fr.addEventListener('pointermove', move, { passive: true });
-    window.addEventListener('resize', resize);
 
-    let active = -1, scroll = 0, pick = 0, pulse = 0, drawn = -1;
+    let active = -1, scroll = 0, pick = 0, pulse = 0, drawn = -1, ever = -1;
     let visible = true, raf = 0, last = 0, slow = 0, seen = 0;
     const start = performance.now();
     const draw = (now: number) => {
@@ -80,7 +127,7 @@ export default function ShowcaseStage({ site, signal, frame, view }: { site: num
       if (sig.pulse) { pulse = 1; sig.pulse = 0; }
       const max = vw.scrollHeight - vw.clientHeight;
       const goal = max > 0 ? vw.scrollTop / max : 0;
-      const first = drawn !== active;
+      const first = ever !== active;
       scroll = first || reduce ? goal : scroll + (goal - scroll) * .09;
       pick = first ? sig.pick : pick + (sig.pick - pick) * .08;
       mouse.x += (target.x - mouse.x) * .06; mouse.y += (target.y - mouse.y) * .06;
@@ -95,7 +142,8 @@ export default function ShowcaseStage({ site, signal, frame, view }: { site: num
       gl.uniform1f(pr.u.uPick, pick);
       gl.uniform1f(pr.u.uPulse, pulse);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
-      if (first) { drawn = active; fr.dataset.gl = 'on'; }
+      drawn = active;
+      if (first) { ever = active; fr.dataset.gl = 'on'; }
       return true;
     };
     const loop = (now: number) => {
@@ -104,17 +152,25 @@ export default function ShowcaseStage({ site, signal, frame, view }: { site: num
       const due = !phone || now - last > 32;
       if (due) {
         const dt = now - last; last = now;
-        // Sustained slow frames: draw fewer pixels rather than drop to a slideshow.
-        if (dt < 400) { seen++; if (dt > (phone ? 48 : 30)) slow++; }
-        if (seen >= 45) { if (slow > 30 && scale > .36) { scale *= .75; resize(); } seen = 0; slow = 0; }
+        if (ever === active && dt < 400) { seen++; if (dt > (phone ? 48 : 26)) slow++; }
+        if (seen >= 50) {
+          if (slow > 34 && tier < TIERS.length - 1 && !reduce) { tier++; fit(); fr.dataset.tier = String(tier); }
+          seen = 0; slow = 0;
+        }
         const ok = draw(now);
         if (reduce && ok) return;
       }
       raf = requestAnimationFrame(loop);
     };
-    const kick = () => { if (!raf && visible && !document.hidden) raf = requestAnimationFrame(loop); };
+    function kick() { if (!raf && visible && !document.hidden) raf = requestAnimationFrame(loop); }
 
-    select.current = i => { active = i; drawn = -1; delete fr.dataset.gl; build(i); kick(); };
+    select.current = i => {
+      active = i; ever = -1; delete fr.dataset.gl; seen = 0; slow = 0;
+      if (tier) { tier = 0; fit(); } // each scene gets the best its device can hold
+      build(i); if (i === STORE_SCENE && !label) loadLabel();
+      kick();
+    };
+    try { ro.observe(canvas, { box: 'device-pixel-content-box' }); } catch { ro.observe(canvas); }
     select.current(site);
 
     const onScroll = () => { if (reduce) kick(); };
@@ -126,8 +182,8 @@ export default function ShowcaseStage({ site, signal, frame, view }: { site: num
     canvas.addEventListener('webglcontextlost', lost);
 
     return () => {
-      cancelAnimationFrame(raf); io.disconnect();
-      fr.removeEventListener('pointermove', move); window.removeEventListener('resize', resize);
+      cancelAnimationFrame(raf); io.disconnect(); ro.disconnect();
+      fr.removeEventListener('pointermove', move);
       vw.removeEventListener('scroll', onScroll);
       document.removeEventListener('visibilitychange', kick);
       canvas.removeEventListener('webglcontextlost', lost);

@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 
 /* Aurora: four ribbons of light drifting on noise, with curtains falling beneath them,
    bent toward the pointer. Plain WebGL (no library): one full-screen triangle drawn at
-   reduced resolution and scaled up, since the light is soft. Paused off screen and in
+   device resolution. Paused off screen and in
    background tabs, and capped at 30 fps on phones. */
 const frag = /* glsl */ `
 precision highp float;
@@ -67,7 +67,7 @@ export default function AppShader() {
     const uTime = gl.getUniformLocation(prog, 'uTime'), uRes = gl.getUniformLocation(prog, 'uRes'), uMouse = gl.getUniformLocation(prog, 'uMouse');
     el.appendChild(canvas);
 
-    const scale = phone ? .5 : .75; // soft light survives being drawn small and scaled up
+    const scale = Math.min(window.devicePixelRatio || 1, 2); // pixel for pixel, never upscaled
     const mouse = { x: .72, y: .62 }, target = { x: .72, y: .62 };
     const resize = () => {
       const w = Math.max(1, Math.round(el.clientWidth * scale)), h = Math.max(1, Math.round(el.clientHeight * scale));

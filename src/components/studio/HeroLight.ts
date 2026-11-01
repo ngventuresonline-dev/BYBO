@@ -1,5 +1,5 @@
 /* A pass of moving light over a hero photo: a soft beam that follows the pointer,
-   slow caustics, drifting dust and one sweep on arrival. Drawn small and blended over
+   slow caustics, drifting dust and one sweep on arrival. Drawn at device resolution and blended over
    the photo with screen, so black adds nothing and the photo stays the picture. */
 const frag = /* glsl */ `
 precision highp float;
@@ -55,7 +55,7 @@ export function startHeroLight(hero: HTMLElement, live: { x: number; y: number; 
   const uTime = u('uTime'), uRes = u('uRes'), uMouse = u('uMouse'), uScroll = u('uScroll');
   hero.appendChild(canvas);
 
-  const scale = phone ? .35 : .5;
+  const scale = Math.min(window.devicePixelRatio || 1, 2);
   const resize = () => {
     const w = Math.max(1, Math.round(hero.clientWidth * scale)), h = Math.max(1, Math.round(hero.clientHeight * scale));
     canvas.width = w; canvas.height = h; gl.viewport(0, 0, w, h); gl.uniform2f(uRes, w, h);

@@ -4,11 +4,11 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ComponentType, 
 import dynamic from 'next/dynamic';
 import { Fraunces, Manrope } from 'next/font/google';
 import { motion, AnimatePresence, useInView, useReducedMotion } from 'framer-motion';
-import { Check, Building2, Stethoscope, UtensilsCrossed, Sparkles, Lock, Play, Pause, MousePointer2 } from 'lucide-react';
-import { StageContext, Estate, Clinic, Restaurant, Store } from './ShowcaseSites';
+import { Check, Building2, Stethoscope, UtensilsCrossed, Sparkles, GraduationCap, Dumbbell, Flower2, Mountain, Lock, Play, Pause, MousePointer2 } from 'lucide-react';
+import { StageContext, Estate, Clinic, Restaurant, Store, School, Gym, Spa, Hotel } from './ShowcaseSites';
 import type { StageSignal } from './ShowcaseStage';
 
-/* Four concept websites inside a browser frame, each one a real-time scene. A demo
+/* Eight concept websites inside a browser frame, each one a real-time scene. A demo
    cursor drives each site on its own: it glides through the film, then picks, types,
    books or checks out, and a cut carries it to the next. The moment a visitor clicks
    inside the frame, the demo hands over control. */
@@ -26,6 +26,10 @@ const SCRIPTS: Step[][] = [
   [{ k: 'book', glide: 4600 }, { k: 'spec-Paediatrics' }, { k: 'doc-NK' }, { k: 'slot-5:00' }, { k: 'patient', type: 'Riya Kapoor' }, { k: 'submit', wait: 2600 }, { k: 'done' }],
   [{ k: 'book', glide: 4600 }, { k: 'tab-Desserts' }, { k: 'guests+' }, { k: 'guests+' }, { k: 'guests+' }, { k: 'time-8:30' }, { k: 'submit', wait: 2600 }, { k: 'done' }],
   [{ k: 'book', glide: 4600 }, { k: 'add-serum' }, { k: 'add-oil' }, { k: 'add-serum' }, { k: 'bag', wait: 1600 }, { k: 'checkout', wait: 2600 }, { k: 'done' }],
+  [{ k: 'book', glide: 4600 }, { k: 'sub-Physics' }, { k: 'batch-Weekend' }, { k: 'student', type: 'Kabir Nair' }, { k: 'parent', type: '90000 00000' }, { k: 'submit', wait: 2600 }, { k: 'done' }],
+  [{ k: 'book', glide: 6000 }, { k: 'cls-Boxing' }, { k: 'gt-18:00' }, { k: 'name', type: 'Meera Joshi' }, { k: 'submit', wait: 2600 }, { k: 'done' }],
+  [{ k: 'book', glide: 4600 }, { k: 'th-Hot' }, { k: 'sd-Saturday' }, { k: 'st-11:00' }, { k: 'name', type: 'Leela Das' }, { k: 'submit', wait: 2600 }, { k: 'done' }],
+  [{ k: 'book', glide: 7000 }, { k: 'room-Forest' }, { k: 'nights+' }, { k: 'nights+' }, { k: 'nights+' }, { k: 'name', type: 'Arjun Mehta' }, { k: 'submit', wait: 2600 }, { k: 'done' }],
 ];
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
 const ease = (t: number) => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
@@ -35,6 +39,10 @@ const SITES: { k: string; label: string; name: string; url: string; Icon: typeof
   { k: 'clinic', label: 'Clinic', name: 'Sage Clinic', url: 'sage.concept', Icon: Stethoscope, shows: 'filter doctors, pick a slot, confirm the appointment', S: Clinic },
   { k: 'resto', label: 'Restaurant', name: 'Tamarind House', url: 'tamarind.concept', Icon: UtensilsCrossed, shows: 'browse the menu, light a candle for each guest, reserve', S: Restaurant },
   { k: 'store', label: 'Store', name: 'Lumen', url: 'lumen.concept', Icon: Sparkles, shows: 'fill the bottle from the shelf, open the bag, check out', S: Store },
+  { k: 'school', label: 'Coaching', name: 'Lantern Academy', url: 'lantern.concept', Icon: GraduationCap, shows: 'join the stars, pick a subject and batch, book a demo class', S: School },
+  { k: 'gym', label: 'Fitness', name: 'Ironline', url: 'ironline.concept', Icon: Dumbbell, shows: 'fly the tunnel, choose a class and time, book a trial', S: Gym },
+  { k: 'spa', label: 'Spa', name: 'Stillwater', url: 'stillwater.concept', Icon: Flower2, shows: 'cross the lake, choose a therapy, reserve your hour', S: Spa },
+  { k: 'hotel', label: 'Hotel', name: 'Ridgeline', url: 'ridgeline.concept', Icon: Mountain, shows: 'stay into the night, choose a room, request your dates', S: Hotel },
 ];
 
 /* Scroll progress as CSS variables, written once per frame while scrolling: --p for
@@ -149,7 +157,7 @@ export function Showcase() {
     <section className={`ws-sc ${display.variable} ${ui.variable}`} id="live-work" aria-labelledby="ws-sc-title">
       <div className="container">
         <div className="ws-sc-head">
-          <div><p className="ws-kicker">Live work</p><h2 id="ws-sc-title">Four websites. <em>All of them work.</em></h2></div>
+          <div><p className="ws-kicker">Live work</p><h2 id="ws-sc-title">Eight websites. <em>All of them work.</em></h2></div>
           <p className="ws-sc-sub">Watch each one play out on its own, then take a booking or an order. Take the controls and try it yourself. Concept sites, built the way we build for clients.</p>
         </div>
         <div className="ws-sc-tabs" role="tablist" aria-label="Choose a website">
