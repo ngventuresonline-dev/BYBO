@@ -107,13 +107,26 @@ export function readPermalink(json: unknown): string | null {
   }
 }
 
+/** Graph omits `config` unless these fields are named. Without them the edge returns only `quota_usage`. */
+export const PUBLISHING_LIMIT_FIELDS = 'quota_usage,config';
+
+export function publishingLimitPath(userId: string): string {
+  return `/${userId}/content_publishing_limit?fields=${PUBLISHING_LIMIT_FIELDS}`;
+}
+
+/**
+ * Live edge shape:
+ * `{ data: [{ quota_usage, config: { quota_total, quota_duration } }] }`.
+ */
 export function readQuota(json: unknown): { usage: number; total: number; durationSeconds: number } {
-  const record = json && typeof json === 'object' ? json as { data?: unknown; quota_usage?: unknown; config?: { quota_total?: unknown; quota_duration?: unknown } } : {};
-  const row = Array.isArray(record.data) ? record.data[0] as typeof record : record;
-  const usage = typeof row?.quota_usage === 'number' ? row.quota_usage : null;
-  const total = typeof row?.config?.quota_total === 'number' ? row.config.quota_total : null;
-  const duration = typeof row?.config?.quota_duration === 'number' ? row.config.quota_duration : 86400;
-  if (usage == null || total == null) throw new InstagramError('instagram did not return a publishing limit');
+  const record = json && typeof json === 'object' ? json as { data?: unknown } : {};
+  const row = Array.isArray(record.data) ? record.data[0] : record;
+  const item = row && typeof row === 'object' ? row as { quota_usage?: unknown; config?: unknown } : {};
+  const config = item.config && typeof item.config === 'object' ? item.config as { quota_total?: unknown; quota_duration?: unknown } : {};
+  const usage = typeof item.quota_usage === 'number' ? item.quota_usage : null;
+  const total = typeof config.quota_total === 'number' ? config.quota_total : null;
+  const duration = typeof config.quota_duration === 'number' ? config.quota_duration : null;
+  if (usage == null || total == null || duration == null) throw new InstagramError('instagram did not return a publishing limit');
   return { usage, total, durationSeconds: duration };
 }
 
@@ -121,6 +134,6 @@ export async function instagramHealth(graph: GraphClient): Promise<HealthReport>
   const user = await graph.request('GET', `/${graph.userId}?fields=username`);
   const username = user && typeof user === 'object' ? (user as { username?: unknown }).username : null;
   if (typeof username !== 'string' || !/^[A-Za-z0-9._]+$/.test(username)) throw new InstagramError('instagram did not return a username');
-  const quota = readQuota(await graph.request('GET', `/${graph.userId}/content_publishing_limit`));
+  const quota = readQuota(await graph.request('GET', publishingLimitPath(graph.userId)));
   return { username, ...quota };
 }

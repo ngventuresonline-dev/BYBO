@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { afterEach, describe, it } from 'node:test';
 import { isDryRun } from './config';
-import { createGraphClient, instagramHealth, InstagramError } from './graph';
+import { createGraphClient, instagramHealth, InstagramError, publishingLimitPath, readQuota } from './graph';
 import { publishInstagram } from './publish';
 import { redactSecrets } from './redact';
 import { newIgPost, type IgPost, type MediaItem } from './types';
@@ -106,7 +106,7 @@ describe('instagram publish', () => {
     assert.equal(result.permalink, 'https://www.instagram.com/p/abc123/');
     assert.equal(result.igMediaId, '202');
     assert.deepEqual(graph.calls.map((call) => `${call.method} ${call.path}`), [
-      `GET /${USER}/content_publishing_limit`,
+      `GET ${publishingLimitPath(USER)}`,
       `POST /${USER}/media`,
       `POST /${USER}/media_publish`,
       'GET /202?fields=permalink',
@@ -205,6 +205,21 @@ describe('instagram publish', () => {
   });
 });
 
+describe('publishing limit parser', () => {
+  it('reads quota_usage, config.quota_total and quota_duration from the edge', () => {
+    assert.deepEqual(readQuota({
+      data: [{ quota_usage: 0, config: { quota_total: 100, quota_duration: 86400 } }],
+    }), { usage: 0, total: 100, durationSeconds: 86400 });
+  });
+
+  it('rejects the default edge payload that omits config', () => {
+    assert.throws(
+      () => readQuota({ data: [{ quota_usage: 0 }] }),
+      (err: unknown) => err instanceof InstagramError && err.message === 'instagram did not return a publishing limit',
+    );
+  });
+});
+
 describe('instagram graph client', () => {
   it('sends the token as a bearer header and redacts it from errors and the health result', async () => {
     const urls: string[] = [];
@@ -217,7 +232,10 @@ describe('instagram graph client', () => {
       assert.equal(auth.startsWith('Bearer '), true);
       assert.equal(auth.slice('Bearer '.length) === TOKEN, true);
       if (url.includes('content_publishing_limit')) {
-        return Response.json({ data: [{ quota_usage: 2, config: { quota_total: 100, quota_duration: 86400 } }] });
+        if (!url.includes('fields=quota_usage,config')) {
+          return Response.json({ data: [{ quota_usage: 0 }] });
+        }
+        return Response.json({ data: [{ quota_usage: 0, config: { quota_total: 100, quota_duration: 86400 } }] });
       }
       if (url.includes('fields=username')) return Response.json({ username: 'byboindia' });
       return Response.json({ error: { message: `bad ${TOKEN}` } }, { status: 400 });
@@ -225,11 +243,12 @@ describe('instagram graph client', () => {
     const client = createGraphClient({ token: TOKEN, userId: USER });
     const health = await instagramHealth(client);
     assert.equal(health.username, 'byboindia');
-    assert.equal(health.usage, 2);
+    assert.equal(health.usage, 0);
     assert.equal(health.total, 100);
+    assert.equal(health.durationSeconds, 86400);
     assert.equal(JSON.stringify(health).includes(TOKEN), false);
     assert.equal(urls.some((url) => url.includes(`/${USER}?fields=username`)), true);
-    assert.equal(urls.some((url) => url.includes(`/${USER}/content_publishing_limit`)), true);
+    assert.equal(urls.some((url) => url.includes(publishingLimitPath(USER))), true);
     await assert.rejects(
       () => client.request('GET', `/${USER}?fields=id`),
       (err: unknown) => err instanceof InstagramError && !err.message.includes(TOKEN) && err.message.includes('[redacted]'),
