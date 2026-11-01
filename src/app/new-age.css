@@ -114,3 +114,15 @@ body .nd th{background:var(--na-card-2)!important}
 body .nd :is(th,td,tr){border-color:var(--na-line)}
 body .nd .nd-flow li.is-end{border-color:var(--na-lilac)}
 body .pay :is(h1,h2){font-family:Arial,Helvetica,sans-serif;font-weight:700;letter-spacing:-.04em}
+
+/* ---- legal pages: plain, quiet, built for reading ---- */
+body .lg{background:var(--na-ink);color:var(--na-text)}
+body .lg :is(h1,h2,h3){font-family:Arial,Helvetica,sans-serif;font-weight:700;letter-spacing:-.03em}
+body .lg-hero{background:var(--na-ink-2);border-bottom:1px solid var(--na-line)}
+body .lg-body :is(h2,h3,strong,b,th){color:var(--na-text)!important}
+body .lg-body :is(p,li,td){color:#f4f2eedb!important}
+body .lg-body a{color:var(--na-lilac)!important}
+body .lg-toc a{color:var(--na-soft)!important}
+body .lg-toc :is(span,.eyebrow){color:var(--na-lilac)!important}
+body :is(.lg-note,.lg-review){background:var(--na-card)!important;border:1px solid var(--na-line);border-radius:var(--na-radius);color:var(--na-text)}
+body .lg-body :is(hr,li,td,th,section){border-color:var(--na-line)}
