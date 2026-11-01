@@ -59,3 +59,23 @@ body .xr-industries button:is([aria-pressed=true],[aria-selected=true],.is-activ
 body .xr-stage-number{color:var(--na-lilac)}
 body .xr-tuesday em{color:var(--na-lilac)}
 body .fr-contact-copy h1 br{display:inline}
+body :is(.ic-link,.ic-card) :is(p,small,span,.ic-meta,.ic-more){color:var(--na-soft)!important}
+body :is(.ic-link,.ic-card) :is(h3,h4){color:var(--na-text)!important}
+
+/* ---- service landing pages and the blueprint ---- */
+body .sl,body .sl section{background:var(--na-ink);color:var(--na-text)}
+body .sl section:nth-of-type(even){background:var(--na-ink-2)}
+body :is(.sl-fit-card,.sl-use,.sl-give-card,.sl-bring-list,.sl-measure-card,.sl-faq-list details,.bp-tier,.bp-suit,.bp-after-card){background:var(--na-card);border:1px solid var(--na-line);border-radius:var(--na-radius);color:var(--na-text);box-shadow:none}
+body .sl-bring-list li{background:none;border-color:var(--na-line);color:var(--na-text)}
+body :is(.sl-use-art span,.bp-tier-shot,.bp-tier-head span){background:var(--na-card-2);border-color:var(--na-line);color:var(--na-text)}
+body .sl section :is(h3,h4,b,strong,summary,dt):not(.button,.button *){color:var(--na-text)}
+body .sl section :is(p,li,small,dd,label):not(.eyebrow,.button,.button *){color:var(--na-soft)}
+body .sl section a:not(.button,.button *,.ic-link){color:var(--na-lilac)}
+body .bp-num{color:var(--na-lilac)!important}
+body .we-bar-meta{color:var(--na-soft)!important}
+body .sl .eyebrow{color:var(--na-lilac)!important}
+body .sl section{border-color:var(--na-line)}
+body :is(.sl-measure-card span,.bp-after-card span,.sl-bring-list li>span){color:var(--na-lilac)!important}
+body .bp-suit.is-no{background:var(--na-card-2)!important}
+body .bp-suit.is-no :is(h3,li,p){color:var(--na-text)!important}
+body :is(.sd-faq-list,.sl-faq-list) summary span{color:var(--na-lilac)!important;background:none!important}
