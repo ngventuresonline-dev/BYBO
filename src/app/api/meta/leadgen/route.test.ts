@@ -47,4 +47,19 @@ describe('/api/meta/leadgen', () => {
     assert.equal(fetched, false);
     globalThis.fetch = original;
   });
+
+  it('answers 500 when a lead cannot be fetched, so Meta delivers it again', async () => {
+    process.env.META_APP_SECRET = 'app-secret';
+    process.env.META_PAGE_ACCESS_TOKEN = 'page-token';
+    const { POST } = await import('./route');
+    const body = JSON.stringify({ entry: [{ changes: [{ field: 'leadgen', value: { leadgen_id: '123' } }] }] });
+    const hex = createHmac('sha256', 'app-secret').update(body).digest('hex');
+    const res = await POST(new NextRequest('https://bybo.in/api/meta/leadgen', {
+      method: 'POST',
+      headers: { 'x-hub-signature-256': `sha256=${hex}`, 'content-type': 'application/json' },
+      body,
+    }));
+    assert.equal(res.status, 500);
+    assert.deepEqual(await res.json(), { ok: false, results: [{ id: '123', action: 'error', reported: false }] });
+  });
 });
