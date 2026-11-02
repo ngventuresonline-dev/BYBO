@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { captureMappedMetaLead } from '@/lib/instant-call/flow';
 import { notifyMetaLead } from '@/lib/instant-call/lead-notify';
-import { extractLeadgenIds, graphLeadToMapped } from '@/lib/instant-call/meta';
+import { extractLeadgenIds, graphLeadToMapped, LEAD_FIELDS } from '@/lib/instant-call/meta';
 import { safeEqual } from '@/lib/instant-call/secrets';
 import { verifyMetaSignature } from '@/lib/instant-call/webhook';
 
@@ -67,7 +67,7 @@ export async function fetchGraphLead(leadgenId: string, token: string, fetchImpl
   }
   const version = process.env.META_GRAPH_VERSION?.trim() || 'v21.0';
   const url = new URL(`https://graph.facebook.com/${version}/${encodeURIComponent(leadgenId)}`);
-  url.searchParams.set('fields', 'id,created_time,ad_id,ad_name,adset_id,adset_name,campaign_id,campaign_name,form_id,form_name,platform,field_data');
+  url.searchParams.set('fields', LEAD_FIELDS);
   url.searchParams.set('access_token', token);
   const res = await fetchImpl(url, { signal: AbortSignal.timeout(15_000) });
   if (!res.ok) throw new Error(`graph lead fetch failed (${res.status})`);

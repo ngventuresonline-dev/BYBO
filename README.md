@@ -1,5 +1,13 @@
 # bybo.in
 
+## Meta form leads
+
+`/api/cron/meta-leads` runs every 5 minutes and pulls new leads from every form on the Page (`FB_PAGE_ID`). It uses `META_PAGE_ACCESS_TOKEN`, or `IG_ACCESS_TOKEN` if that is unset. The token needs `leads_retrieval` and `pages_manage_ads`.
+
+Each new lead is stored, runs the instant-call gates, gets the enquiry confirmation by email, and is reported to the team inboxes. `/api/meta/leadgen` does the same when the webhook is subscribed. The two share the lead store, so a lead is handled once.
+
+Leads from before `POLL_FROM` in `src/lib/instant-call/meta-poll.ts` are not pulled. A failed run answers with an error and is visible in the cron logs.
+
 ## Instagram posting (@byboindia)
 
 The founder posts to Instagram from `/admin/instagram`. A draft is never sent. **Post to Instagram now** and **Schedule** are the approval. The scheduler at `/api/cron/instagram` runs every 10 minutes and publishes each due approved post once.

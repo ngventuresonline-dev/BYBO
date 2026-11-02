@@ -68,7 +68,7 @@ describe('Meta lead notifications', () => {
     assert.deepEqual(sent[1]!.to, ['support@bybo.in', 'byboonline@gmail.com']);
     assert.equal(sent[1]!.subject, 'Meta lead: Priya Sharma (Spice Co)');
     assert.equal(sent[1]!.reply_to, 'priya@example.com');
-    assert.equal(sent[1]!.key, 'meta-lead-report/lead-1');
+    assert.equal(sent[1]!.key, 'meta-lead-report/meta-1');
   });
 
   it('sends nothing twice when Meta redelivers a lead', async () => {
@@ -137,7 +137,7 @@ describe('Meta lead notifications', () => {
     second.restore();
     assert.deepEqual(retried, { reported: true, ack: 'sent' });
     assert.equal(second.sent.length, 1);
-    assert.equal(second.sent[0]!.key, 'meta-lead-report/lead-1');
+    assert.equal(second.sent[0]!.key, 'meta-lead-report/meta-1');
   });
 
   it('reports failure without a Resend key', async () => {

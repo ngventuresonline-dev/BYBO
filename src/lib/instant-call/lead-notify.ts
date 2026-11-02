@@ -88,9 +88,15 @@ async function acknowledgeLead(key: string, lead: Lead): Promise<AckState> {
   const name = lead.name.trim() || 'there';
   const to = [lead.email.trim()];
   const replyTo = CONTACT.email;
-  if (await send(key, `meta-lead-ack/${lead.id}`, { to, replyTo, ...visitorAck(name, []) })) return 'sent';
-  const fallback = await send(key, `meta-lead-ack-fallback/${lead.id}`, { to, replyTo, ...visitorAckFallback(name, []) });
+  const ref = leadRef(lead);
+  if (await send(key, `meta-lead-ack/${ref}`, { to, replyTo, ...visitorAck(name, []) })) return 'sent';
+  const fallback = await send(key, `meta-lead-ack-fallback/${ref}`, { to, replyTo, ...visitorAckFallback(name, []) });
   return fallback ? 'sent' : 'failed';
+}
+
+/** Meta's id is the same on every delivery, even if the lead was not stored. */
+function leadRef(lead: Lead): string {
+  return lead.external_id ?? lead.id;
 }
 
 /**
@@ -115,7 +121,7 @@ export async function notifyMetaLead(
 
   const ack = stored ?? await acknowledgeLead(key, lead);
   const mail = metaLeadReport(lead, ack);
-  const reported = alreadyReported || await send(key, `meta-lead-report/${lead.id}`, {
+  const reported = alreadyReported || await send(key, `meta-lead-report/${leadRef(lead)}`, {
     to: teamRecipients(),
     ...mail,
     ...(hasValidEmail(lead.email) ? { replyTo: lead.email.trim() } : {}),

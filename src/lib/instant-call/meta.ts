@@ -11,6 +11,8 @@ export type MappedMetaLead = {
   raw: Record<string, unknown>;
 };
 
+export const LEAD_FIELDS = 'id,created_time,ad_id,ad_name,adset_id,adset_name,campaign_id,campaign_name,form_id,platform,field_data';
+
 const normKey = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 
 /** Graph field_data, a CSV row, or any name/value bag. Unknown names stay in raw. */
