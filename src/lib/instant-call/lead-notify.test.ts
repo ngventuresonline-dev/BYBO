@@ -148,6 +148,13 @@ describe('Meta lead notifications', () => {
     assert.equal(sent.length, 0);
   });
 
+  it('keeps a long, multi-line business answer to one short subject line', () => {
+    const { subject } = metaLeadReport(lead({ business: `Spice Co\n\nWe sell ${'spices '.repeat(40)}` }), 'sent');
+    assert.doesNotMatch(subject, /\n/);
+    assert.match(subject, /^Meta lead: Priya Sharma \(Spice Co We sell spices/);
+    assert.equal(subject.length, 120);
+  });
+
   it('escapes form answers in the report', () => {
     const { html } = metaLeadReport(lead({ enquiry: '<script>x</script>' }), 'sent');
     assert.doesNotMatch(html, /<script>x/);

@@ -14,6 +14,8 @@ const ACK_LABEL: Record<AckState, string> = {
   no_email: 'Not sent, no valid email on the form',
 };
 
+const SUBJECT_MAX = 120;
+
 type Mail = {
   to: string[];
   subject: string;
@@ -46,7 +48,8 @@ export function metaLeadReport(lead: Lead, ack: AckState) {
     ['Lead', lead.id],
   ];
   const enquiry = lead.enquiry.trim() || 'The form had no further answers.';
-  const subject = `Meta lead: ${who}${lead.business.trim() ? ` (${lead.business.trim()})` : ''}`;
+  // Form answers can run over several lines, which Resend refuses in a subject.
+  const subject = `Meta lead: ${who}${lead.business.trim() ? ` (${lead.business.trim()})` : ''}`.replace(/\s+/g, ' ').slice(0, SUBJECT_MAX);
   return {
     subject,
     text: brandedEmailText({ headline: subject, paragraphs: [enquiry], fields }),
@@ -78,7 +81,10 @@ async function send(key: string, idempotencyKey: string, mail: Mail): Promise<bo
       ...(mail.replyTo ? { reply_to: mail.replyTo } : {}),
     }),
   }).catch(() => null);
-  if (!res?.ok) console.error('lead email failed', idempotencyKey, res?.status ?? 0);
+  if (!res?.ok) {
+    const reason = await res?.text().catch(() => '');
+    console.error('lead email failed', idempotencyKey, res?.status ?? 0, reason?.slice(0, 200));
+  }
   return Boolean(res?.ok);
 }
 
