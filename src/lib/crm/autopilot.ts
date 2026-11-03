@@ -57,10 +57,12 @@ export type DemoContent = {
   hero_float?: string | null;
   spotlight?: { image: string; title: string; kicker: string; callouts: string[] } | null;
   /** Hero scenes. `float` places the floating product for that scene: centre x and y in % of the screen, s = scale. */
-  scenes?: { image: string | null; brief?: string; kicker: string; title: string; text: string; float?: { x: number; y: number; s: number } }[];
+  scenes?: { image: string | null; brief?: string; product?: string; kicker: string; title: string; text: string; float?: { x: number; y: number; s: number } }[];
   hero_float_pos?: { x: number; y: number; s: number };
   /** An art-directed scene photo for the first hero frame (made for the demo, never lifted from their site). */
   hero_scene?: string | null;
+  /** The product handle the first hero scene's hotspot points at. */
+  hero_product?: string;
   /** The art direction brief for the first hero scene photo. */
   hero_brief?: string;
   quality?: { score: number; issues: string[] };

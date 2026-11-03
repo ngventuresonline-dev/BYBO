@@ -48,6 +48,7 @@ export default async function DemoLayout({ children, params }: { children: React
           base={base} brand={c.brand} logo={c.logo ?? null} cats={cats}
           items={items.map((i) => ({ title: i.title, handle: i.handle, image: i.image, price: i.price, category: i.category }))}
           featured={(() => { const f = featured(c, items).find((i) => isCutout(i.image)) ?? items[0]; return f ? { title: f.title, handle: f.handle, image: f.image, price: f.price, category: f.category } : null; })()}
+          badge={c.sample_note ? 'Featured' : 'Bestseller'}
           quote={items.length && !items.some((i) => i.price != null) ? words(c).ask.replace(/ about this \w+$/i, '') : null}
         />
 

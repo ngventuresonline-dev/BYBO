@@ -13,7 +13,7 @@ const inr = (n: number) => `₹${Math.round(n).toLocaleString('en-IN')}`;
  * The demo store's header: a mega menu with real products per category, live
  * product search, and a full-screen menu on phones.
  */
-export function StoreHeader({ base, brand, logo, cats, items, featured, quote }: { base: string; brand: string; logo: string | null; cats: string[]; items: NavItem[]; featured: NavItem | null; quote?: string | null }) {
+export function StoreHeader({ base, brand, logo, cats, items, featured, quote, badge = 'Bestseller' }: { base: string; brand: string; logo: string | null; cats: string[]; items: NavItem[]; featured: NavItem | null; quote?: string | null; badge?: string }) {
   const [mega, setMega] = useState(false);
   const [active, setActive] = useState(cats[0] ?? '');
   const [search, setSearch] = useState(false);
@@ -91,7 +91,7 @@ export function StoreHeader({ base, brand, logo, cats, items, featured, quote }:
           {featured ? (
             <Link href={`${base}/p/${featured.handle}`} className="st-mega-feature">
               <span className={`st-mega-img${featured.image && !/\.(png|webp)(\?|$)/i.test(featured.image) || featured.image?.includes('/demo-media/') ? ' is-photo' : ''}`}>{featured.image ? <img src={featured.image} alt="" /> : null}</span>
-              <span className="st-mega-feature-copy"><small>Bestseller</small><b>{featured.title}</b>{featured.price != null ? <em>{inr(featured.price)} · Shop now →</em> : null}</span>
+              <span className="st-mega-feature-copy"><small>{badge}</small><b>{featured.title}</b>{featured.price != null ? <em>{inr(featured.price)} · Shop now →</em> : null}</span>
             </Link>
           ) : null}
         </div>

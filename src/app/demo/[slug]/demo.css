@@ -91,7 +91,7 @@ body:has(.demo) .skip-link { display: none !important; }
 /* Product-in-scene hero: full photos, a soft left wash for the words, and a shoppable hotspot on the product */
 .demo-hero.is-in-scene .demo-hero-scrim { background: linear-gradient(90deg, color-mix(in srgb, var(--bg) 62%, transparent) 0%, color-mix(in srgb, var(--bg) 18%, transparent) 34%, transparent 52%); }
 .demo-hero.is-in-scene .demo-motes { opacity: .5; }
-.demo-hotspot { position: absolute; z-index: 5; left: calc(var(--fx, 60) * 1% + 4vw); top: calc(var(--fy, 50) * 1%); display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--ink); transition: left 1.3s var(--ease), top 1.3s var(--ease); }
+.demo-hotspot { position: absolute; z-index: 5; left: calc(var(--hx, 60) * 1% + 4vw); top: calc(var(--hy, 50) * 1%); opacity: 0; pointer-events: none; transition: opacity .6s var(--ease); display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--ink); transition: left 1.3s var(--ease), top 1.3s var(--ease); }
 .demo-hotspot-dot { position: relative; width: 16px; height: 16px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 5px color-mix(in srgb, #fff 45%, transparent); }
 .demo-hotspot-dot::after { content: ''; position: absolute; inset: -12px; border-radius: 50%; border: 1px solid #fff; animation: demo-ping 2.2s ease-out infinite; }
 @keyframes demo-ping { from { transform: scale(.4); opacity: 1; } to { transform: scale(1.6); opacity: 0; } }
@@ -339,3 +339,4 @@ body:has(.demo) .skip-link { display: none !important; }
 .demo-story-rail li { text-shadow: 0 2px 14px rgba(0, 0, 0, .7); }
 .demo-story-rail { padding: 16px 18px; border-radius: 16px; background: rgba(10, 8, 8, .32); backdrop-filter: blur(8px); }
 .demo:has(.demo-story) .demo-rail:has(li.is-active[data-rail='how']) { opacity: 0; pointer-events: none; }
+.demo-hotspot.is-active { opacity: 1; pointer-events: auto; }

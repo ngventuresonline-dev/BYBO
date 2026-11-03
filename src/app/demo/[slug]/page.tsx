@@ -46,7 +46,7 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
   // Hero frames: art-directed scene photos when we have them, otherwise studio sets drawn in their colours.
   // Their own site photos are never reused here: the redesign tells their story in a new way.
   const frames = [
-    { image: c.hero_scene ?? null, kicker: c.hero.eyebrow, title: c.hero.headline, text: c.hero.sub, float: c.hero_float_pos },
+    { image: c.hero_scene ?? null, kicker: c.hero.eyebrow, title: c.hero.headline, text: c.hero.sub, float: c.hero_float_pos, product: c.hero_product },
     ...scenes.map((x) => ({ ...x, image: x.image ?? null })),
   ].slice(0, 4);
   const chapters = [
@@ -94,12 +94,17 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
               {heroItem?.price != null ? <span className="demo-float-tag"><b>{heroItem.title}</b>{inr(heroItem.price)}</span> : null}
             </Link>
           ) : null}
-          {inScene && heroItem ? (
-            <Link href={`${base}/p/${heroItem.handle}`} className="demo-hotspot" aria-label={`${heroItem.title}, view product`}>
-              <span className="demo-hotspot-dot" />
-              <span className="demo-hotspot-tag"><b>{heroItem.title}</b>{heroItem.price != null ? inr(heroItem.price) : 'View'} →</span>
-            </Link>
-          ) : null}
+          {/* One hotspot per scene, on that scene's own product; it fades with its scene. */}
+          {inScene ? frames.map((f, i) => {
+            const item = items.find((x) => x.handle === f.product) ?? (i === 0 ? heroItem : undefined);
+            return item ? (
+              <Link key={i} href={`${base}/p/${item.handle}`} className={`demo-hotspot${i === 0 ? ' is-active' : ''}`} data-frame={i} aria-label={`${item.title}, view product`}
+                style={{ '--hx': f.float?.x ?? 64, '--hy': f.float?.y ?? 45 } as React.CSSProperties}>
+                <span className="demo-hotspot-dot" />
+                <span className="demo-hotspot-tag"><b>{item.title}</b>{item.price != null ? inr(item.price) : 'View'} →</span>
+              </Link>
+            ) : null;
+          }) : null}
           <div className="demo-captions">
             {frames.map((f, i) => (
               <div key={f.title + i} className={`demo-caption${i === 0 ? ' is-active' : ''}`} data-frame={i}>
@@ -264,7 +269,7 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
 
       {c.flow?.length ? (
         <section className="demo-section demo-journey" data-reveal>
-          <div className="demo-head"><p className="demo-kicker">From browse to doorstep</p><h2>Simple, start to finish.</h2></div>
+          <div className="demo-head"><p className="demo-kicker">How ordering works</p><h2>Simple, start to finish.</h2></div>
           <ol>{c.flow.map((f, i) => <li key={f.step} style={{ transitionDelay: `${i * 120}ms` }}><span>{pad(i + 1)}</span><h3>{f.step}</h3><p>{f.text}</p></li>)}</ol>
         </section>
       ) : null}

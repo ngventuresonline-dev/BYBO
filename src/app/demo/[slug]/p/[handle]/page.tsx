@@ -64,14 +64,13 @@ export default async function Product({ params }: { params: Promise<{ slug: stri
               <details open><summary>Description</summary>{paras.slice(0, 8).map((p) => <p key={p}>{p}</p>)}</details>
             ) : null}
             {facts.length ? <details><summary>Delivery & returns</summary><ul>{facts.map((f) => <li key={f}>{f}</li>)}</ul></details> : null}
-            <details><summary>Payment</summary><p>UPI, cards and cash on delivery.</p></details>
           </div>
         </div>
       </section>
 
       {related.length ? (
         <section className="st-wrap pd-related">
-          <div className="demo-head" data-reveal><p className="demo-kicker">You may also like</p><h2>Complete the routine</h2></div>
+          <div className="demo-head" data-reveal><p className="demo-kicker">You may also like</p><h2>More to explore</h2></div>
           <div className="sh-grid">
             {related.map((p) => (
               <article key={p.handle} className="sh-card" data-reveal>
