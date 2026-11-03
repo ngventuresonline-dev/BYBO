@@ -129,6 +129,11 @@ export function AutopilotSection({ leads, now, onOpen, onToast, onChanged }: { l
                   {l ? <QualityChip lead={l} /> : null}
                 </header>
                 {d.content.hero?.headline ? <p className="crm-approve-head">“{d.content.hero.headline}”</p> : null}
+                {d.content.quality ? (
+                  <p className={`crm-ready ${d.content.quality.score >= 75 ? 'is-good' : d.content.quality.score >= 50 ? 'is-ok' : 'is-low'}`}>
+                    <b>Ready {d.content.quality.score}/100</b>{d.content.quality.issues.length ? ` · ${d.content.quality.issues.join(' · ')}` : ' · good to send'}
+                  </p>
+                ) : null}
                 <footer>
                   <a className="crm-btn is-ghost" href={demoLink(d)} target="_blank" rel="noreferrer">Preview</a>
                   <button className="crm-btn" disabled={!!busy || !l?.email} onClick={() => act(`send-${d.id}`, { action: 'approve_send', demo_id: d.id })}>{busy === `send-${d.id}` ? 'Sending…' : l?.email ? 'Approve & email client' : 'No email on lead'}</button>

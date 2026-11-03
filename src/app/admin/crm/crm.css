@@ -404,3 +404,9 @@ body:has(.crm) .skip-link { display: none !important; }
 @media (prefers-reduced-motion: reduce) {
   .crm *, .crm *::before, .crm *::after { animation: none !important; transition: none !important; }
 }
+
+.crm-ready { margin: 6px 0 10px; font-size: 12.5px; line-height: 1.5; color: var(--crm-muted, #6b6b76); }
+.crm-ready b { font-weight: 700; margin-right: 2px; }
+.crm-ready.is-good b { color: #1f9d55; }
+.crm-ready.is-ok b { color: #c27c0e; }
+.crm-ready.is-low b { color: #d64545; }
