@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import type { DemoContent } from '@/lib/crm/autopilot';
 import { CONTACT } from '@/lib/site';
 import { DemoMotion } from './DemoMotion';
-import { catalog, featured, inr, isCutout, loadDemo, off, pad } from './data';
+import { catalog, featured, inr, isCutout, loadDemo, off, pad, words } from './data';
 import { AddToCart } from './store';
 
 export const dynamic = 'force-dynamic';
@@ -25,6 +25,7 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
   const c = demo.content as DemoContent;
   const base = `/demo/${slug}`;
   const items = catalog(c);
+  const w = words(c);
   const best = featured(c, items);
   const facts = c.facts ?? [];
   const scenes = c.scenes ?? [];
@@ -108,7 +109,7 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
           </div>
           <div className="demo-hero-cta">
             <Link className="demo-btn" data-magnet href={`${base}/shop`}>Shop the range</Link>
-            {heroItem?.price != null ? <AddToCart item={{ handle: heroItem.handle, title: heroItem.title, price: heroItem.price, image: heroItem.image }} className="demo-btn is-ghost" label={`Add to bag · ${inr(heroItem.price)}`} /> : <Link className="demo-btn is-ghost" href={`${base}/contact`}>Book a video call</Link>}
+            {heroItem?.price != null ? <AddToCart item={{ handle: heroItem.handle, title: heroItem.title, price: heroItem.price, image: heroItem.image }} className="demo-btn is-ghost" label={`Add to bag · ${inr(heroItem.price)}`} /> : <Link className="demo-btn is-ghost" href={`${base}/contact`}>{w.call}</Link>}
           </div>
           <div className="demo-dots" aria-hidden="true">{frames.map((f, i) => <i key={i} data-frame={i} className={i === 0 ? 'is-active' : ''} />)}</div>
           <div className="demo-scroll-hint" aria-hidden="true"><span />Scroll</div>
@@ -123,7 +124,7 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
 
       {c.origins?.length ? (
         <section className="demo-section hm-origins" id="origins">
-          <div className="demo-head is-center" data-reveal><p className="demo-kicker">Every weave tells where it was born</p><h2><Words text="Sarees by origin" /></h2></div>
+          <div className="demo-head is-center" data-reveal><p className="demo-kicker">{w.originsKicker}</p><h2><Words text={w.originsTitle} /></h2></div>
           <div className="hm-origin-row">
             {c.origins.map((o, i) => (
               <Link key={o.name} href={`${base}/shop?c=${encodeURIComponent(o.name)}`} className="hm-origin" data-reveal style={{ transitionDelay: `${i * 90}ms` }}>
@@ -156,8 +157,8 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
         <section className="demo-hscroll" id="shop" data-hscroll data-chapter="shop">
           <div className="demo-stage">
             <div className="demo-shop-head">
-              <p className="demo-kicker">{c.sample_note ? "Featured weaves" : "Bestsellers"}</p>
-              <h2>{c.sample_note ? `The ${c.brand} edit` : "Most-loved pieces"}</h2>
+              <p className="demo-kicker">{w.featuredKicker}</p>
+              <h2>{w.featuredTitle}</h2>
               <Link className="demo-shop-hint" href={`${base}/shop`}>View all {items.length} →</Link>
             </div>
             <div className="demo-track" data-track>
@@ -175,7 +176,7 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
                     <div className="demo-price">
                       {p.price != null ? <b>{inr(p.price)}</b> : null}
                       {pct ? <s>{inr(p.compare!)}</s> : null}
-                      {p.price != null ? <AddToCart item={{ handle: p.handle, title: p.title, price: p.price, image: p.image }} className="demo-add" /> : <><b className="is-ask">Price on request</b><Link className="demo-add" href={`${base}/contact?p=${encodeURIComponent(p.title)}`}>Enquire</Link></>}
+                      {p.price != null ? <AddToCart item={{ handle: p.handle, title: p.title, price: p.price, image: p.image }} className="demo-add" /> : <><b className="is-ask">{w.priceNote}</b><Link className="demo-add" href={`${base}/contact?p=${encodeURIComponent(p.title)}`}>{w.askShort}</Link></>}
                     </div>
                   </article>
                 );

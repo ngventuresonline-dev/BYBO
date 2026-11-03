@@ -205,7 +205,7 @@ export function Checkout({ brand }: { brand: string }) {
 }
 
 /** Shop grid with category filters and sorting. */
-export function ShopGrid({ items, cats, base, initial = 'All' }: { initial?: string; items: { title: string; handle: string; price: number | null; compare: number | null; image: string | null; category: string; line: string }[]; cats: string[]; base: string }) {
+export function ShopGrid({ items, cats, base, initial = 'All', ask = 'Enquire', priceNote = 'Price on request' }: { ask?: string; priceNote?: string; initial?: string; items: { title: string; handle: string; price: number | null; compare: number | null; image: string | null; category: string; line: string }[]; cats: string[]; base: string }) {
   const [cat, setCat] = useState(initial);
   const [sort, setSort] = useState('featured');
   const list = items.filter((i) => cat === 'All' || i.category === cat).sort((a, b) => sort === 'low' ? (a.price ?? 0) - (b.price ?? 0) : sort === 'high' ? (b.price ?? 0) - (a.price ?? 0) : 0);
@@ -229,7 +229,7 @@ export function ShopGrid({ items, cats, base, initial = 'All' }: { initial?: str
               <div className="demo-price">
                 {p.price != null ? <b>{inr(p.price)}</b> : null}
                 {pct ? <s>{inr(p.compare!)}</s> : null}
-                {p.price != null ? <AddToCart item={{ handle: p.handle, title: p.title, price: p.price, image: p.image }} className="demo-add" label="Add" /> : <><b className="is-ask">Price on request</b><Link className="demo-add" href={`${base}/contact?p=${encodeURIComponent(p.title)}`}>Enquire</Link></>}
+                {p.price != null ? <AddToCart item={{ handle: p.handle, title: p.title, price: p.price, image: p.image }} className="demo-add" label="Add" /> : <><b className="is-ask">{priceNote}</b><Link className="demo-add" href={`${base}/contact?p=${encodeURIComponent(p.title)}`}>{ask}</Link></>}
               </div>
             </article>
           );
