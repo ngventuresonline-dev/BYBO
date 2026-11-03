@@ -14,6 +14,16 @@ const Ctx = createContext<Cart | null>(null);
 export const useCart = () => useContext(Ctx)!;
 const inr = (n: number) => `₹${Math.round(n).toLocaleString('en-IN')}`;
 
+/** Orders and enquiries made on a demo, kept in this browser so the owner dashboard can show them. */
+export type DemoOrder = { id: string; at: string; name: string; city: string; pay: string; items: { title: string; qty: number; price: number }[]; total: number };
+export type DemoEnquiry = { at: string; name: string; contact: string; message: string };
+export function readRecords<T>(base: string, kind: 'orders' | 'enquiries'): T[] {
+  try { return JSON.parse(localStorage.getItem(`bybo-demo-${kind}:${base}`) ?? '[]') as T[]; } catch { return []; }
+}
+function addRecord<T>(base: string, kind: 'orders' | 'enquiries', rec: T) {
+  try { localStorage.setItem(`bybo-demo-${kind}:${base}`, JSON.stringify([rec, ...readRecords<T>(base, kind)].slice(0, 50))); } catch { /* private mode */ }
+}
+
 /** The demo shop's cart: kept in this browser only, per demo. */
 export function CartProvider({ slug, children }: { slug: string; children: React.ReactNode }) {
   const key = `bybo-demo-cart:${slug}`;
@@ -148,15 +158,19 @@ export function Checkout({ brand }: { brand: string }) {
         <h2>Thank you, {order.name}.</h2>
         <p>Order <b>{order.id}</b> is confirmed: {order.items} item{order.items === 1 ? '' : 's'}, {inr(order.total)}. Updates will reach you on WhatsApp.</p>
         <p className="st-note">This is a demo checkout by BYBO. Nothing was charged.</p>
-        <Link className="demo-btn" href={`${base}/shop`}>Keep shopping</Link>
+        <div className="demo-actions"><Link className="demo-btn" href={`${base}/shop`}>Keep shopping</Link><Link className="demo-btn is-ghost" href={`${base}/dashboard`}>See it in the owner dashboard →</Link></div>
       </div>
     );
   }
   if (!lines.length) return <div className="st-page-empty"><p>Your bag is empty.</p><Link className="demo-btn" href={`${base}/shop`}>Start shopping</Link></div>;
   const submit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const name = String(new FormData(e.currentTarget).get('name') ?? '').split(' ')[0] || 'there';
-    setOrder({ id: `${brand.slice(0, 3).toUpperCase()}-${String(Date.now()).slice(-6)}`, total: subtotal, name, items: lines.reduce((n, l) => n + l.qty, 0) });
+    const f = new FormData(e.currentTarget);
+    const full = String(f.get('name') ?? '').trim();
+    const name = full.split(' ')[0] || 'there';
+    const id = `${brand.slice(0, 3).toUpperCase()}-${String(Date.now()).slice(-6)}`;
+    addRecord<DemoOrder>(base, 'orders', { id, at: new Date().toISOString(), name: full || 'Customer', city: String(f.get('city') ?? ''), pay, items: lines.map((l) => ({ title: l.title, qty: l.qty, price: l.price })), total: subtotal });
+    setOrder({ id, total: subtotal, name, items: lines.reduce((n, l) => n + l.qty, 0) });
     clear();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -215,7 +229,7 @@ export function ShopGrid({ items, cats, base, initial = 'All' }: { initial?: str
               <div className="demo-price">
                 {p.price != null ? <b>{inr(p.price)}</b> : null}
                 {pct ? <s>{inr(p.compare!)}</s> : null}
-                {p.price != null ? <AddToCart item={{ handle: p.handle, title: p.title, price: p.price, image: p.image }} className="demo-add" label="Add" /> : null}
+                {p.price != null ? <AddToCart item={{ handle: p.handle, title: p.title, price: p.price, image: p.image }} className="demo-add" label="Add" /> : <><b className="is-ask">Price on request</b><Link className="demo-add" href={`${base}/contact?p=${encodeURIComponent(p.title)}`}>Enquire</Link></>}
               </div>
             </article>
           );
@@ -236,14 +250,20 @@ export function Gallery({ images, title }: { images: string[]; title: string }) 
   );
 }
 
-export function ContactForm() {
+export function ContactForm({ product }: { product?: string }) {
   const [sent, setSent] = useState(false);
+  const { base } = useCart();
   if (sent) return <div className="co-done"><span className="co-tick">✓</span><h2>Message received.</h2><p>We will reply within a day.</p><p className="st-note">Demo form by BYBO: nothing was sent.</p></div>;
   return (
-    <form className="ct-form" onSubmit={(e) => { e.preventDefault(); setSent(true); }}>
-      <label>Name<input required autoComplete="name" /></label>
-      <label>Email or mobile<input required /></label>
-      <label className="is-wide">Message<textarea required rows={5} /></label>
+    <form className="ct-form" onSubmit={(e) => {
+      e.preventDefault();
+      const f = new FormData(e.currentTarget);
+      addRecord<DemoEnquiry>(base, 'enquiries', { at: new Date().toISOString(), name: String(f.get('name') ?? ''), contact: String(f.get('contact') ?? ''), message: String(f.get('message') ?? '') });
+      setSent(true);
+    }}>
+      <label>Name<input name="name" required autoComplete="name" /></label>
+      <label>Email or mobile<input name="contact" required /></label>
+      <label className="is-wide">Message<textarea name="message" required rows={5} defaultValue={product ? `I'd like to know more about the ${product}.` : ''} /></label>
       <button className="demo-btn" type="submit">Send message</button>
     </form>
   );

@@ -41,7 +41,7 @@ export type DemoContent = {
   pages: string[];
   cta: { headline: string; sub: string };
   /** v2: a redesign of the prospect's real site. */
-  style?: 'luxe' | 'bold' | 'calm';
+  style?: 'luxe' | 'bold' | 'calm' | 'heritage';
   site_url?: string | null;
   logo?: string | null;
   hero_image?: string | null;
@@ -64,6 +64,12 @@ export type DemoContent = {
   /** The art direction brief for the first hero scene photo. */
   hero_brief?: string;
   quality?: { score: number; issues: string[] };
+  /** A full-screen intro the visitor scrolls into (a fabric or texture macro). */
+  intro_image?: string | null;
+  /** Collections by origin or line, each with its own image. */
+  origins?: { name: string; region: string; text: string; image: string | null }[];
+  /** Set when the products shown are a sample range, not their real catalogue. */
+  sample_note?: string;
   /** True when the scene photos already show their product: no floating cut-out, a shoppable hotspot instead. */
   scenes_show_product?: boolean;
   /** Their full catalogue (from their store), for the demo's shop, product and cart pages. */
@@ -252,6 +258,8 @@ export async function artDirect(c: DemoContent, slug: string): Promise<DemoConte
 }
 
 const slugify = (s: string) => s.toLowerCase().normalize('NFKD').replace(/[^\w\s-]/g, '').trim().replace(/[\s_]+/g, '-').replace(/-+/g, '-').slice(0, 40) || 'demo';
+/** Leads scoring below this are held for a person: no demo is drafted for them. */
+const HOLD_BELOW = Number(process.env.BYBO_LEAD_HOLD_BELOW ?? 50);
 export const demoUrl = (slug: string) => `https://bybo.in/demo/${slug}`;
 
 async function log(lead: string, kind: string, title: string, body?: string, meta: Record<string, unknown> = {}) {
@@ -296,13 +304,14 @@ export async function step(l: CrmLead): Promise<string> {
     try {
       const intel = await researchLead(l);
       const fake = intel.quality === 'fake';
+      const low = !fake && (intel.score ?? 0) < HOLD_BELOW;
       await rpc('bybo_ap_set', { p_lead: l.id, p: {
-        autopilot: fake ? 'needs_review' : 'qualified', quality: intel.quality, quality_score: String(intel.score ?? ''),
+        autopilot: fake ? 'needs_review' : low ? 'held' : 'qualified', quality: intel.quality, quality_score: String(intel.score ?? ''),
         intel, temperature: fake ? '' : intel.temperature ?? '', company: intel.business?.name ?? '',
       } });
-      await log(l.id, fake ? 'alert' : 'research', fake ? `Likely fake (${intel.score}/100): held for your review` : `Researched: ${intel.quality} lead, ${intel.score}/100`,
+      await log(l.id, fake || low ? 'alert' : 'research', fake ? `Likely fake (${intel.score}/100): held for your review` : low ? `Low score (${intel.score}/100): held, no demo drafted` : `Researched: ${intel.quality} lead, ${intel.score}/100`,
         [intel.business?.what_they_do, ...(intel.reasons ?? []).map((r) => `• ${r}`), intel.pitch ? `Pitch: ${intel.pitch}` : ''].filter(Boolean).join('\n'), { sources: intel.sources ?? [] });
-      return `${who}: ${intel.quality} (${intel.score})`;
+      return `${who}: ${intel.quality} (${intel.score})${low ? ', held' : ''}`;
     } catch (err) {
       await rpc('bybo_ap_set', { p_lead: l.id, p: { autopilot: 'failed', intel: { error: (err as Error).message.slice(0, 200) } } });
       return `${who}: research failed`;
