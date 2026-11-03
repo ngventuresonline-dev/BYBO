@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
 import type { DemoContent } from '@/lib/crm/autopilot';
 import { DemoMotion } from '../DemoMotion';
-import { catalog, featured, loadDemo } from '../data';
+import { catalog, featured, loadDemo, words } from '../data';
 import { ShopGrid } from '../store';
 
 export const dynamic = 'force-dynamic';
@@ -30,7 +30,7 @@ export default async function Shop({ params, searchParams }: { params: Promise<{
         <p>{c.hero.sub}</p>
       </section>
       <section className="st-wrap">
-        <ShopGrid key={initial ?? 'all'} items={ordered} cats={cats} base={`/demo/${slug}`} initial={initial && cats.includes(initial) ? initial : 'All'} />
+        <ShopGrid key={initial ?? 'all'} items={ordered} cats={cats} base={`/demo/${slug}`} initial={initial && cats.includes(initial) ? initial : 'All'} ask={words(c).askShort} priceNote={words(c).priceNote} />
       </section>
     </>
   );

@@ -70,6 +70,8 @@ export type DemoContent = {
   origins?: { name: string; region: string; text: string; image: string | null }[];
   /** Set when the products shown are a sample range, not their real catalogue. */
   sample_note?: string;
+  /** Words that change with the business: saree shops "enquire about this saree", wholesalers "get a bulk quote". */
+  labels?: { origins_kicker?: string; origins_title?: string; featured_kicker?: string; featured_title?: string; ask?: string; ask_short?: string; call?: string; price_note?: string };
   /** True when the scene photos already show their product: no floating cut-out, a shoppable hotspot instead. */
   scenes_show_product?: boolean;
   /** Their full catalogue (from their store), for the demo's shop, product and cart pages. */
