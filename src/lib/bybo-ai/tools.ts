@@ -1,3 +1,4 @@
+import { captureLead } from '@/lib/crm/db';
 import { findSlot } from './slots';
 import { sendBooking } from './booking';
 import { esc, sendMail, shell, toTeam, transcriptHtml, transcriptText, type Turn } from './mail';
@@ -144,6 +145,7 @@ export async function runTool(name: string, input: Record<string, unknown>, ctx:
     const first = str(input.name, 120).split(' ')[0];
     const ok = await sendMail({ to: [email], reply_to: 'support@bybo.in', subject: `Your BYBO brief: ${brief.title}`, html: briefHtml(brief, first) });
     if (ok) await toTeam({ reply_to: email, subject: `Brief sent to ${email}: ${brief.title}`, html: briefHtml(brief, '') + shell(`<h3>Conversation</h3>${transcriptHtml(ctx.turns, str(input.name, 120))}`) });
+    if (ok) await captureLead({ source: 'b_chat', name: str(input.name, 120), email, need: brief.title, summary: brief.problem, page: ctx.page, event: { kind: 'brief', title: `B sent a brief: ${brief.title}`, body: `${brief.problem}\n\n${brief.solution}`, meta: { transcript: transcriptText(ctx.turns, str(input.name, 120)).slice(0, 8000) } } });
     return ok ? { brief, action: `Brief emailed to ${email}`, result: `Brief shown and emailed to ${email}. Now close for the call.` } : { brief, result: 'Brief shown; email failed. Offer to resend.' };
   }
 
@@ -155,6 +157,7 @@ export async function runTool(name: string, input: Record<string, unknown>, ctx:
     const html = shell(`<p>Hi ${esc(nm.split(' ')[0] || 'there')},</p><p>${esc(summary)}</p><h3 style="font-size:15px">Next steps</h3><ol>${steps.map((s) => `<li>${esc(s)}</li>`).join('')}</ol><p>Reply to this email any time.</p>`);
     const ok = await sendMail({ to: [email], reply_to: 'support@bybo.in', subject: 'Your BYBO conversation, summarised', html, text: `${summary}\n\nNext steps:\n${steps.map((s, i) => `${i + 1}. ${s}`).join('\n')}` });
     if (ok) await toTeam({ reply_to: email, subject: `Summary sent to ${nm || email}`, html: html + shell(`<h3>Conversation</h3>${transcriptHtml(ctx.turns, nm)}`) });
+    if (ok) await captureLead({ source: 'b_chat', name: nm, email, summary, page: ctx.page, event: { kind: 'summary', title: 'B emailed a conversation summary', body: `${summary}\n\nNext steps:\n${steps.map((s, i) => `${i + 1}. ${s}`).join('\n')}`, meta: { transcript: transcriptText(ctx.turns, nm).slice(0, 8000) } } });
     return ok ? { action: `Summary emailed to ${email}`, result: `Summary emailed to ${email}.` } : { result: 'Summary email failed.' };
   }
 
@@ -168,6 +171,11 @@ export async function runTool(name: string, input: Record<string, unknown>, ctx:
 <h3 style="font-size:15px">Conversation</h3>${transcriptHtml(ctx.turns, nm)}`);
     const email = str(input.email, 200);
     const ok = await toTeam({ ...(EMAIL.test(email) ? { reply_to: email } : {}), subject: `${t} lead: ${nm || 'website visitor'} · ${str(input.need, 80)}`, html, text: transcriptText(ctx.turns, nm) });
+    await captureLead({
+      source: 'b_chat', name: nm, email: EMAIL.test(email) ? email : '', phone: str(input.phone, 30), company: str(input.company, 160),
+      need: str(input.need, 300), summary: str(input.summary, 1200), temperature: t === 'HOT' ? 'hot' : 'warm', page: ctx.page,
+      event: { kind: 'alert', title: `${t} lead flagged by B`, body: [str(input.summary, 1200), input.recommended ? `B recommends: ${str(input.recommended, 600)}` : ''].filter(Boolean).join('\n\n'), meta: { transcript: transcriptText(ctx.turns, nm).slice(0, 8000) } },
+    });
     return { result: ok ? 'Team alerted; a person will follow up. Keep going and close for the call.' : 'Alert failed; carry on.' };
   }
 

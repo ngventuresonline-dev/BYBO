@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import { linksConfigured, MAX_INR, MIN_INR, signLink } from '@/lib/payments/link';
+import { captureLead } from '@/lib/crm/db';
+import { inr, linksConfigured, MAX_INR, MIN_INR, signLink } from '@/lib/payments/link';
 import { createOrder, phonepeConfigured } from '@/lib/payments/phonepe';
 import { productById } from '@/lib/payments/products';
 
@@ -49,6 +50,11 @@ export async function POST(request: Request) {
       message: `BYBO: ${link.purpose}`,
       redirectUrl: `${origin}/pay/result?o=${encodeURIComponent(merchantOrderId)}&t=${encodeURIComponent(token)}`,
       meta: { ref: link.id, name: link.name, email: link.email, phone: link.phone, purpose: link.purpose },
+    });
+    await captureLead({
+      source: 'payment', name: link.name, email: link.email, phone: link.phone, company: link.company,
+      need: link.purpose, value: amount, stage: 'proposal',
+      event: { kind: 'payment', title: `Started checkout: ${link.purpose} (${inr(amount)})`, meta: { ref: link.id, order: merchantOrderId } },
     });
     return NextResponse.json({ ok: true, redirectUrl: order.redirectUrl });
   } catch (err) {

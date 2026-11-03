@@ -1,3 +1,4 @@
+import { captureLead } from '@/lib/crm/db';
 import { CONTACT } from '@/lib/site';
 import { teamRecipients } from '@/lib/enquiry-ack';
 import { SLOT_MINUTES, slotLabel } from './slots';
@@ -92,5 +93,10 @@ export async function sendBooking(b: Booking) {
   const team = await send(key, { to: teamRecipients(), reply_to: b.email, attachments, ...teamMail(b, when) });
   if (!team) return false;
   await send(key, { to: [b.email], reply_to: CONTACT.email, attachments, ...visitorMail(b, when) });
+  await captureLead({
+    source: b.summary.includes('BYBO Voice') ? 'voice' : 'booking', name: b.name, email: b.email, phone: b.phone, company: b.company,
+    need: b.need, summary: b.summary, stage: 'call_booked', temperature: 'hot', page: b.page,
+    event: { kind: 'booking', title: `Discovery call booked · ${when}`, body: b.summary, meta: { slot: b.slot } },
+  });
   return true;
 }
