@@ -32,6 +32,11 @@ export type CrmLead = {
   next_follow_up: string | null;
   external_id: string | null;
   meta: Record<string, unknown>;
+  autopilot: 'queued' | 'researching' | 'needs_review' | 'qualified' | 'demo_drafted' | 'awaiting_approval' | 'sent' | 'held' | 'done' | 'failed';
+  quality: 'good' | 'maybe' | 'fake' | null;
+  quality_score: number | null;
+  intel: Record<string, unknown>;
+  autopilot_at: string | null;
 };
 
 export type CrmEvent = {

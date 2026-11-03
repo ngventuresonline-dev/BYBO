@@ -7,7 +7,7 @@ import { sendDigest, syncCallQueue } from '@/lib/crm/desk';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
-export const maxDuration = 60;
+export const maxDuration = 300;
 
 export async function POST(request: Request) {
   if (!adminAuthorized(request)) return NextResponse.json({ ok: false }, { status: 401 });
@@ -25,6 +25,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: r.sent || r.reason === 'nothing_to_report', message: r.sent ? 'Digest sent to the team.' : r.reason === 'nothing_to_report' ? 'Nothing new to report, so no email was sent.' : 'The digest could not be sent.' });
     } catch {
       return NextResponse.json({ ok: false, reason: 'failed' }, { status: 502 });
+    }
+  }
+
+  if (job === 'autopilot') {
+    try {
+      const { runAutopilot } = await import('@/lib/crm/autopilot');
+      const done = await runAutopilot(2);
+      return NextResponse.json({ ok: true, message: done.length ? `Autopilot: ${done.join('; ')}` : 'Autopilot: nothing waiting.' });
+    } catch (err) {
+      console.error('desk autopilot failed', (err as Error).message);
+      return NextResponse.json({ ok: false, reason: 'failed', message: 'Autopilot could not run. Check System.' }, { status: 502 });
     }
   }
 

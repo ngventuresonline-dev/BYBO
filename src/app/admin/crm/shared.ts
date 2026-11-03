@@ -27,7 +27,7 @@ export type FeedItem = {
   lead_name: string | null; lead_email: string | null; lead_phone: string | null; lead_company: string | null; lead_source: Source; lead_stage: Stage; lead_value: number | null;
 };
 export type Health = { id: string; label: string; ok: boolean; detail: string };
-export type Automation = { id: string; title: string; trigger: string; does: string; on: boolean; status: string; run?: 'sync' | 'digest' | 'meta_pull' };
+export type Automation = { id: string; title: string; trigger: string; does: string; on: boolean; status: string; run?: 'sync' | 'digest' | 'meta_pull' | 'autopilot' };
 export type QueueItem = { id: string; name: string; phone: string | null; email: string; business: string; source: string; status: string; attempts: number; next_call_at: string | null; last_call_at: string | null; summary: string | null; created_at: string };
 export type IgSummary = { counts: Record<string, number>; next: { caption: string; scheduledAt: string | null; status: string }[]; recent: { caption: string; publishedAt: string | null; permalink: string | null }[] };
 export type Slot = { id: string; label: string };

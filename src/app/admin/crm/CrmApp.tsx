@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { CrmLead, Source, Stage } from '@/lib/crm/db';
 import { Drawer } from './Drawer';
+import { AutopilotSection } from './autopilot';
 import {
   ActivitySection, AddLead, AutomationsSection, Board, CallsSection, ChatsSection, InstagramSection, List, OverviewSection, PaymentsSection, SystemSection,
 } from './sections';
@@ -12,6 +13,7 @@ const POLL_MS = 20_000;
 
 const NAV = [
   { id: 'overview', label: 'Overview', icon: '◎' },
+  { id: 'autopilot', label: 'Autopilot', icon: '⚡' },
   { id: 'pipeline', label: 'Pipeline', icon: '▥' },
   { id: 'leads', label: 'Leads', icon: '☰' },
   { id: 'activity', label: 'Activity', icon: '↯' },
@@ -135,6 +137,7 @@ export function CrmApp() {
   const feed = extra?.feed ?? [];
   const open = leads?.find((l) => l.id === openId) ?? null;
   const counts: Partial<Record<SectionId, number>> = {
+    autopilot: leads?.filter((l) => l.autopilot === 'awaiting_approval' || l.autopilot === 'needs_review').length,
     pipeline: leads?.filter((l) => l.stage === 'new').length,
     calls: feed.filter((f) => f.kind === 'booking' && Date.parse(String(f.meta?.slot ?? '')) >= now).length,
     automations: extra?.automations.filter((a) => !a.on).length,
@@ -155,7 +158,7 @@ export function CrmApp() {
             <li key={n.id}>
               <a href={`#${n.id}`} aria-current={section === n.id ? 'page' : undefined} onClick={(e) => { e.preventDefault(); go(n.id); }}>
                 <span className="crm-nav-icon" aria-hidden="true">{n.icon}</span>{n.label}
-                {counts[n.id] ? <span className={`crm-nav-n ${n.id === 'system' || n.id === 'automations' ? 'is-warn' : ''}`}>{counts[n.id]}</span> : null}
+                {counts[n.id] ? <span className={`crm-nav-n ${n.id === 'system' || n.id === 'automations' || n.id === 'autopilot' ? 'is-warn' : ''}`}>{counts[n.id]}</span> : null}
               </a>
             </li>
           ))}
@@ -211,6 +214,7 @@ export function CrmApp() {
         ) : (
           <>
             {section === 'overview' ? <OverviewSection leads={leads ?? []} feed={feed} queue={extra?.queue ?? null} health={extra?.health ?? []} now={now} onOpen={setOpenId} go={go} /> : null}
+            {section === 'autopilot' ? <AutopilotSection leads={leads ?? []} now={now} onOpen={setOpenId} onToast={setToast} onChanged={load} /> : null}
             {section === 'pipeline' ? <Board leads={filtered} now={now} fresh={fresh} onOpen={setOpenId} onMove={move} /> : null}
             {section === 'leads' ? <List leads={filtered} now={now} onOpen={setOpenId} /> : null}
             {section === 'activity' ? <ActivitySection feed={feed} now={now} onOpen={setOpenId} /> : null}

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type FormEvent } from 'react';
 import type { CrmEvent, CrmLead, Stage } from '@/lib/crm/db';
+import { IntelPanel } from './autopilot';
 import { ago, api, display, EVENT_ICON, initials, inr, localInput, SOURCE_LABEL, STAGES, waLink, when, type Product, type Slot } from './shared';
 
 type Tool = 'email' | 'pay' | 'book' | 'whatsapp' | null;
@@ -129,6 +130,7 @@ export function Drawer({ lead, now, products, slots, onClose, onSaved, onMove, o
         </div>
 
         {lead.summary ? <div className="crm-summary"><p className="crm-label">Summary</p><p>{lead.summary}</p></div> : null}
+        <IntelPanel lead={lead} />
         {lead.services.length ? <div className="crm-tags">{lead.services.map((s) => <span key={s} className="crm-tag">{s}</span>)}</div> : null}
 
         <form className="crm-form" onSubmit={save}>

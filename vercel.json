@@ -21,6 +21,10 @@
       "schedule": "*/5 * * * *"
     },
     {
+      "path": "/api/cron/crm-autopilot",
+      "schedule": "*/10 * * * *"
+    },
+    {
       "path": "/api/cron/crm-digest",
       "schedule": "30 3 * * 1-6"
     }

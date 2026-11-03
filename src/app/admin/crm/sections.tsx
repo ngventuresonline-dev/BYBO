@@ -6,6 +6,7 @@ import {
   ago, api, DAY, display, EVENT_ICON, EVENT_LABEL, feedLead, initials, inr, SOURCE_LABEL, STAGE_LABEL, STAGES, until, when,
   type Automation, type FeedItem, type Health, type IgSummary, type Product, type QueueItem,
 } from './shared';
+import { QualityChip } from './autopilot';
 
 export function Kpi({ label, value, sub, accent, trend }: { label: string; value: string; sub?: string; accent?: boolean; trend?: number | null }) {
   return (
@@ -180,6 +181,7 @@ export function Card({ lead, now, fresh, onOpen, draggable }: { lead: CrmLead; n
         <span className="crm-card-name"><b>{display(lead)}</b>{lead.company && lead.name ? <small>{lead.company}</small> : null}</span>
         {lead.temperature === 'hot' ? <span className="crm-hot" title="Hot lead">●</span> : null}
       </span>
+      {lead.quality ? <QualityChip lead={lead} /> : null}
       {lead.need ? <span className="crm-card-need">{lead.need}</span> : null}
       <span className="crm-card-foot">
         <span className={`crm-chip src-${lead.source}`}>{SOURCE_LABEL[lead.source]}</span>
@@ -464,7 +466,7 @@ export function AutomationsSection({ automations, onDone }: { automations: Autom
     } catch { onDone('Import failed. Use the Leads Center export (CSV, UTF-16).'); }
     setBusy(null);
   }
-  const RUN_LABEL = { sync: 'Sync now', digest: 'Send digest now', meta_pull: 'Pull Meta leads now' } as const;
+  const RUN_LABEL = { sync: 'Sync now', digest: 'Send digest now', meta_pull: 'Pull Meta leads now', autopilot: 'Run autopilot now' } as const;
   return (
     <div className="crm-stack">
       <div className="crm-auto-grid">
