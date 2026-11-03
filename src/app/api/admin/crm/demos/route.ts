@@ -41,18 +41,22 @@ export async function POST(request: Request) {
       const palette = c.theme ? `${c.theme.bg}, ${c.theme.soft}, ${c.theme.accent}` : 'their brand colours';
       const jobs = (Array.isArray(body.images) ? body.images : []).slice(0, 6) as { path: string; brief: string; ref?: string; raw?: boolean }[];
       const made = await Promise.all(jobs.map(async (j, i) => {
-        if (!/^[a-z_]+(\.\d+(\.[a-z_]+)?)?$/.test(j.path ?? '') || !j.brief) return { path: j.path, error: 'bad_job' };
+        if (!/^[a-z_]+(\.([a-z_]+|\d+)){0,3}$/.test(j.path ?? '') || !j.brief) return { path: j.path, error: 'bad_job' };
         try {
           const url = await generateImage(demo.slug, `art-${j.path.replace(/\./g, '-')}-${i}`.replace(/_/g, '-').slice(0, 40), j.brief, { productImage: j.ref ?? null, palette, raw: !!j.raw });
-          // Set content[path] where path is "field", "field.index" or "field.index.key".
-          const [field, idx, key] = j.path.split('.');
-          const rec = c as unknown as Record<string, unknown>;
-          if (idx === undefined) rec[field!] = url;
-          else {
-            const list = [...((rec[field!] as Record<string, unknown>[] | undefined) ?? [])];
-            list[Number(idx)] = key ? { ...(list[Number(idx)] ?? {}), [key]: url } : (url as unknown as Record<string, unknown>);
-            rec[field!] = list;
-          }
+          // Set content[path] for dotted paths like "hero_scene", "scenes.0.image" or "story.steps.2.image".
+          const keys = j.path.split('.');
+          let node = c as unknown as Record<string, unknown> | unknown[];
+          keys.forEach((k, n) => {
+            const last = n === keys.length - 1;
+            const idx = /^\d+$/.test(k) ? Number(k) : k;
+            const holder = node as Record<string | number, unknown>;
+            if (last) { holder[idx] = url; return; }
+            const nextIsIndex = /^\d+$/.test(keys[n + 1]!);
+            const child = holder[idx];
+            holder[idx] = Array.isArray(child) ? [...child] : child && typeof child === 'object' ? { ...(child as object) } : nextIsIndex ? [] : {};
+            node = holder[idx] as Record<string, unknown>;
+          });
           return { path: j.path, url };
         } catch (err) { return { path: j.path, error: (err as Error).message.slice(0, 160) }; }
       }));

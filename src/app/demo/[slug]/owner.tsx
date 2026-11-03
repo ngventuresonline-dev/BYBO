@@ -8,7 +8,7 @@ import { readRecords, useCart, type DemoEnquiry, type DemoOrder } from './store'
 type P = { title: string; handle: string; image: string | null; price: number | null };
 const inr = (n: number) => `₹${Math.round(n).toLocaleString('en-IN')}`;
 const CITIES = ['Mumbai', 'Bengaluru', 'Delhi', 'Pune', 'Hyderabad', 'Chennai', 'Kolkata', 'Jaipur', 'Ahmedabad', 'Lucknow'];
-const NAMES = ['Priya S.', 'Ananya R.', 'Neha K.', 'Sneha P.', 'Kavya M.', 'Ritu J.', 'Pooja D.', 'Aisha K.', 'Meera N.', 'Divya T.'];
+const NAMES = ['Priya S.', 'Rahul M.', 'Neha K.', 'Imran A.', 'Kavya R.', 'Vikram J.', 'Pooja D.', 'Sanjay N.', 'Meera T.', 'Arjun P.'];
 
 /** A small seeded random so sample figures stay the same on every visit. */
 function seeded(seed: string) {
@@ -78,7 +78,7 @@ export function Dashboard({ brand, products }: { brand: string; products: P[] })
               <article><span>Carts recovered</span><b>{Math.round(today * 0.22)}</b><em className="up">via WhatsApp</em></article>
             </div> : <div className="db-kpis">
               <article><span>Enquiries today</span><b>{Math.round(today * 0.6) + enquiries.length}</b><em className="up">{enquiries.length ? `${enquiries.length} from this demo` : '▲ 22% vs last week'}</em></article>
-              <article><span>Video calls booked</span><b>{Math.round(today * 0.18)}</b><em className="up">Shown live, then sold</em></article>
+              <article><span>Video calls booked</span><b>{Math.round(today * 0.18)}</b><em className="up">Booked from the site</em></article>
               <article><span>Confirmed on WhatsApp</span><b>{Math.round(today * 0.12) + orders.length}</b><em className="up">▲ 14%</em></article>
               <article><span>Replied within 5 min</span><b>96%</b><em>Auto-reply, then the team</em></article>
             </div>}
@@ -168,7 +168,7 @@ function Orders({ live, sample, compact, priced = true }: { live: DemoOrder[]; s
     <article className="db-card">
       <header><h3>{priced ? (compact ? 'Recent orders' : 'All orders') : (compact ? 'Recent enquiries' : 'All enquiries')}</h3><span className="db-tag">{live.length ? `${live.length} live from this demo` : 'Sample'}</span></header>
       <table className="db-table">
-        <thead><tr><th>{priced ? 'Order' : 'Enquiry'}</th><th>Customer</th><th>{priced ? 'Items' : 'Saree'}</th><th>{priced ? 'Payment' : 'Came from'}</th>{priced ? <th>Total</th> : null}<th>Status</th></tr></thead>
+        <thead><tr><th>{priced ? 'Order' : 'Enquiry'}</th><th>Customer</th><th>{priced ? 'Items' : 'Product'}</th><th>{priced ? 'Payment' : 'Came from'}</th>{priced ? <th>Total</th> : null}<th>Status</th></tr></thead>
         <tbody>{rows.map((r) => <tr key={r.id} className={r.live ? 'is-live' : ''}><td><b>{r.id}</b>{r.live ? <span className="db-pill is-on">Just now</span> : null}</td><td>{r.name}<small>{r.city}</small></td><td>{r.item}</td><td>{r.pay}</td>{priced ? <td>{inr(r.total)}</td> : null}<td><span className={`db-pill ${r.status === 'New' ? 'is-new' : 'is-on'}`}>{r.status}</span></td></tr>)}</tbody>
       </table>
     </article>
