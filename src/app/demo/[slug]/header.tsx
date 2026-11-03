@@ -13,7 +13,7 @@ const inr = (n: number) => `₹${Math.round(n).toLocaleString('en-IN')}`;
  * The demo store's header: a mega menu with real products per category, live
  * product search, and a full-screen menu on phones.
  */
-export function StoreHeader({ base, brand, logo, cats, items, featured }: { base: string; brand: string; logo: string | null; cats: string[]; items: NavItem[]; featured: NavItem | null }) {
+export function StoreHeader({ base, brand, logo, cats, items, featured, quote }: { base: string; brand: string; logo: string | null; cats: string[]; items: NavItem[]; featured: NavItem | null; quote?: string | null }) {
   const [mega, setMega] = useState(false);
   const [active, setActive] = useState(cats[0] ?? '');
   const [search, setSearch] = useState(false);
@@ -50,7 +50,7 @@ export function StoreHeader({ base, brand, logo, cats, items, featured }: { base
         <button type="button" className={`st-icon st-burger${menu ? ' is-x' : ''}`} onClick={() => setMenu(!menu)} aria-label={menu ? 'Close menu' : 'Open menu'} aria-expanded={menu}>
           <span /><span />
         </button>
-        <Link href={base} className="demo-logo">{logo ? <img src={logo} alt={brand} /> : brand}</Link>
+        <Link href={base} className="demo-logo">{logo ? <img src={logo} alt={brand} /> : <><span className="st-mono" aria-hidden="true">{brand.trim()[0]}</span><span className="st-word">{brand}</span></>}</Link>
         <nav className="st-nav" onMouseLeave={close}>
           {items.length ? <Link href={`${base}/shop`} className={`st-nav-shop${mega ? ' is-on' : ''}`} onMouseEnter={open} onFocus={open} aria-expanded={mega}>Shop <i aria-hidden="true">⌄</i></Link> : <Link href={`${base}#why`}>Services</Link>}
           {cats.slice(0, 3).map((k) => <Link key={k} href={`${base}/shop?c=${encodeURIComponent(k)}`} onMouseEnter={close}>{k}</Link>)}
@@ -63,7 +63,7 @@ export function StoreHeader({ base, brand, logo, cats, items, featured }: { base
               <button type="button" className="st-icon" onClick={() => setSearch(true)} aria-label="Search products">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6" /><path d="m20 20-4.5-4.5" /></svg>
               </button>
-              <CartButton />
+              {quote ? <Link className="demo-btn is-small st-quote" href={`${base}/contact`}>{quote}</Link> : <CartButton />}
             </>
           ) : <Link className="demo-btn is-small" href={`${base}/contact`}>Enquire</Link>}
         </div>
@@ -90,7 +90,7 @@ export function StoreHeader({ base, brand, logo, cats, items, featured }: { base
           </div>
           {featured ? (
             <Link href={`${base}/p/${featured.handle}`} className="st-mega-feature">
-              <span className="st-mega-img">{featured.image ? <img src={featured.image} alt="" /> : null}</span>
+              <span className={`st-mega-img${featured.image && !/\.(png|webp)(\?|$)/i.test(featured.image) || featured.image?.includes('/demo-media/') ? ' is-photo' : ''}`}>{featured.image ? <img src={featured.image} alt="" /> : null}</span>
               <span className="st-mega-feature-copy"><small>Bestseller</small><b>{featured.title}</b>{featured.price != null ? <em>{inr(featured.price)} · Shop now →</em> : null}</span>
             </Link>
           ) : null}

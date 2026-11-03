@@ -60,10 +60,18 @@ export function DemoMotion() {
         const n = Number(el.dataset.frames);
         if (n > 1) {
           // Scene changes: one active frame, caption and dot at a time; the product moves to its spot for that scene.
-          const active = String(Math.min(n - 1, Math.floor(p * n)));
+          const cur = Number(el.dataset.active ?? 0);
+          let next = Math.min(n - 1, Math.floor(p * n));
+          // Near a hand-over point keep the current scene, so a resting scroll never flips back and forth.
+          if (next !== cur && Math.abs(p * n - Math.round(p * n)) < 0.04) next = cur;
+          const active = String(next);
           if (el.dataset.active !== active) {
             el.dataset.active = active;
-            el.querySelectorAll<HTMLElement>('[data-frame]').forEach((f) => f.classList.toggle('is-active', f.dataset.frame === active));
+            el.querySelectorAll<HTMLElement>('[data-frame]').forEach((f) => {
+              f.classList.toggle('is-active', f.dataset.frame === active);
+              // Scenes stack: every scene up to the active one stays opaque, so a fade never shows the page behind.
+              if (f.classList.contains('demo-frame')) f.classList.toggle('is-shown', Number(f.dataset.frame) <= next);
+            });
             const spot = el.querySelector<HTMLElement>(`.demo-frame[data-frame="${active}"]`)?.dataset.float;
             if (spot) {
               const { x, y, s } = JSON.parse(spot) as { x: number; y: number; s: number };

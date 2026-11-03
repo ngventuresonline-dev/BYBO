@@ -79,8 +79,8 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
       <section className={`demo-pin demo-hero${inScene ? ' is-in-scene' : ''}`} id="top" data-pin data-frames={frames.length} data-chapter="top" style={{ '--n': frames.length, '--fx': frames[0]?.float?.x ?? 66, '--fy': frames[0]?.float?.y ?? 48, '--fs': frames[0]?.float?.s ?? 0.92 } as React.CSSProperties}>
         <div className="demo-stage">
           {frames.map((f, i) => (
-            <div key={i} className={`demo-frame${i === 0 ? ' is-active' : ''}`} data-frame={i} data-float={JSON.stringify(f.float ?? STUDIO_FLOAT[i % 3])}>
-              {f.image ? <img src={f.image} alt={inScene && heroItem ? heroItem.title : ''} style={{ objectPosition: `${f.float?.x ?? 60}% 22%` }} fetchPriority={i === 0 ? 'high' : 'auto'} loading={i === 0 ? 'eager' : 'lazy'} /> : <div className={`demo-studio s${i % 3}`} aria-hidden="true"><i /><i /><i /></div>}
+            <div key={i} className={`demo-frame${i === 0 ? ' is-active is-shown' : ''}`} data-frame={i} data-float={JSON.stringify(f.float ?? STUDIO_FLOAT[i % 3])}>
+              {f.image ? <img src={f.image} alt={inScene && heroItem ? heroItem.title : ''} style={{ objectPosition: `${f.float?.x ?? 60}% 22%` }} fetchPriority={i === 0 ? 'high' : 'auto'} loading="eager" decoding="async" /> : <div className={`demo-studio s${i % 3}`} aria-hidden="true"><i /><i /><i /></div>}
             </div>
           ))}
           <div className="demo-hero-scrim" aria-hidden="true" />
