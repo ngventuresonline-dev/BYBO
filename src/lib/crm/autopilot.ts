@@ -1,5 +1,6 @@
 import { randomBytes } from 'node:crypto';
 import { rpc, type CrmLead } from './db';
+import { normaliseUrl, scanSite, type SiteScan } from './sitescan';
 
 /**
  * The lead autopilot. Each new lead moves through:
@@ -25,6 +26,7 @@ export type Intel = {
   temperature?: 'hot' | 'warm' | 'cold';
   sources?: string[];
   researched_at?: string;
+  site?: SiteScan | null;
 };
 
 export type DemoContent = {
@@ -36,6 +38,15 @@ export type DemoContent = {
   flow: { step: string; text: string }[];
   pages: string[];
   cta: { headline: string; sub: string };
+  /** v2: a redesign of the prospect's real site. */
+  style?: 'luxe' | 'bold' | 'calm';
+  site_url?: string | null;
+  logo?: string | null;
+  hero_image?: string | null;
+  products?: { title: string; line: string; price: number | null; compare: number | null; image: string | null; url: string }[];
+  categories?: string[];
+  facts?: string[];
+  redesign?: { was: string; now: string }[];
 };
 
 export type Demo = { id: string; lead_id: string; created_at: string; slug: string; kind: 'auto' | 'custom'; status: 'drafting' | 'awaiting_approval' | 'approved' | 'sent' | 'rejected'; url: string | null; content: DemoContent | Record<string, never>; approved_at: string | null; sent_at: string | null; note: string | null };
@@ -73,42 +84,99 @@ const leadFacts = (l: CrmLead) => JSON.stringify({
   name: l.name, email: l.email, phone: l.phone, company: l.company, need: l.need, summary: l.summary, services: l.services, source: l.source, arrived: l.created_at,
 });
 
+const FREE_MAIL = /@(gmail|googlemail|yahoo|ymail|outlook|hotmail|live|icloud|me|rediffmail|proton|protonmail|aol|zoho)\./i;
+
+/** Try the lead's own words and email domain, then likely brand domains, and keep the first site that is clearly theirs. */
+async function findSite(l: CrmLead, hint?: string | null): Promise<SiteScan | null> {
+  const brand = (hint || l.company || '').split(/[\n,.(|:]/)[0]!.trim();
+  const token = brand.toLowerCase().replace(/[^a-z0-9]/g, '');
+  const tried = new Set<string>();
+  const candidates: string[] = [];
+  const add = (u: string | null) => { const n = normaliseUrl(u); if (n && !tried.has(n)) { tried.add(n); candidates.push(n); } };
+  for (const m of `${l.company ?? ''} ${l.summary ?? ''}`.matchAll(/\b((?:https?:\/\/)?(?:www\.)?[a-z0-9-]+\.(?:com|in|co\.in|store|shop|co|net|org|io|app|online))\b/gi)) add(m[1]!);
+  if (l.email && !FREE_MAIL.test(l.email)) add(l.email.split('@')[1]!);
+  if (token.length >= 3) for (const tld of ['com', 'in', 'co.in', 'store', 'shop', 'co']) add(`${token}.${tld}`);
+  for (const url of candidates.slice(0, 9)) {
+    const scan = await scanSite(url);
+    if (!scan) continue;
+    const hay = `${scan.title ?? ''} ${scan.description ?? ''} ${scan.text.slice(0, 800)}`.toLowerCase().replace(/[^a-z0-9]/g, '');
+    if (!token || hay.includes(token)) return scan;
+  }
+  return null;
+}
+
+const compactSite = (s: SiteScan) => ({
+  url: s.url, platform: s.platform, title: s.title, description: s.description,
+  products: s.products.map((p, i) => ({ i, title: p.title, price: p.price, compare: p.compare, type: p.type })),
+  text: s.text.slice(0, 2500),
+});
+
 export async function researchLead(l: CrmLead): Promise<Intel> {
+  // Their own site first: it is the best evidence of who they are and what they sell.
+  let site = await findSite(l);
   const system = `You research inbound leads for BYBO (bybo.in), an Indian studio that builds AI systems, websites, apps and AI films for businesses.
-Use web search to find the lead's business: what it does, where, its website and social pages. Then judge if the lead is real and worth pursuing.
+Research THIS lead's business specifically, not the topic. Search for: "<brand> official website", "<brand> instagram", "<brand> amazon" or "flipkart", the owner's name with the brand, and the email domain if it is not Gmail/Yahoo/Outlook. Ignore generic articles and blog posts; only use pages about this business.
+If a website scan is given, it is their real site: use it as the main evidence and set business.website to it.
+Then judge if the lead is real and worth pursuing.
 Rules:
-- Never invent. If you can't find something, use null. Only cite what search shows.
+- Never invent. If you can't find something, use null. Only cite what search or the scan shows.
 - "fake": gibberish or joke names, "test" entries, nonsense business, disposable email, obvious spam or bots, competitors probing.
 - "maybe": looks human but thin or unverifiable (personal email, nothing found online).
 - "good": a real person or business with a plausible need BYBO can serve.
 - score 0-100 for fit and seriousness. temperature: hot if ready to buy now, warm if interested, cold if vague.
 - package: the best first BYBO package id from: ${PRODUCT_IDS.join(', ')}.
-- pitch: one or two sentences on what BYBO should offer them. demo_angle: one line on what their demo should show.
+- pitch: one or two sentences on what BYBO should offer them, referring to what you actually found (e.g. their current site's weaknesses). demo_angle: one line on what their demo should show.
 Reply with JSON only:
 {"business":{"name":null,"industry":null,"location":null,"website":null,"socials":[],"what_they_do":null,"size_hint":null},"quality":"good|maybe|fake","score":0,"reasons":["..."],"signals":{"email_type":"business|personal|disposable|none","phone_valid":true,"name_looks_real":true,"business_found":false},"pitch":"","package":"","demo_angle":"","temperature":"hot|warm|cold"}`;
-  const { text, sources } = await claude(system, `Lead:\n${leadFacts(l)}`, { search: true, maxTokens: 2500 });
+  const user = `Lead:\n${leadFacts(l)}${site ? `\n\nWebsite scan of their real site:\n${JSON.stringify(compactSite(site))}` : '\n\nNo website found yet by direct lookup.'}`;
+  const { text, sources } = await claude(system, user, { search: true, maxTokens: 3000 });
   const intel = json<Intel>(text);
+  // Search may name a site the direct lookup missed (or their brand name may differ): read it.
+  if (!site) site = (intel.business?.website ? await scanSite(intel.business.website) : null) ?? await findSite(l, intel.business?.name);
+  if (site) {
+    intel.business = { ...(intel.business ?? {}), website: site.url };
+    intel.signals = { ...(intel.signals ?? {}), business_found: true };
+    intel.reasons = [`Website found and read: ${site.url}${site.platform === 'shopify' ? ` (Shopify store, ${site.products.length} products)` : ''}.`, ...(intel.reasons ?? []).filter((r) => !/no (official )?website/i.test(r))];
+  }
   if (!['good', 'maybe', 'fake'].includes(intel.quality ?? '')) intel.quality = 'maybe';
   intel.score = Math.max(0, Math.min(100, Math.round(Number(intel.score) || 0)));
   if (intel.package && !PRODUCT_IDS.includes(intel.package)) intel.package = 'blueprint';
-  intel.sources = [...new Set(sources)].slice(0, 8);
+  intel.sources = [...new Set([...(site ? [site.url] : []), ...sources])].slice(0, 8);
+  intel.site = site ? { ...site, text: site.text.slice(0, 2500) } : null;
   intel.researched_at = new Date().toISOString();
   return intel;
 }
 
 export async function draftDemo(l: CrmLead, intel: Intel): Promise<DemoContent> {
-  const system = `You write the content for a one-page personalised demo that BYBO (bybo.in) shows a prospect: a preview of the website or AI system BYBO would build for their business.
-Write in clear, confident, simple English for an Indian business owner. Use their business name only if known.
-Strict rules: no invented statistics, results, awards, client names, testimonials, prices or timelines. Describe what the system would do, not what it has achieved. Indian context.
-Pick a palette that suits their industry (three hex colours that read well on a dark background).
+  const site = intel.site ?? null;
+  const system = `You art-direct a personalised demo that BYBO (bybo.in) shows a prospect. ${site ? 'They already have a website: the demo is a bold REDESIGN of it, built with their real products and facts, so it must feel dramatically more premium, modern and alive than what they have now.' : 'They have no website we could find: the demo shows the premium site BYBO would build for them.'}
+Write in clear, confident, simple English for an Indian audience, in the voice of their brand (the demo is their site, not BYBO's).
+Strict rules: no invented statistics, ratings, reviews, testimonials, awards, client names or prices. Use only facts that appear in the website scan (offers, delivery, ratings, badges). Product names and prices come only from the scan.
+Choose style: "luxe" (beauty, fashion, jewellery, premium goods), "bold" (tech, gadgets, fitness, youth brands), or "calm" (health, education, services, B2B).
+Pick a palette for their industry: three hex colours that look stunning on a near-black background.
 Reply with JSON only:
-{"brand":"","tagline":"","industry":"","palette":{"from":"#","to":"#","accent":"#"},"hero":{"eyebrow":"","headline":"","sub":""},"offer":[{"title":"","text":""}],"features":[{"title":"","text":""}],"flow":[{"step":"","text":""}],"pages":[""],"cta":{"headline":"","sub":""}}
-offer: 3 items (what visitors get). features: 4 items (what BYBO builds). flow: 4 steps of how an enquiry is captured and answered. pages: 4-6 page names.`;
-  const { text } = await claude(system, `Lead:\n${leadFacts(l)}\n\nResearch:\n${JSON.stringify(intel)}`, { maxTokens: 2000 });
-  const c = json<DemoContent>(text);
+{"brand":"","tagline":"","industry":"","style":"luxe|bold|calm","palette":{"from":"#","to":"#","accent":"#"},"hero":{"eyebrow":"","headline":"","sub":""},"hero_product":0,"products":[{"i":0,"line":""}],"categories":[""],"facts":[""],"offer":[{"title":"","text":""}],"features":[{"title":"","text":""}],"flow":[{"step":"","text":""}],"pages":[""],"redesign":[{"was":"","now":""}],"cta":{"headline":"","sub":""}}
+hero: a striking 4-8 word headline in their brand voice. hero_product and products[].i: indexes into the scan's products (pick the best 4-6, line = one benefit line); use [] and null if no products.
+categories: 3-6 shop categories or service areas. facts: 2-5 short trust lines taken from the scan (e.g. "Free delivery across India"); [] if none.
+offer: 3 items (why choose them). features: 4 items (what the new site does better: e.g. faster checkout, bundles, WhatsApp ordering). flow: 4 steps of a customer's journey on the new site.
+redesign: 3 items comparing their current site ("was") with the new one ("now"), concrete and kind; [] if no site. pages: 4-6 page names.`;
+  const user = `Lead:\n${leadFacts(l)}\n\nResearch:\n${JSON.stringify({ ...intel, site: undefined })}${site ? `\n\nWebsite scan:\n${JSON.stringify(compactSite(site))}` : ''}`;
+  const { text } = await claude(system, user, { maxTokens: 3000 });
+  const raw = json<Omit<DemoContent, 'products'> & { hero_product?: number | null; products?: { i: number; line: string }[] }>(text);
   const hex = (v: unknown, d: string) => (typeof v === 'string' && /^#[0-9a-f]{6}$/i.test(v) ? v : d);
-  c.palette = { from: hex(c.palette?.from, '#7a3cff'), to: hex(c.palette?.to, '#ff6a3d'), accent: hex(c.palette?.accent, '#b794ff') };
-  c.offer = (c.offer ?? []).slice(0, 4); c.features = (c.features ?? []).slice(0, 6); c.flow = (c.flow ?? []).slice(0, 5); c.pages = (c.pages ?? []).slice(0, 6);
+  const c: DemoContent = { ...raw, products: undefined };
+  c.palette = { from: hex(raw.palette?.from, '#7a3cff'), to: hex(raw.palette?.to, '#ff6a3d'), accent: hex(raw.palette?.accent, '#b794ff') };
+  c.style = ['luxe', 'bold', 'calm'].includes(raw.style ?? '') ? raw.style : 'luxe';
+  c.offer = (raw.offer ?? []).slice(0, 4); c.features = (raw.features ?? []).slice(0, 6); c.flow = (raw.flow ?? []).slice(0, 5); c.pages = (raw.pages ?? []).slice(0, 6);
+  c.categories = (raw.categories ?? []).slice(0, 6); c.facts = (raw.facts ?? []).slice(0, 5); c.redesign = site ? (raw.redesign ?? []).slice(0, 3) : [];
+  // Product facts come from the scan, never from the model.
+  const sp = site?.products ?? [];
+  c.products = (raw.products ?? []).map((p) => ({ p: sp[p.i], line: p.line })).filter((x) => x.p)
+    .slice(0, 6).map(({ p, line }) => ({ title: p!.title, line: String(line ?? '').slice(0, 120), price: p!.price, compare: p!.compare, image: p!.image, url: p!.url }));
+  const heroP = typeof raw.hero_product === 'number' ? sp[raw.hero_product] : undefined;
+  c.hero_image = heroP?.images[1] ?? heroP?.image ?? c.products[0]?.image ?? site?.ogImage ?? null;
+  c.site_url = site?.url ?? null;
+  c.logo = site?.logo ?? null;
   return c;
 }
 
