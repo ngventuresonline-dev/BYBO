@@ -317,8 +317,11 @@ export async function step(l: CrmLead): Promise<string> {
       return `${who}: demo already exists`;
     }
     try {
-      const slug = `${slugify(intel.business?.name || l.company || l.name || 'demo')}-${randomBytes(2).toString('hex')}`;
-      const content = await artDirect(await draftDemo(l, intel), slug);
+      const draft = await draftDemo(l, intel);
+      // Research notes sometimes ride along in names ("Saree (unverified …)"): keep the name itself.
+      draft.brand = (draft.brand || intel.business?.name || l.company || l.name || 'Demo').replace(/\s*[([—–-]\s*(unverified|unknown|not found).*$/i, '').replace(/\s*\(.*$/, '').trim();
+      const slug = `${slugify(draft.brand)}-${randomBytes(2).toString('hex')}`;
+      const content = await artDirect(draft, slug);
       const demo = await rpc<Demo>('bybo_demo_upsert', { p: { lead_id: l.id, slug, kind: 'auto', status: 'awaiting_approval', content } });
       await rpc('bybo_ap_set', { p_lead: l.id, p: { autopilot: 'awaiting_approval' } });
       await log(l.id, 'demo', `Demo drafted (ready score ${content.quality?.score ?? '?'}/100): waiting for your approval`, [demoUrl(slug), ...(content.quality?.issues ?? []).map((i) => `• ${i}`)].join('\n'), { slug });
