@@ -130,10 +130,13 @@ export async function recordInCrm(lead: Lead) {
     email: lead.email,
     phone: lead.phone_e164,
     company: lead.business,
-    need: lead.enquiry.split('\n')[0],
+    // Meta form answers arrive as codes like `get_more_enquiries`.
+    need: lead.enquiry.split('\n')[0].replace(/^[a-z]+(?:_[a-z]+)+$/, (code) => code.split('_').map((w) => w[0]!.toUpperCase() + w.slice(1)).join(' ')),
     summary: lead.enquiry,
     services,
     external_id: crmKey(lead),
+    created_at: lead.created_at,
+    backfill: true,
     meta: { lead_source: lead.raw.lead_source ?? null, area: lead.area || null },
     event: {
       kind: lead.source === 'meta' ? 'meta' : 'enquiry',

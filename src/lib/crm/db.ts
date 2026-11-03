@@ -59,6 +59,10 @@ export type Capture = {
   page?: string;
   external_id?: string | null;
   meta?: Record<string, unknown>;
+  /** When the lead really arrived, for leads recorded after the fact. Defaults to now. */
+  created_at?: string;
+  /** True when replaying a known event (a sync): an identical event moves to the earlier time instead of repeating. */
+  backfill?: boolean;
   event: { kind: string; title: string; body?: string; meta?: Record<string, unknown> };
 };
 
@@ -108,6 +112,8 @@ export async function captureLead(c: Capture): Promise<string | null> {
         page: clean(c.page, 200),
         external_id: clean(c.external_id, 120),
         meta: c.meta ?? {},
+        created_at: c.created_at ?? '',
+        event_backfill: c.backfill ? 'true' : '',
         event_kind: c.event.kind,
         event_title: clean(c.event.title, 200),
         event_body: clean(c.event.body, 4000),
