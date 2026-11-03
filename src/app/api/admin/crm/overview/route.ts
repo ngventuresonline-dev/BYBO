@@ -14,8 +14,9 @@ export const maxDuration = 30;
 export async function GET(request: Request) {
   if (!adminAuthorized(request)) return NextResponse.json({ ok: false }, { status: 401 });
   const health = systemHealth();
-  const [feed, queue, ig] = await Promise.all([
+  const [feed, demos, queue, ig] = await Promise.all([
     crmConfigured() ? rpc<unknown[]>('bybo_crm_feed', { p_limit: 400 }).catch(() => null) : Promise.resolve(null),
+    crmConfigured() ? rpc<unknown[]>('bybo_demo_list', {}).catch(() => []) : Promise.resolve([]),
     callQueue(),
     instagramSummary(),
   ]);
@@ -24,6 +25,7 @@ export async function GET(request: Request) {
     health,
     automations: automations(health),
     feed,
+    demos,
     queue,
     ig,
     slots: upcomingSlots(),

@@ -30,13 +30,14 @@ export function systemHealth(): Health[] {
   ];
 }
 
-export type Automation = { id: string; title: string; trigger: string; does: string; on: boolean; status: string; run?: 'sync' | 'digest' | 'meta_pull' };
+export type Automation = { id: string; title: string; trigger: string; does: string; on: boolean; status: string; run?: 'sync' | 'digest' | 'meta_pull' | 'autopilot' };
 
 export function automations(health = systemHealth()): Automation[] {
   const ok = (id: string) => health.find((h) => h.id === id)?.ok ?? false;
   const detail = (id: string) => health.find((h) => h.id === id)?.detail ?? '';
   return [
     { id: 'capture', title: 'Every lead lands here', trigger: 'Form, B chat, Meta form, AI call, booking, payment', does: 'Creates or merges the lead by email, phone or form id and logs the activity', on: ok('crm'), status: detail('crm') },
+    { id: 'autopilot', title: 'Lead autopilot', trigger: 'Every 10 minutes, for each new lead', does: 'Researches the lead on the web, scores it, holds likely fakes for review, drafts a personalised demo, emails you to approve, then emails the client', on: ok('crm') && ok('b'), status: ok('b') ? 'Uses Claude with web search; nothing reaches a client without your approval' : 'Needs ANTHROPIC_API_KEY', run: 'autopilot' },
     { id: 'b', title: 'B answers and closes', trigger: 'Visitor opens the chat on bybo.in', does: 'Qualifies, writes a brief, books a 30-minute call, alerts the team on hot leads', on: ok('b'), status: detail('b') },
     { id: 'meta', title: 'Meta lead forms pulled', trigger: 'Every 5 minutes', does: 'Fetches new Instagram/Facebook form leads, emails each one and reports to the team', on: ok('meta'), status: detail('meta'), run: 'meta_pull' },
     { id: 'calls', title: 'Instant AI call', trigger: 'New lead with a phone number and consent', does: 'BYBO Voice calls within minutes in calling hours, retries once, emails the summary', on: ok('calls'), status: detail('calls') },

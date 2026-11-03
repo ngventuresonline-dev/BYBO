@@ -2,6 +2,7 @@ import { createHash, timingSafeEqual } from 'node:crypto';
 import { NextResponse } from 'next/server';
 import { brandedEmail, brandedEmailText } from '@/lib/email-layout';
 import { CONTACT } from '@/lib/site';
+import { captureLead } from '@/lib/crm/db';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -61,5 +62,11 @@ export async function POST(request: Request) {
     console.error('lead mail failed', body.key, res?.status ?? 0, reason?.slice(0, 200));
     return NextResponse.json({ ok: false, status: res?.status ?? 0 }, { status: 502 });
   }
+  // Log it on the lead in the CRM (merged by email). Best effort.
+  await captureLead({
+    source: 'manual',
+    email: body.to,
+    event: { kind: 'email', title: `Emailed: ${body.subject}`, body: [...body.intro, body.cta ? `${body.cta.label}: ${body.cta.href}` : ''].filter(Boolean).join('\n\n') },
+  });
   return NextResponse.json({ ok: true });
 }

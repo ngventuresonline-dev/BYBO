@@ -4,8 +4,9 @@ import { useMemo, useState, type FormEvent } from 'react';
 import type { CrmLead, Source, Stage } from '@/lib/crm/db';
 import {
   ago, api, DAY, display, EVENT_ICON, EVENT_LABEL, feedLead, initials, inr, SOURCE_LABEL, STAGE_LABEL, STAGES, until, when,
-  type Automation, type FeedItem, type Health, type IgSummary, type Product, type QueueItem,
+  type Automation, type DemoRow, type FeedItem, type Health, type IgSummary, type Product, type QueueItem,
 } from './shared';
+import { DemoPanel, QualityChip } from './autopilot';
 
 export function Kpi({ label, value, sub, accent, trend }: { label: string; value: string; sub?: string; accent?: boolean; trend?: number | null }) {
   return (
@@ -38,8 +39,8 @@ function FeedRow({ f, now, onOpen }: { f: FeedItem; now: number; onOpen: (id: st
 
 /* ───────────────────────── Overview ───────────────────────── */
 
-export function OverviewSection({ leads, feed, queue, health, now, onOpen, go }: {
-  leads: CrmLead[]; feed: FeedItem[]; queue: QueueItem[] | null; health: Health[]; now: number; onOpen: (id: string) => void; go: (section: string, source?: Source) => void;
+export function OverviewSection({ leads, demos, onToast, onChanged, feed, queue, health, now, onOpen, go }: {
+  leads: CrmLead[]; demos: DemoRow[]; onToast: (t: string) => void; onChanged: () => void; feed: FeedItem[]; queue: QueueItem[] | null; health: Health[]; now: number; onOpen: (id: string) => void; go: (section: string, source?: Source) => void;
 }) {
   const s = useMemo(() => {
     const open = leads.filter((l) => l.stage !== 'won' && l.stage !== 'lost');
@@ -79,6 +80,7 @@ export function OverviewSection({ leads, feed, queue, health, now, onOpen, go }:
   const maxSource = Math.max(1, ...s.bySource.map(([, n]) => n));
   const top = Math.max(1, s.funnel[0]?.reached ?? 1);
   const down = health.filter((h) => !h.ok);
+  const awaitingDemos = demos.filter((d) => d.status === 'awaiting_approval').length;
 
   return (
     <div className="crm-stack">
@@ -90,6 +92,8 @@ export function OverviewSection({ leads, feed, queue, health, now, onOpen, go }:
         <Kpi label="Won" value={inr(s.wonValue)} sub={`${s.won.length} deal${s.won.length === 1 ? '' : 's'} · ${inr(s.revenue30)} in 30d`} accent />
         <Kpi label="Win rate" value={s.winRate == null ? '—' : `${s.winRate}%`} sub="Of closed leads" />
       </section>
+
+      {awaitingDemos ? <div className="crm-alerts"><button className="crm-alert is-warn" onClick={() => go('autopilot')}>⚡ {awaitingDemos} demo{awaitingDemos === 1 ? ' is' : 's are'} waiting for your approval</button></div> : null}
 
       {s.untouched || down.length ? (
         <div className="crm-alerts">
@@ -157,6 +161,8 @@ export function OverviewSection({ leads, feed, queue, health, now, onOpen, go }:
         </Panel>
       </div>
 
+      <DemoPanel demos={demos} leads={leads} now={now} onOpen={onOpen} onToast={onToast} onChanged={onChanged} go={go} />
+
       <Panel title="Latest activity" action={<button className="crm-link" onClick={() => go('activity')}>See all</button>}>
         <div className="crm-feed">{feed.filter((f) => f.kind !== 'created' && f.kind !== 'edit').slice(0, 10).map((f) => <FeedRow key={f.id} f={f} now={now} onOpen={onOpen} />)}{!feed.length ? <p className="crm-muted">Activity appears as leads come in.</p> : null}</div>
       </Panel>
@@ -180,6 +186,7 @@ export function Card({ lead, now, fresh, onOpen, draggable }: { lead: CrmLead; n
         <span className="crm-card-name"><b>{display(lead)}</b>{lead.company && lead.name ? <small>{lead.company}</small> : null}</span>
         {lead.temperature === 'hot' ? <span className="crm-hot" title="Hot lead">●</span> : null}
       </span>
+      {lead.quality ? <QualityChip lead={lead} /> : null}
       {lead.need ? <span className="crm-card-need">{lead.need}</span> : null}
       <span className="crm-card-foot">
         <span className={`crm-chip src-${lead.source}`}>{SOURCE_LABEL[lead.source]}</span>
@@ -464,7 +471,7 @@ export function AutomationsSection({ automations, onDone }: { automations: Autom
     } catch { onDone('Import failed. Use the Leads Center export (CSV, UTF-16).'); }
     setBusy(null);
   }
-  const RUN_LABEL = { sync: 'Sync now', digest: 'Send digest now', meta_pull: 'Pull Meta leads now' } as const;
+  const RUN_LABEL = { sync: 'Sync now', digest: 'Send digest now', meta_pull: 'Pull Meta leads now', autopilot: 'Run autopilot now' } as const;
   return (
     <div className="crm-stack">
       <div className="crm-auto-grid">
