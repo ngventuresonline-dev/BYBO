@@ -156,8 +156,8 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
         <section className="demo-hscroll" id="shop" data-hscroll data-chapter="shop">
           <div className="demo-stage">
             <div className="demo-shop-head">
-              <p className="demo-kicker">Bestsellers</p>
-              <h2>Loved across India</h2>
+              <p className="demo-kicker">{c.sample_note ? "Featured weaves" : "Bestsellers"}</p>
+              <h2>{c.sample_note ? `The ${c.brand} edit` : "Most-loved pieces"}</h2>
               <Link className="demo-shop-hint" href={`${base}/shop`}>View all {items.length} →</Link>
             </div>
             <div className="demo-track" data-track>
