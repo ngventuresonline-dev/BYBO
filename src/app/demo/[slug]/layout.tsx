@@ -42,7 +42,7 @@ export default async function DemoLayout({ children, params }: { children: React
   return (
     <div className={`demo f-${c.font ?? 'editorial'} ${editorial.variable} ${soft.variable} ${modern.variable} ${body.variable}`} style={style}>
       <CartProvider slug={slug}>
-        <div className="demo-ribbon">A redesign prepared by <b>BYBO</b> for {c.brand}{c.site_url ? <> · <a href={c.site_url} target="_blank" rel="noreferrer">see the current site</a></> : null} · <a href={wa} target="_blank" rel="noreferrer">talk to BYBO</a></div>
+        <div className="demo-ribbon">A redesign prepared by <b>BYBO</b> for {c.brand}{c.site_url ? <> · <a href={c.site_url} target="_blank" rel="noreferrer">see the current site</a></> : null} · <Link href={`${base}/dashboard`}>open the owner dashboard</Link> · <a href={wa} target="_blank" rel="noreferrer">talk to BYBO</a></div>
         {facts.length ? <div className="st-announce"><div>{[0, 1].map((k) => <span key={k}>{facts.map((f) => <em key={f + k}>{f}</em>)}</span>)}</div></div> : null}
         <StoreHeader
           base={base} brand={c.brand} logo={c.logo ?? null} cats={cats}
@@ -58,10 +58,11 @@ export default async function DemoLayout({ children, params }: { children: React
             <p>{c.tagline}</p>
           </div>
           <div><h4>Shop</h4>{links.slice(0, 5).map((l) => <Link key={l.href} href={l.href}>{l.label}</Link>)}</div>
-          <div><h4>Help</h4><Link href={`${base}/contact`}>Contact us</Link><Link href={`${base}/about`}>Our story</Link><Link href={`${base}/cart`}>Your bag</Link></div>
+          <div><h4>Help</h4><Link href={`${base}/dashboard`}>Owner dashboard</Link><Link href={`${base}/contact`}>Contact us</Link><Link href={`${base}/about`}>Our story</Link><Link href={`${base}/cart`}>Your bag</Link></div>
           <div><h4>Promise</h4>{facts.slice(0, 4).map((f) => <p key={f}>{f}</p>)}</div>
           <p className="st-foot-base">© {c.brand} · Redesign by <a href="https://bybo.in">BYBO</a></p>
         </footer>
+        <Link href={`${base}/dashboard`} className="st-owner" aria-label="Open the owner dashboard"><i />Owner view</Link>
         <CartDrawer />
       </CartProvider>
     </div>
