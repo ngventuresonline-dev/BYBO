@@ -13,6 +13,8 @@ export interface LeadStore {
   save(lead: Lead): Promise<void>;
   claimForCall(id: string, now: Date, opts: { requireDue: boolean }): Promise<Lead | null>;
   listActionable(): Promise<Lead[]>;
+  /** Every stored lead. Used by the CRM sync; optional for test stores. */
+  listAll?(): Promise<Lead[]>;
 }
 
 export class LeadStoreUnavailable extends Error {

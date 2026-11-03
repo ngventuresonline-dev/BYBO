@@ -19,6 +19,10 @@
     {
       "path": "/api/cron/meta-leads",
       "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/cron/crm-digest",
+      "schedule": "30 3 * * 1-6"
     }
   ]
 }

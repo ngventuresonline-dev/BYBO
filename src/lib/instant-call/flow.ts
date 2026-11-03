@@ -118,8 +118,11 @@ export async function captureLead(draft: Lead, consent: boolean, deps: FlowDeps)
   return dialClaimed(stored.lead, deps, { requireDue: false });
 }
 
+/** One CRM key per call-queue lead, so a later sync never duplicates it. */
+const crmKey = (lead: Lead) => (lead.external_id ? `${lead.source}:${lead.external_id}` : `lead:${lead.id}`);
+
 /** Mirror a new lead into the CRM. Best effort; never blocks the call flow. */
-async function recordInCrm(lead: Lead) {
+export async function recordInCrm(lead: Lead) {
   const services = Array.isArray(lead.raw.services) ? (lead.raw.services as unknown[]).map(String) : [];
   await captureCrm({
     source: lead.source === 'meta' ? 'meta' : 'enquiry',
@@ -130,7 +133,7 @@ async function recordInCrm(lead: Lead) {
     need: lead.enquiry.split('\n')[0],
     summary: lead.enquiry,
     services,
-    external_id: lead.external_id ? `${lead.source}:${lead.external_id}` : null,
+    external_id: crmKey(lead),
     meta: { lead_source: lead.raw.lead_source ?? null, area: lead.area || null },
     event: {
       kind: lead.source === 'meta' ? 'meta' : 'enquiry',
@@ -221,7 +224,7 @@ export async function applyCallUpdate(lead: Lead, update: CallUpdate, deps: Flow
       source: 'voice',
       email: next.email,
       phone: next.phone_e164,
-      external_id: next.external_id ? `${next.source}:${next.external_id}` : null,
+      external_id: crmKey(next),
       stage: next.call_status === 'done' || next.call_status === 'answered' ? 'contacted' : undefined,
       event: { kind: 'call', title: callTitle, body: next.call_summary ?? undefined, meta: { attempts: next.call_attempts } },
     });

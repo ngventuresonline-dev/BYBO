@@ -116,6 +116,16 @@ export class BlobLeadStore implements LeadStore {
     return leads;
   }
 
+  async listAll(): Promise<Lead[]> {
+    const paths = await this.io.list(RECORD);
+    const leads: Lead[] = [];
+    for (const path of paths) {
+      const lead = await this.readJson<Lead>(path);
+      if (lead) leads.push(lead);
+    }
+    return leads;
+  }
+
   private async findExternal(source: Lead['source'], externalId: string): Promise<Lead | null> {
     const pointer = await this.readJson<{ leadId: string }>(externalPath(source, externalId));
     if (!pointer?.leadId) return null;
