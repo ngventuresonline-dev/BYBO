@@ -32,10 +32,12 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
   const shop = items.length > 0;
   const spotlight = c.spotlight ?? (best[0]?.image ? { image: best[0].image, kicker: best[0].title, title: c.tagline, callouts: (c.features ?? []).map((f) => f.title).slice(0, 4) } : null);
   const spotItem = items.find((i) => i.images.includes(spotlight?.image ?? '')) ?? best[0];
-  const heroFloat = c.hero_float ?? items.find((p) => isCutout(p.image))?.image ?? null;
-  const heroItem = items.find((i) => i.images.includes(heroFloat ?? '')) ?? best[0];
-  const whyItem = items.find((i) => isCutout(i.image) && i.image !== heroFloat) ?? heroItem;
-  const ctaItem = items.find((i) => isCutout(i.image) && i !== whyItem && i.image !== heroFloat) ?? whyItem;
+  const inScene = !!c.scenes_show_product;
+  const floatImage = c.hero_float ?? items.find((p) => isCutout(p.image))?.image ?? null;
+  const heroFloat = inScene ? null : floatImage;
+  const heroItem = items.find((i) => i.images.includes(floatImage ?? '')) ?? best[0];
+  const whyItem = items.find((i) => isCutout(i.image) && i.image !== floatImage) ?? heroItem;
+  const ctaItem = items.find((i) => isCutout(i.image) && i !== whyItem && i.image !== floatImage) ?? whyItem;
   const cats = [...new Set(items.map((i) => i.category))].slice(0, 4).map((k) => ({ name: k, item: items.find((i) => i.category === k && isCutout(i.image)) ?? items.find((i) => i.category === k)!, n: items.filter((i) => i.category === k).length }));
   const wa = `https://wa.me/${CONTACT.phone.replace(/\D/g, '')}?text=${encodeURIComponent(`Hi BYBO, I saw the demo for ${c.brand}. Let's talk.`)}`;
 
@@ -62,11 +64,11 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
 
       {/* Hero: a pinned, full-screen scene with their product in front from the first second.
           Scenes cross-fade and slowly zoom while the captions change. */}
-      <section className="demo-pin demo-hero" id="top" data-pin data-frames={frames.length} data-chapter="top" style={{ '--n': frames.length, '--fx': frames[0]?.float?.x ?? 66, '--fy': frames[0]?.float?.y ?? 48, '--fs': frames[0]?.float?.s ?? 0.92 } as React.CSSProperties}>
+      <section className={`demo-pin demo-hero${inScene ? ' is-in-scene' : ''}`} id="top" data-pin data-frames={frames.length} data-chapter="top" style={{ '--n': frames.length, '--fx': frames[0]?.float?.x ?? 66, '--fy': frames[0]?.float?.y ?? 48, '--fs': frames[0]?.float?.s ?? 0.92 } as React.CSSProperties}>
         <div className="demo-stage">
           {frames.map((f, i) => (
             <div key={i} className={`demo-frame${i === 0 ? ' is-active' : ''}`} data-frame={i} data-float={JSON.stringify(f.float ?? STUDIO_FLOAT[i % 3])}>
-              {f.image ? <img src={f.image} alt="" fetchPriority={i === 0 ? 'high' : 'auto'} loading={i === 0 ? 'eager' : 'lazy'} /> : <div className={`demo-studio s${i % 3}`} aria-hidden="true"><i /><i /><i /></div>}
+              {f.image ? <img src={f.image} alt={inScene && heroItem ? heroItem.title : ''} style={{ objectPosition: `${f.float?.x ?? 60}% 22%` }} fetchPriority={i === 0 ? 'high' : 'auto'} loading={i === 0 ? 'eager' : 'lazy'} /> : <div className={`demo-studio s${i % 3}`} aria-hidden="true"><i /><i /><i /></div>}
             </div>
           ))}
           <div className="demo-hero-scrim" aria-hidden="true" />
@@ -76,6 +78,12 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
               <div className="demo-float-glow" />
               <img src={heroFloat} alt={heroItem?.title ?? ''} fetchPriority="high" />
               {heroItem?.price != null ? <span className="demo-float-tag"><b>{heroItem.title}</b>{inr(heroItem.price)}</span> : null}
+            </Link>
+          ) : null}
+          {inScene && heroItem ? (
+            <Link href={`${base}/p/${heroItem.handle}`} className="demo-hotspot" aria-label={`${heroItem.title}, view product`}>
+              <span className="demo-hotspot-dot" />
+              <span className="demo-hotspot-tag"><b>{heroItem.title}</b>{heroItem.price != null ? inr(heroItem.price) : 'View'} →</span>
             </Link>
           ) : null}
           <div className="demo-captions">
@@ -89,7 +97,7 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
           </div>
           <div className="demo-hero-cta">
             <Link className="demo-btn" data-magnet href={`${base}/shop`}>Shop the range</Link>
-            {heroItem?.price != null ? <AddToCart item={{ handle: heroItem.handle, title: heroItem.title, price: heroItem.price, image: heroItem.image }} className="demo-btn is-ghost" label={`Add ${heroItem.title.split(' ').slice(0, 3).join(' ')}`} /> : null}
+            {heroItem?.price != null ? <AddToCart item={{ handle: heroItem.handle, title: heroItem.title, price: heroItem.price, image: heroItem.image }} className="demo-btn is-ghost" label={`Add to bag · ${inr(heroItem.price)}`} /> : null}
           </div>
           <div className="demo-dots" aria-hidden="true">{frames.map((f, i) => <i key={i} data-frame={i} className={i === 0 ? 'is-active' : ''} />)}</div>
           <div className="demo-scroll-hint" aria-hidden="true"><span />Scroll</div>

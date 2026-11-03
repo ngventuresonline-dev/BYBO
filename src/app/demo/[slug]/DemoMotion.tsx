@@ -1,5 +1,7 @@
 'use client';
 
+import Lenis from 'lenis';
+import 'lenis/dist/lenis.css';
 import { useEffect } from 'react';
 
 const clamp = (n: number) => Math.min(1, Math.max(0, n));
@@ -7,8 +9,8 @@ const clamp = (n: number) => Math.min(1, Math.max(0, n));
 /**
  * Drives the demo's scroll story: pinned chapters get a --p progress (0 to 1),
  * the shop rail moves sideways, the chapter rail tracks where you are, and
- * reveals, tilt, magnetic buttons and gallery parallax run on top. With
- * reduced motion everything shows in its final state.
+ * reveals, tilt, magnetic buttons and gallery parallax run on top. Scrolling
+ * is smoothed with Lenis. With reduced motion everything shows in its final state.
  */
 export function DemoMotion() {
   useEffect(() => {
@@ -21,6 +23,8 @@ export function DemoMotion() {
       return;
     }
     root.classList.add('is-motion');
+    const lenis = new Lenis({ lerp: 0.085, wheelMultiplier: 0.9 });
+    let raf = requestAnimationFrame(function loop(t) { lenis.raf(t); raf = requestAnimationFrame(loop); });
     const io = new IntersectionObserver((entries) => {
       for (const e of entries) if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); }
     }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
@@ -118,6 +122,8 @@ export function DemoMotion() {
       });
     }
     return () => {
+      cancelAnimationFrame(raf);
+      lenis.destroy();
       io.disconnect();
       off.forEach((f) => f());
       window.removeEventListener('scroll', onScroll);

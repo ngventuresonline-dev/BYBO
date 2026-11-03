@@ -59,6 +59,8 @@ export type DemoContent = {
   hero_float_pos?: { x: number; y: number; s: number };
   /** An art-directed scene photo for the first hero frame (made for the demo, never lifted from their site). */
   hero_scene?: string | null;
+  /** True when the scene photos already show their product: no floating cut-out, a shoppable hotspot instead. */
+  scenes_show_product?: boolean;
   /** Their full catalogue (from their store), for the demo's shop, product and cart pages. */
   catalog?: { title: string; handle: string; price: number | null; compare: number | null; image: string | null; images: string[]; type: string | null; description: string }[];
   gallery?: string[];
