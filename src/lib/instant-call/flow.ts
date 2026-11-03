@@ -60,11 +60,11 @@ export type FlowDeps = {
   dial: (lead: Lead) => Promise<string>;
   poll?: (conversationId: string) => Promise<CallUpdate>;
   sendSummary?: (lead: Lead) => Promise<boolean>;
-  log?: (message: string, fields?: { leadId?: string; phone?: string | null }) => void;
+  log?: (message: string, fields?: { leadId?: string; phone?: string | null; reason?: string }) => void;
 };
 
-function logDefault(message: string, fields?: { leadId?: string; phone?: string | null }) {
-  console.info(message, { leadId: fields?.leadId ?? '', phone: maskPhone(fields?.phone) });
+function logDefault(message: string, fields?: { leadId?: string; phone?: string | null; reason?: string }) {
+  console.info(message, { leadId: fields?.leadId ?? '', phone: maskPhone(fields?.phone), ...(fields?.reason ? { reason: fields.reason } : {}) });
 }
 
 export async function captureLead(draft: Lead, consent: boolean, deps: FlowDeps): Promise<{ lead: Lead; action: string }> {
@@ -164,8 +164,8 @@ async function dialClaimed(lead: Lead, deps: FlowDeps, opts: { requireDue: boole
     const updated: Lead = { ...claimed, raw: { ...claimed.raw }, conversation_id: conversationId };
     await deps.store.save(updated);
     return { lead: updated, action: 'dialed' };
-  } catch {
-    log('outbound call failed', { leadId: claimed.id, phone: claimed.phone_e164 });
+  } catch (err) {
+    log('outbound call failed', { leadId: claimed.id, phone: claimed.phone_e164, reason: err instanceof Error ? err.message : String(err) });
     const finished = await applyCallUpdate(claimed, { outcome: 'failed' }, deps);
     return { lead: finished, action: 'failed' };
   }
