@@ -5,7 +5,7 @@
  * and visible text. Best effort: a site that won't load returns null.
  */
 
-export type SiteProduct = { title: string; price: number | null; compare: number | null; image: string | null; images: string[]; type: string | null; url: string };
+export type SiteProduct = { title: string; handle?: string; price: number | null; compare: number | null; image: string | null; images: string[]; type: string | null; url: string; description?: string };
 export type SiteScan = {
   url: string;
   platform: 'shopify' | 'other';
@@ -14,6 +14,10 @@ export type SiteScan = {
   logo: string | null;
   ogImage: string | null;
   images: string[];
+  /** Large site images with their alt text, for art direction. */
+  media?: { src: string; alt: string }[];
+  /** Hex colours used in the site's CSS, most used first. */
+  colors?: string[];
   products: SiteProduct[];
   text: string;
 };
@@ -64,22 +68,37 @@ export async function scanSite(rawUrl: string): Promise<SiteScan | null> {
     return m ? absolute(m[1]!, url) : null;
   })();
   const images = [...new Set([...html.matchAll(/<img[^>]+(?:data-src|src)=["']([^"']+)["']/gi)].map((m) => absolute(m[1]!, url)).filter((s): s is string => !!s && !/\.svg(\?|$)|icon|sprite|pixel|logo|badge|payment|flag/i.test(s)))].slice(0, 16);
+  const seen = new Set<string>();
+  const media = [...html.matchAll(/<img\b[^>]*>/gi)].map((m) => {
+    const tag = m[0];
+    const src = tag.match(/\s(?:data-src|src)=["']([^"']+)["']/i)?.[1];
+    const abs = src ? absolute(src.replace(/\{width\}/g, '1600'), url) : null;
+    if (!abs || /\.svg(\?|$)|icon|sprite|pixel|logo|badge|payment|flag|avatar|favicon/i.test(abs)) return null;
+    const key = abs.split('?')[0]!;
+    if (seen.has(key)) return null;
+    seen.add(key);
+    return { src: key.includes('/cdn/shop/') ? `${key}?width=1600` : abs, alt: decode(tag.match(/\salt=["']([^"']*)["']/i)?.[1] ?? '').slice(0, 90) };
+  }).filter((x): x is { src: string; alt: string } => !!x).slice(0, 30);
+  const tally = new Map<string, number>();
+  for (const m of html.matchAll(/#([0-9a-f]{6})\b/gi)) { const c = `#${m[1]!.toLowerCase()}`; tally.set(c, (tally.get(c) ?? 0) + 1); }
+  const colors = [...tally.entries()].sort((a, b) => b[1] - a[1]).map(([c]) => c).slice(0, 14);
   const text = decode(html.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>|<noscript[\s\S]*?<\/noscript>/gi, ' ').replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim().slice(0, 3500);
 
   let products: SiteProduct[] = [];
   let platform: SiteScan['platform'] = /cdn\.shopify\.com|Shopify\.theme/i.test(html) ? 'shopify' : 'other';
   if (platform === 'shopify') {
     const res = await get(`${url}/products.json?limit=24`);
-    const data = res ? await res.json().catch(() => null) as { products?: { title: string; handle: string; product_type?: string; variants?: { price?: string; compare_at_price?: string | null }[]; images?: { src: string }[] }[] } | null : null;
+    const data = res ? await res.json().catch(() => null) as { products?: { title: string; handle: string; body_html?: string | null; product_type?: string; variants?: { price?: string; compare_at_price?: string | null }[]; images?: { src: string }[] }[] } | null : null;
     products = (data?.products ?? []).slice(0, 12).map((p) => {
       const v = p.variants?.[0];
-      const imgs = (p.images ?? []).map((i) => i.src).filter(Boolean).slice(0, 4);
+      const imgs = (p.images ?? []).map((i) => i.src).filter(Boolean).slice(0, 6);
       return {
         title: p.title, price: v?.price ? Number(v.price) : null, compare: v?.compare_at_price ? Number(v.compare_at_price) : null,
-        image: imgs[0] ?? null, images: imgs, type: p.product_type || null, url: `${url}/products/${p.handle}`,
+        image: imgs[0] ?? null, images: imgs, type: p.product_type || null, url: `${url}/products/${p.handle}`, handle: p.handle,
+        description: decode((p.body_html ?? '').replace(/<\/(p|li|h\d)>/gi, '\n').replace(/<[^>]+>/g, ' ')).replace(/[ \t]+/g, ' ').replace(/\s*\n\s*/g, '\n').trim().slice(0, 900),
       };
     });
     if (!products.length) platform = 'other';
   }
-  return { url, platform, title, description, logo, ogImage, images, products, text };
+  return { url, platform, title, description, logo, ogImage, images, media, colors, products, text };
 }
