@@ -70,6 +70,10 @@ export type DemoContent = {
   origins?: { name: string; region: string; text: string; image: string | null }[];
   /** Set when the products shown are a sample range, not their real catalogue. */
   sample_note?: string;
+  /** A pinned, scroll-driven "how it works" chapter: each step a close-up with labelled callouts. */
+  story?: { kicker: string; title: string; steps: { image: string | null; title: string; text: string; callouts: string[] }[] } | null;
+  /** A draggable before/after comparison, e.g. waxing versus trimming. Marked as an illustration. */
+  compare?: { kicker: string; title: string; left: { image: string | null; label: string }; right: { image: string | null; label: string }; note?: string } | null;
   /** Words that change with the business: saree shops "enquire about this saree", wholesalers "get a bulk quote". */
   labels?: { origins_kicker?: string; origins_title?: string; featured_kicker?: string; featured_title?: string; ask?: string; ask_short?: string; call?: string; price_note?: string };
   /** True when the scene photos already show their product: no floating cut-out, a shoppable hotspot instead. */

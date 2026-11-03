@@ -6,6 +6,7 @@ import { CONTACT } from '@/lib/site';
 import { DemoMotion } from './DemoMotion';
 import { catalog, featured, inr, isCutout, loadDemo, off, pad, words } from './data';
 import { AddToCart } from './store';
+import { Compare } from './compare';
 
 export const dynamic = 'force-dynamic';
 
@@ -50,6 +51,7 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
   ].slice(0, 4);
   const chapters = [
     { id: 'top', label: 'Intro' },
+    ...(c.story?.steps?.length ? [{ id: 'how', label: 'How it works' }] : []),
     ...(cats.length > 1 ? [{ id: 'cats', label: 'Categories' }] : []),
     ...(shop ? [{ id: 'shop', label: 'Bestsellers' }] : []),
     ...(spotlight ? [{ id: 'spotlight', label: 'Product' }] : []),
@@ -115,6 +117,30 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
           <div className="demo-scroll-hint" aria-hidden="true"><span />Scroll</div>
         </div>
       </section>
+
+      {/* How it works: pinned while each step's close-up and callouts play in turn. */}
+      {c.story?.steps?.length ? (
+        <section className="demo-pin demo-story" id="how" data-pin data-frames={c.story.steps.length} data-chapter="how" style={{ '--n': c.story.steps.length } as React.CSSProperties}>
+          <div className="demo-stage">
+            {c.story.steps.map((s, i) => (
+              <div key={i} className={`demo-frame${i === 0 ? ' is-active is-shown' : ''}`} data-frame={i}>
+                {s.image ? <img src={s.image} alt={s.title} loading="eager" decoding="async" /> : null}
+              </div>
+            ))}
+            <div className="demo-story-shade" aria-hidden="true" />
+            <div className="demo-story-head"><p className="demo-kicker">{c.story.kicker}</p><h2>{c.story.title}</h2></div>
+            {c.story.steps.map((s, i) => (
+              <div key={i} className={`demo-story-step${i === 0 ? ' is-active' : ''}`} data-frame={i}>
+                <span className="demo-story-no">{pad(i + 1)}<i>/ {pad(c.story!.steps.length)}</i></span>
+                <h3>{s.title}</h3>
+                <p>{s.text}</p>
+                <ul>{s.callouts.map((t, k) => <li key={t} style={{ '--k': k } as React.CSSProperties}><span />{t}</li>)}</ul>
+              </div>
+            ))}
+            <ol className="demo-story-rail" aria-hidden="true">{c.story.steps.map((s, i) => <li key={i} data-frame={i} className={i === 0 ? 'is-active' : ''}><b>{pad(i + 1)}</b>{s.title}</li>)}</ol>
+          </div>
+        </section>
+      ) : null}
 
       {facts.length ? (
         <div className="demo-marquee" aria-hidden="true">
@@ -186,6 +212,8 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
           </div>
         </section>
       ) : null}
+
+      {c.compare?.left.image && c.compare.right.image ? <Compare data={c.compare} /> : null}
 
       {/* Product spotlight: the product turns as feature callouts arrive one by one. */}
       {spotlight ? (
