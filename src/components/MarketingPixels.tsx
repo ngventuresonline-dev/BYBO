@@ -113,7 +113,9 @@ fbq('init', '${metaPixelId}');`}
 
 export function MarketingPixels() {
   const consent = useSyncExternalStore(subscribeConsent, readConsent, () => null);
-  if (!hasMarketingPixels()) return null;
+  const pathname = usePathname();
+  // Client demos and proposals are private pages for one prospect: no measurement and no banner over them.
+  if (!hasMarketingPixels() || /^\/(demo|proposal)\//.test(pathname ?? '')) return null;
   if (consent === "granted") return <PixelScripts />;
   if (consent === "denied") return null;
 
