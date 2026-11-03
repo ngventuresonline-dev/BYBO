@@ -229,7 +229,7 @@ export function ShopGrid({ items, cats, base, initial = 'All' }: { initial?: str
               <div className="demo-price">
                 {p.price != null ? <b>{inr(p.price)}</b> : null}
                 {pct ? <s>{inr(p.compare!)}</s> : null}
-                {p.price != null ? <AddToCart item={{ handle: p.handle, title: p.title, price: p.price, image: p.image }} className="demo-add" label="Add" /> : null}
+                {p.price != null ? <AddToCart item={{ handle: p.handle, title: p.title, price: p.price, image: p.image }} className="demo-add" label="Add" /> : <><b className="is-ask">Price on request</b><Link className="demo-add" href={`${base}/contact?p=${encodeURIComponent(p.title)}`}>Enquire</Link></>}
               </div>
             </article>
           );
@@ -250,7 +250,7 @@ export function Gallery({ images, title }: { images: string[]; title: string }) 
   );
 }
 
-export function ContactForm() {
+export function ContactForm({ product }: { product?: string }) {
   const [sent, setSent] = useState(false);
   const { base } = useCart();
   if (sent) return <div className="co-done"><span className="co-tick">✓</span><h2>Message received.</h2><p>We will reply within a day.</p><p className="st-note">Demo form by BYBO: nothing was sent.</p></div>;
@@ -263,7 +263,7 @@ export function ContactForm() {
     }}>
       <label>Name<input name="name" required autoComplete="name" /></label>
       <label>Email or mobile<input name="contact" required /></label>
-      <label className="is-wide">Message<textarea name="message" required rows={5} /></label>
+      <label className="is-wide">Message<textarea name="message" required rows={5} defaultValue={product ? `I'd like to know more about the ${product}.` : ''} /></label>
       <button className="demo-btn" type="submit">Send message</button>
     </form>
   );

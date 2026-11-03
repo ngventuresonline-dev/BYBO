@@ -2,7 +2,9 @@ import { randomBytes } from 'node:crypto';
 import { NextResponse } from 'next/server';
 import { adminAuthorized } from '@/lib/instagram/auth';
 import { crmConfigured, rpc, type CrmLead } from '@/lib/crm/db';
-import { sendDemo, step, type Demo } from '@/lib/crm/autopilot';
+import { sendDemo, step, type Demo, type DemoContent } from '@/lib/crm/autopilot';
+import { demoQuality } from '@/lib/crm/quality';
+import { generateImage } from '@/lib/crm/scenes';
 
 /** Demo approvals and autopilot decisions from the desk. Admin only. */
 
@@ -24,13 +26,40 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   if (!adminAuthorized(request)) return NextResponse.json({ ok: false }, { status: 401 });
   if (!crmConfigured()) return NextResponse.json({ ok: false, reason: 'not_configured' }, { status: 503 });
-  const b = (await request.json().catch(() => ({}))) as Record<string, string>;
+  const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
+  const b = body as Record<string, string>;
   const leads = await rpc<CrmLead[]>('bybo_crm_list', {});
   const demos = await rpc<Demo[]>('bybo_demo_list', {});
   const lead = UUID.test(b.lead_id ?? '') ? leads.find((l) => l.id === b.lead_id) : undefined;
   const demo = UUID.test(b.demo_id ?? '') ? demos.find((d) => d.id === b.demo_id) : undefined;
 
   switch (b.action) {
+    case 'art': {
+      // Hand art direction: merge content fields, then make images with OpenAI into named slots.
+      if (!demo || demo.kind !== 'auto') return NextResponse.json({ ok: false, reason: 'not_found' }, { status: 404 });
+      const c = { ...(demo.content as DemoContent), ...((body.patch ?? {}) as Partial<DemoContent>) } as DemoContent;
+      const palette = c.theme ? `${c.theme.bg}, ${c.theme.soft}, ${c.theme.accent}` : 'their brand colours';
+      const jobs = (Array.isArray(body.images) ? body.images : []).slice(0, 6) as { path: string; brief: string; ref?: string; raw?: boolean }[];
+      const made = await Promise.all(jobs.map(async (j, i) => {
+        if (!/^[a-z_]+(\.\d+(\.[a-z_]+)?)?$/.test(j.path ?? '') || !j.brief) return { path: j.path, error: 'bad_job' };
+        try {
+          const url = await generateImage(demo.slug, `art-${j.path.replace(/\./g, '-')}-${i}`.replace(/_/g, '-').slice(0, 40), j.brief, { productImage: j.ref ?? null, palette, raw: !!j.raw });
+          // Set content[path] where path is "field", "field.index" or "field.index.key".
+          const [field, idx, key] = j.path.split('.');
+          const rec = c as unknown as Record<string, unknown>;
+          if (idx === undefined) rec[field!] = url;
+          else {
+            const list = [...((rec[field!] as Record<string, unknown>[] | undefined) ?? [])];
+            list[Number(idx)] = key ? { ...(list[Number(idx)] ?? {}), [key]: url } : (url as unknown as Record<string, unknown>);
+            rec[field!] = list;
+          }
+          return { path: j.path, url };
+        } catch (err) { return { path: j.path, error: (err as Error).message.slice(0, 160) }; }
+      }));
+      c.quality = demoQuality(c);
+      await rpc('bybo_demo_upsert', { p: { id: demo.id, content: c } });
+      return NextResponse.json({ ok: true, made, quality: c.quality });
+    }
     case 'approve_send': {
       if (!demo) return NextResponse.json({ ok: false, reason: 'not_found' }, { status: 404 });
       const l = leads.find((x) => x.id === demo.lead_id);

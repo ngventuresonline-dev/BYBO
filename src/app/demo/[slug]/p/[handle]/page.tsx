@@ -47,11 +47,17 @@ export default async function Product({ params }: { params: Promise<{ slug: stri
           <h1>{item.title}</h1>
           {item.line ? <p className="pd-line">{item.line}</p> : null}
           <div className="pd-price">
-            {item.price != null ? <b>{inr(item.price)}</b> : null}
+            {item.price != null ? <b>{inr(item.price)}</b> : <b>Price on request</b>}
             {pct ? <><s>{inr(item.compare!)}</s><span className="demo-off">Save {pct}%</span></> : null}
           </div>
-          <p className="pd-tax">Inclusive of all taxes</p>
-          {buy ? <BuyBox item={buy} facts={facts.slice(0, 3)} /> : null}
+          {item.price != null ? <p className="pd-tax">Inclusive of all taxes</p> : null}
+          {buy ? <BuyBox item={buy} facts={facts.slice(0, 3)} /> : (
+            <div className="pd-buy">
+              <Link className="demo-btn pd-now" href={`${base}/contact?p=${encodeURIComponent(item.title)}`}>Enquire about this saree</Link>
+              <Link className="demo-btn is-ghost pd-now" href={`${base}/contact?p=${encodeURIComponent(`${item.title} (video call)`)}`}>Book a video call to see it</Link>
+              {facts.length ? <ul className="pd-facts">{facts.slice(0, 3).map((f) => <li key={f}>{f}</li>)}</ul> : null}
+            </div>
+          )}
           <div className="pd-acc">
             {paras.length ? (
               <details open><summary>Description</summary>{paras.slice(0, 8).map((p) => <p key={p}>{p}</p>)}</details>

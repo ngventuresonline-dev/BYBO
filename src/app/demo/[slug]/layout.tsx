@@ -40,9 +40,9 @@ export default async function DemoLayout({ children, params }: { children: React
   const wa = `https://wa.me/${CONTACT.phone.replace(/\D/g, '')}?text=${encodeURIComponent(`Hi BYBO, I saw the demo for ${c.brand}. Let's talk.`)}`;
 
   return (
-    <div className={`demo f-${c.font ?? 'editorial'} ${editorial.variable} ${soft.variable} ${modern.variable} ${body.variable}`} style={style}>
+    <div className={`demo f-${c.font ?? 'editorial'} s-${c.style ?? 'luxe'} ${editorial.variable} ${soft.variable} ${modern.variable} ${body.variable}`} style={style}>
       <CartProvider slug={slug}>
-        <div className="demo-ribbon">A redesign prepared by <b>BYBO</b> for {c.brand}{c.site_url ? <> · <a href={c.site_url} target="_blank" rel="noreferrer">see the current site</a></> : null} · <Link href={`${base}/dashboard`}>open the owner dashboard</Link> · <a href={wa} target="_blank" rel="noreferrer">talk to BYBO</a></div>
+        <div className="demo-ribbon">{c.sample_note ? <>{c.sample_note} · </> : null}A demo prepared by <b>BYBO</b> for {c.brand}{c.site_url ? <> · <a href={c.site_url} target="_blank" rel="noreferrer">see the current site</a></> : null} · <Link href={`${base}/dashboard`}>open the owner dashboard</Link> · <a href={wa} target="_blank" rel="noreferrer">talk to BYBO</a></div>
         {facts.length ? <div className="st-announce"><div>{[0, 1].map((k) => <span key={k}>{facts.map((f) => <em key={f + k}>{f}</em>)}</span>)}</div></div> : null}
         <StoreHeader
           base={base} brand={c.brand} logo={c.logo ?? null} cats={cats}

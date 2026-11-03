@@ -41,7 +41,7 @@ export type DemoContent = {
   pages: string[];
   cta: { headline: string; sub: string };
   /** v2: a redesign of the prospect's real site. */
-  style?: 'luxe' | 'bold' | 'calm';
+  style?: 'luxe' | 'bold' | 'calm' | 'heritage';
   site_url?: string | null;
   logo?: string | null;
   hero_image?: string | null;
@@ -64,6 +64,12 @@ export type DemoContent = {
   /** The art direction brief for the first hero scene photo. */
   hero_brief?: string;
   quality?: { score: number; issues: string[] };
+  /** A full-screen intro the visitor scrolls into (a fabric or texture macro). */
+  intro_image?: string | null;
+  /** Collections by origin or line, each with its own image. */
+  origins?: { name: string; region: string; text: string; image: string | null }[];
+  /** Set when the products shown are a sample range, not their real catalogue. */
+  sample_note?: string;
   /** True when the scene photos already show their product: no floating cut-out, a shoppable hotspot instead. */
   scenes_show_product?: boolean;
   /** Their full catalogue (from their store), for the demo's shop, product and cart pages. */

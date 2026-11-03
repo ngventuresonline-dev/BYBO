@@ -62,6 +62,17 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
         {chapters.map((ch, i) => <li key={ch.id} data-rail={ch.id}><span>{pad(i + 1)}</span><em>{ch.label}</em></li>)}
       </ol>
 
+      {/* Intro: scroll into the fabric before the store opens. */}
+      {c.intro_image ? (
+        <section className="demo-pin demo-intro" data-pin>
+          <div className="demo-stage">
+            <img src={c.intro_image} alt="" fetchPriority="high" />
+            <div className="demo-intro-mark"><span>{c.brand}</span><small>{c.tagline}</small></div>
+            <div className="demo-scroll-hint" aria-hidden="true"><span />Scroll</div>
+          </div>
+        </section>
+      ) : null}
+
       {/* Hero: a pinned, full-screen scene with their product in front from the first second.
           Scenes cross-fade and slowly zoom while the captions change. */}
       <section className={`demo-pin demo-hero${inScene ? ' is-in-scene' : ''}`} id="top" data-pin data-frames={frames.length} data-chapter="top" style={{ '--n': frames.length, '--fx': frames[0]?.float?.x ?? 66, '--fy': frames[0]?.float?.y ?? 48, '--fs': frames[0]?.float?.s ?? 0.92 } as React.CSSProperties}>
@@ -97,7 +108,7 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
           </div>
           <div className="demo-hero-cta">
             <Link className="demo-btn" data-magnet href={`${base}/shop`}>Shop the range</Link>
-            {heroItem?.price != null ? <AddToCart item={{ handle: heroItem.handle, title: heroItem.title, price: heroItem.price, image: heroItem.image }} className="demo-btn is-ghost" label={`Add to bag · ${inr(heroItem.price)}`} /> : null}
+            {heroItem?.price != null ? <AddToCart item={{ handle: heroItem.handle, title: heroItem.title, price: heroItem.price, image: heroItem.image }} className="demo-btn is-ghost" label={`Add to bag · ${inr(heroItem.price)}`} /> : <Link className="demo-btn is-ghost" href={`${base}/contact`}>Book a video call</Link>}
           </div>
           <div className="demo-dots" aria-hidden="true">{frames.map((f, i) => <i key={i} data-frame={i} className={i === 0 ? 'is-active' : ''} />)}</div>
           <div className="demo-scroll-hint" aria-hidden="true"><span />Scroll</div>
@@ -110,7 +121,23 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
         </div>
       ) : null}
 
-      {cats.length > 1 ? (
+      {c.origins?.length ? (
+        <section className="demo-section hm-origins" id="origins">
+          <div className="demo-head is-center" data-reveal><p className="demo-kicker">Every weave tells where it was born</p><h2><Words text="Sarees by origin" /></h2></div>
+          <div className="hm-origin-row">
+            {c.origins.map((o, i) => (
+              <Link key={o.name} href={`${base}/shop?c=${encodeURIComponent(o.name)}`} className="hm-origin" data-reveal style={{ transitionDelay: `${i * 90}ms` }}>
+                <span className="hm-origin-img">{o.image ? <img src={o.image} alt={o.name} loading="lazy" /> : null}</span>
+                <small>{o.region}</small>
+                <b>{o.name}</b>
+                <em>{o.text}</em>
+              </Link>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      {cats.length > 1 && !c.origins?.length ? (
         <section className="demo-section hm-cats" id="cats" data-chapter="cats">
           <div className="demo-head" data-reveal><p className="demo-kicker">Shop by need</p><h2><Words text="Find your perfect match." /></h2></div>
           <div className="hm-cat-grid">
@@ -148,7 +175,7 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
                     <div className="demo-price">
                       {p.price != null ? <b>{inr(p.price)}</b> : null}
                       {pct ? <s>{inr(p.compare!)}</s> : null}
-                      {p.price != null ? <AddToCart item={{ handle: p.handle, title: p.title, price: p.price, image: p.image }} className="demo-add" /> : null}
+                      {p.price != null ? <AddToCart item={{ handle: p.handle, title: p.title, price: p.price, image: p.image }} className="demo-add" /> : <><b className="is-ask">Price on request</b><Link className="demo-add" href={`${base}/contact?p=${encodeURIComponent(p.title)}`}>Enquire</Link></>}
                     </div>
                   </article>
                 );

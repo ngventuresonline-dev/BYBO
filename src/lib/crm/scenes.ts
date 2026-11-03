@@ -49,6 +49,21 @@ async function one(prompt: string, reference: Blob | null) {
   return openai('generations', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ...common, output_compression: 86, prompt }) });
 }
 
+/** Make one image from a brief and keep it under a name. Returns its served path. */
+export async function generateImage(slug: string, name: string, brief: string, opts: { productImage: string | null; palette: string; raw?: boolean }): Promise<string> {
+  if (!scenesConfigured()) throw new Error('openai_not_configured');
+  let reference: Blob | null = null;
+  if (opts.productImage) {
+    const r = await fetch(opts.productImage, { signal: AbortSignal.timeout(20_000) }).catch(() => null);
+    reference = r?.ok ? await r.blob() : null;
+  }
+  const img = await one(opts.raw ? `${brief} ${STYLE}` : scenePrompt(brief, { product: !!reference, palette: opts.palette }), reference);
+  const { put } = await import('@vercel/blob');
+  const path = `demo-media/${slug}/${name}.webp`;
+  await put(path, img, { access: 'private', addRandomSuffix: false, allowOverwrite: true, contentType: 'image/webp' });
+  return `/${path}?v=${Date.now().toString(36)}`;
+}
+
 /**
  * Make one image per brief, in parallel. Returns a served path per brief, or
  * null where that image failed. `productImage` is the brand's own photo.
