@@ -47,23 +47,6 @@ export function CartButton() {
   );
 }
 
-export function MenuButton({ links }: { links: { href: string; label: string }[] }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <>
-      <button type="button" className="st-icon st-burger" onClick={() => setOpen(true)} aria-label="Menu">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h16M4 16h16" /></svg>
-      </button>
-      <div className={`st-menu ${open ? 'is-open' : ''}`} onClick={() => setOpen(false)}>
-        <nav onClick={(e) => e.stopPropagation()}>
-          <button type="button" className="st-close" onClick={() => setOpen(false)} aria-label="Close">×</button>
-          {links.map((l) => <Link key={l.href + l.label} href={l.href} onClick={() => setOpen(false)}>{l.label}</Link>)}
-        </nav>
-      </div>
-    </>
-  );
-}
-
 export function AddToCart({ item, qty = 1, label = 'Add to bag', className = 'demo-btn' }: { item: Omit<Line, 'qty'>; qty?: number; label?: string; className?: string }) {
   const { add } = useCart();
   const [done, setDone] = useState(false);

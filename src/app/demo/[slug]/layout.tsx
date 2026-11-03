@@ -1,12 +1,12 @@
-/* eslint-disable @next/next/no-img-element -- the prospect's own logo */
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Cormorant_Garamond, Fraunces, Manrope, Space_Grotesk } from 'next/font/google';
 import { notFound, redirect } from 'next/navigation';
 import type { DemoContent } from '@/lib/crm/autopilot';
 import { CONTACT } from '@/lib/site';
-import { catalog, loadDemo } from './data';
-import { CartButton, CartDrawer, CartProvider, MenuButton } from './store';
+import { catalog, featured, isCutout, loadDemo } from './data';
+import { StoreHeader } from './header';
+import { CartDrawer, CartProvider } from './store';
 import './demo.css';
 import './shop.css';
 
@@ -44,15 +44,11 @@ export default async function DemoLayout({ children, params }: { children: React
       <CartProvider slug={slug}>
         <div className="demo-ribbon">A redesign prepared by <b>BYBO</b> for {c.brand}{c.site_url ? <> · <a href={c.site_url} target="_blank" rel="noreferrer">see the current site</a></> : null} · <a href={wa} target="_blank" rel="noreferrer">talk to BYBO</a></div>
         {facts.length ? <div className="st-announce"><div>{[0, 1].map((k) => <span key={k}>{facts.map((f) => <em key={f + k}>{f}</em>)}</span>)}</div></div> : null}
-        <header className="demo-nav st-header" data-nav>
-          <MenuButton links={links} />
-          <Link href={base} className="demo-logo">{c.logo ? <img src={c.logo} alt={c.brand} /> : c.brand}</Link>
-          <nav>{links.slice(0, 5).map((l) => <Link key={l.href} href={l.href}>{l.label}</Link>)}</nav>
-          <div className="st-icons">
-            <Link className="st-icon" href={`${base}/shop`} aria-label="Search the shop"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6" /><path d="m20 20-4.5-4.5" /></svg></Link>
-            <CartButton />
-          </div>
-        </header>
+        <StoreHeader
+          base={base} brand={c.brand} logo={c.logo ?? null} cats={cats}
+          items={items.map((i) => ({ title: i.title, handle: i.handle, image: i.image, price: i.price, category: i.category }))}
+          featured={(() => { const f = featured(c, items).find((i) => isCutout(i.image)) ?? items[0]; return f ? { title: f.title, handle: f.handle, image: f.image, price: f.price, category: f.category } : null; })()}
+        />
 
         <main>{children}</main>
 
