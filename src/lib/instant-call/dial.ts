@@ -41,8 +41,11 @@ export async function placeOutboundCall(lead: Lead, env: NodeJS.ProcessEnv = pro
     body: JSON.stringify(outboundBody(lead, env)),
     signal: AbortSignal.timeout(20_000),
   });
-  if (!res.ok) throw new Error(`outbound call failed (${res.status})`);
-  const json = await res.json() as { conversation_id?: string };
-  if (!json.conversation_id) throw new Error('outbound call returned no conversation');
+  if (!res.ok) {
+    const reason = await res.text().catch(() => '');
+    throw new Error(`outbound call failed (${res.status}) ${reason.replace(/\+?\d{8,}/g, '[number]').replace(/\s+/g, ' ').slice(0, 200)}`.trim());
+  }
+  const json = await res.json() as { conversation_id?: string; success?: boolean; message?: string };
+  if (!json.conversation_id) throw new Error(`outbound call returned no conversation ${String(json.message ?? '').slice(0, 200)}`.trim());
   return json.conversation_id;
 }
