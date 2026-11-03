@@ -16,7 +16,7 @@ async function load(slug: string) {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const d = await load((await params).slug);
   const c = d?.content as DemoContent | undefined;
-  return { title: c?.brand ? `${c.brand}: a demo by BYBO` : 'Demo by BYBO', robots: { index: false, follow: false } };
+  return { title: { absolute: c?.brand ? `${c.brand}: a demo by BYBO` : 'A demo by BYBO' }, robots: { index: false, follow: false } };
 }
 
 /** A personalised demo BYBO prepared for one prospect. Unlisted; the slug carries a random suffix. */
