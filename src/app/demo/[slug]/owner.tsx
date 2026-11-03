@@ -38,14 +38,15 @@ export function Dashboard({ brand, products }: { brand: string; products: P[] })
   const sample = useMemo(() => {
     const r = seeded(brand);
     const priced = products.filter((p) => p.price);
+    const pool = priced.length ? priced : products;
     const days = Array.from({ length: 14 }, (_, i) => Math.round((18 + r() * 22) * (0.8 + i / 30)));
     const recent = Array.from({ length: 7 }, (_, i) => {
-      const p = priced[Math.floor(r() * priced.length)];
+      const p = pool[Math.floor(r() * pool.length)];
       const qty = r() > 0.75 ? 2 : 1;
-      return { id: `${brand.slice(0, 3).toUpperCase()}-${String(482113 - i * 37)}`, name: NAMES[i % NAMES.length]!, city: CITIES[Math.floor(r() * CITIES.length)]!, item: p?.title ?? 'Order', qty, total: (p?.price ?? 0) * qty, status: ['Packed', 'Shipped', 'Delivered', 'New', 'Shipped', 'Delivered', 'Delivered'][i]!, pay: ['UPI', 'COD', 'UPI', 'Card', 'UPI', 'COD', 'UPI'][i]! };
+      return { id: `${brand.slice(0, 3).toUpperCase()}-${String(482113 - i * 37)}`, name: NAMES[i % NAMES.length]!, city: CITIES[Math.floor(r() * CITIES.length)]!, item: p?.title ?? 'Order', qty, total: (p?.price ?? 0) * qty, status: (priced.length ? ['Packed', 'Shipped', 'Delivered', 'New', 'Shipped', 'Delivered', 'Delivered'] : ['Call booked', 'Quoted', 'Confirmed', 'New', 'Quoted', 'Confirmed', 'Call booked'])[i]!, pay: (priced.length ? ['UPI', 'COD', 'UPI', 'Card', 'UPI', 'COD', 'UPI'] : ['WhatsApp', 'Website', 'Instagram', 'WhatsApp', 'Website', 'WhatsApp', 'Instagram'])[i]! };
     });
-    const top = priced.slice(0, 5).map((p) => ({ ...p, sold: Math.round(40 + r() * 160) })).sort((a, b) => b.sold - a.sold);
-    return { days, recent, top, aov: Math.round(priced.reduce((n, p) => n + (p.price ?? 0), 0) / Math.max(1, priced.length) * 1.3) };
+    const top = pool.slice(0, 5).map((p) => ({ ...p, sold: Math.round(priced.length ? 40 + r() * 160 : 12 + r() * 40) })).sort((a, b) => b.sold - a.sold);
+    return { priced: priced.length > 0, days, recent, top, aov: Math.round(priced.reduce((n, p) => n + (p.price ?? 0), 0) / Math.max(1, priced.length) * 1.3) };
   }, [brand, products]);
 
   const live = orders.reduce((n, o) => n + o.total, 0);
@@ -70,15 +71,20 @@ export function Dashboard({ brand, products }: { brand: string; products: P[] })
 
         {tab === 'Overview' ? (
           <>
-            <div className="db-kpis">
+            {sample.priced ? <div className="db-kpis">
               <article><span>Revenue today</span><b>{inr(revenue)}</b><em className="up">▲ 18% vs last week</em></article>
               <article><span>Orders today</span><b>{today}</b><em className="up">{orders.length ? `${orders.length} from this demo` : '▲ 12%'}</em></article>
               <article><span>Average order</span><b>{inr(sample.aov)}</b><em>Bundles lift it</em></article>
               <article><span>Carts recovered</span><b>{Math.round(today * 0.22)}</b><em className="up">via WhatsApp</em></article>
-            </div>
+            </div> : <div className="db-kpis">
+              <article><span>Enquiries today</span><b>{Math.round(today * 0.6) + enquiries.length}</b><em className="up">{enquiries.length ? `${enquiries.length} from this demo` : '▲ 22% vs last week'}</em></article>
+              <article><span>Video calls booked</span><b>{Math.round(today * 0.18)}</b><em className="up">Shown live, then sold</em></article>
+              <article><span>Confirmed on WhatsApp</span><b>{Math.round(today * 0.12) + orders.length}</b><em className="up">▲ 14%</em></article>
+              <article><span>Replied within 5 min</span><b>96%</b><em>Auto-reply, then the team</em></article>
+            </div>}
             <div className="db-grid">
               <article className="db-card db-chart">
-                <header><h3>Orders, last 14 days</h3><span className="db-tag">Sample</span></header>
+                <header><h3>{sample.priced ? 'Orders' : 'Enquiries'}, last 14 days</h3><span className="db-tag">Sample</span></header>
                 <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
                   <defs><linearGradient id="dbg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stopColor="var(--accent)" stopOpacity=".35" /><stop offset="1" stopColor="var(--accent)" stopOpacity="0" /></linearGradient></defs>
                   <polygon points={`0,100 ${pts} 100,100`} fill="url(#dbg)" />
@@ -86,11 +92,11 @@ export function Dashboard({ brand, products }: { brand: string; products: P[] })
                 </svg>
               </article>
               <article className="db-card">
-                <header><h3>Bestsellers</h3><span className="db-tag">Sample</span></header>
-                <ul className="db-top5">{sample.top.map((p) => <li key={p.handle}><span className="db-thumb">{p.image ? <img src={p.image} alt="" /> : null}</span><b>{p.title}</b><em>{p.sold} sold</em></li>)}</ul>
+                <header><h3>{sample.priced ? 'Bestsellers' : 'Most asked about'}</h3><span className="db-tag">Sample</span></header>
+                <ul className="db-top5">{sample.top.map((p) => <li key={p.handle}><span className="db-thumb">{p.image ? <img src={p.image} alt="" /> : null}</span><b>{p.title}</b><em>{p.sold} {sample.priced ? 'sold' : 'enquiries'}</em></li>)}</ul>
               </article>
             </div>
-            <Orders live={orders} sample={sample.recent} compact />
+            <Orders live={orders} sample={sample.recent} priced={sample.priced} compact />
             <div className="db-grid">
               <article className="db-card">
                 <header><h3>Live in carts now</h3><span className="db-tag is-live">Live</span></header>
@@ -104,7 +110,7 @@ export function Dashboard({ brand, products }: { brand: string; products: P[] })
           </>
         ) : null}
 
-        {tab === 'Orders' ? <Orders live={orders} sample={sample.recent} /> : null}
+        {tab === 'Orders' ? <Orders live={orders} sample={sample.recent} priced={sample.priced} /> : null}
 
         {tab === 'Customers' ? (
           <article className="db-card">
@@ -117,10 +123,10 @@ export function Dashboard({ brand, products }: { brand: string; products: P[] })
           <article className="db-card">
             <header><h3>Campaigns</h3><span className="db-tag">Sample</span></header>
             <table className="db-table">
-              <thead><tr><th>Campaign</th><th>Channel</th><th>Spend</th><th>Orders</th><th>Return</th><th>Status</th></tr></thead>
+              <thead><tr><th>Campaign</th><th>Channel</th><th>Spend</th><th>Orders</th><th>{sample.priced ? 'Return' : 'Leads'}</th><th>Status</th></tr></thead>
               <tbody>
                 {[['Bestseller retargeting', 'Instagram', 4200, 61, 'Live'], ['Search: face trimmer', 'Google', 3100, 38, 'Live'], ['Festive gifting', 'Instagram', 2600, 27, 'Scheduled'], ['Abandoned cart', 'WhatsApp', 0, 44, 'Always on'], ['Win-back, 60 days', 'WhatsApp', 0, 19, 'Always on']].map(([n, c, s, o, st]) => (
-                  <tr key={n as string}><td><b>{n}</b></td><td>{c}</td><td>{s ? inr(s as number) : 'Free'}</td><td>{o}</td><td>{s ? `${(((o as number) * sample.aov) / (s as number)).toFixed(1)}×` : '—'}</td><td><span className={`db-pill ${st === 'Scheduled' ? '' : 'is-on'}`}>{st}</span></td></tr>
+                  <tr key={n as string}><td><b>{n}</b></td><td>{c}</td><td>{s ? inr(s as number) : 'Free'}</td><td>{o}</td><td>{!sample.priced ? `${Math.round((o as number) * 2.4)} enquiries` : s ? `${(((o as number) * sample.aov) / (s as number)).toFixed(1)}×` : '—'}</td><td><span className={`db-pill ${st === 'Scheduled' ? '' : 'is-on'}`}>{st}</span></td></tr>
                 ))}
               </tbody>
             </table>
@@ -153,17 +159,17 @@ export function Dashboard({ brand, products }: { brand: string; products: P[] })
   );
 }
 
-function Orders({ live, sample, compact }: { live: DemoOrder[]; sample: { id: string; name: string; city: string; item: string; qty: number; total: number; status: string; pay: string }[]; compact?: boolean }) {
+function Orders({ live, sample, compact, priced = true }: { live: DemoOrder[]; sample: { id: string; name: string; city: string; item: string; qty: number; total: number; status: string; pay: string }[]; compact?: boolean; priced?: boolean }) {
   const rows = [
     ...live.map((o) => ({ id: o.id, name: o.name, city: o.city, item: o.items.map((i) => `${i.title} × ${i.qty}`).join(', '), total: o.total, status: 'New', pay: o.pay.toUpperCase(), live: true })),
     ...sample.map((s) => ({ ...s, item: `${s.item}${s.qty > 1 ? ` × ${s.qty}` : ''}`, live: false })),
   ].slice(0, compact ? 6 : 30);
   return (
     <article className="db-card">
-      <header><h3>{compact ? 'Recent orders' : 'All orders'}</h3><span className="db-tag">{live.length ? `${live.length} live from this demo` : 'Sample'}</span></header>
+      <header><h3>{priced ? (compact ? 'Recent orders' : 'All orders') : (compact ? 'Recent enquiries' : 'All enquiries')}</h3><span className="db-tag">{live.length ? `${live.length} live from this demo` : 'Sample'}</span></header>
       <table className="db-table">
-        <thead><tr><th>Order</th><th>Customer</th><th>Items</th><th>Payment</th><th>Total</th><th>Status</th></tr></thead>
-        <tbody>{rows.map((r) => <tr key={r.id} className={r.live ? 'is-live' : ''}><td><b>{r.id}</b>{r.live ? <span className="db-pill is-on">Just now</span> : null}</td><td>{r.name}<small>{r.city}</small></td><td>{r.item}</td><td>{r.pay}</td><td>{inr(r.total)}</td><td><span className={`db-pill ${r.status === 'New' ? 'is-new' : 'is-on'}`}>{r.status}</span></td></tr>)}</tbody>
+        <thead><tr><th>{priced ? 'Order' : 'Enquiry'}</th><th>Customer</th><th>{priced ? 'Items' : 'Saree'}</th><th>{priced ? 'Payment' : 'Came from'}</th>{priced ? <th>Total</th> : null}<th>Status</th></tr></thead>
+        <tbody>{rows.map((r) => <tr key={r.id} className={r.live ? 'is-live' : ''}><td><b>{r.id}</b>{r.live ? <span className="db-pill is-on">Just now</span> : null}</td><td>{r.name}<small>{r.city}</small></td><td>{r.item}</td><td>{r.pay}</td>{priced ? <td>{inr(r.total)}</td> : null}<td><span className={`db-pill ${r.status === 'New' ? 'is-new' : 'is-on'}`}>{r.status}</span></td></tr>)}</tbody>
       </table>
     </article>
   );
