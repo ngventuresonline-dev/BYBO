@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
-import { captureLead } from '@/lib/crm/db';
-import { inr, linksConfigured, MAX_INR, MIN_INR, signLink } from '@/lib/payments/link';
-import { createOrder, phonepeConfigured } from '@/lib/payments/phonepe';
+import { linksConfigured, MAX_INR, MIN_INR } from '@/lib/payments/link';
+import { phonepeConfigured } from '@/lib/payments/phonepe';
 import { productById } from '@/lib/payments/products';
+import { startCheckout } from '@/lib/payments/start';
 
 /**
  * The Pay button: a client enters their details and amount on /pay and goes
@@ -40,23 +40,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, reason: 'invalid' }, { status: 400 });
   }
 
-  const token = signLink(link);
-  const merchantOrderId = `bybo_${link.id.slice(0, 30)}_${now.toString(36)}`;
-  const origin = new URL(request.url).origin;
   try {
-    const order = await createOrder({
-      merchantOrderId,
-      amountPaisa: Math.round(amount * 100),
-      message: `BYBO: ${link.purpose}`,
-      redirectUrl: `${origin}/pay/result?o=${encodeURIComponent(merchantOrderId)}&t=${encodeURIComponent(token)}`,
-      meta: { ref: link.id, name: link.name, email: link.email, phone: link.phone, purpose: link.purpose },
-    });
-    await captureLead({
-      source: 'payment', name: link.name, email: link.email, phone: link.phone, company: link.company,
-      need: link.purpose, value: amount, stage: 'proposal',
-      event: { kind: 'payment', title: `Started checkout: ${link.purpose} (${inr(amount)})`, meta: { ref: link.id, order: merchantOrderId } },
-    });
-    return NextResponse.json({ ok: true, redirectUrl: order.redirectUrl });
+    const redirectUrl = await startCheckout(link, new URL(request.url).origin, now);
+    return NextResponse.json({ ok: true, redirectUrl });
   } catch (err) {
     console.error('pay checkout failed', (err as Error).message);
     return NextResponse.json({ ok: false, reason: 'gateway_error' }, { status: 502 });

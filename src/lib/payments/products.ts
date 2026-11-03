@@ -14,10 +14,14 @@ export type Product = {
   service?: string; // the /systems/<slug> this package belongs to
   /** A milestone of one client's quote: payable by its link, never listed on /pay. */
   unlisted?: boolean;
+  /** Who a quote milestone is for, so its Pay button can open PhonePe without a form. */
+  payer?: { name: string; email: string; phone?: string; company: string };
   lead: string;
   description: string;
   includes: string[];
 };
+
+const MIRACLE = { name: 'Navdeep Singh', email: 'Navdeepsinghkainth1976@gmail.com', company: 'Miracle Education' };
 
 export const PRODUCTS: Product[] = [
   {
@@ -88,19 +92,19 @@ export const PRODUCTS: Product[] = [
   },
   // Miracle Education, Patiala: website and lead automation, ₹59,000 in three milestones.
   {
-    id: 'miracle-edu-advance', name: 'Miracle Education: 60% advance', price: 35400, group: 'Your quote', unlisted: true,
+    id: 'miracle-edu-advance', name: 'Miracle Education: 60% advance', price: 35400, group: 'Your quote', unlisted: true, payer: MIRACLE,
     lead: 'Starts the 14-day build.',
     description: 'Advance for the Miracle Education website and lead automation, as set out in the proposal (₹59,000 in total).',
     includes: ['Kick-off and content collection', 'Website build begins on day 1', 'Lead automation set up alongside'],
   },
   {
-    id: 'miracle-edu-midway', name: 'Miracle Education: 20% midway', price: 11800, group: 'Your quote', unlisted: true,
+    id: 'miracle-edu-midway', name: 'Miracle Education: 20% midway', price: 11800, group: 'Your quote', unlisted: true, payer: MIRACLE,
     lead: 'Due on day 7, at the staging review.',
     description: 'Second milestone for the Miracle Education website and lead automation, due when the site is ready for your review.',
     includes: ['Full site on a review link', 'AI call script and WhatsApp templates for approval'],
   },
   {
-    id: 'miracle-edu-final', name: 'Miracle Education: 20% on completion', price: 11800, group: 'Your quote', unlisted: true,
+    id: 'miracle-edu-final', name: 'Miracle Education: 20% on completion', price: 11800, group: 'Your quote', unlisted: true, payer: MIRACLE,
     lead: 'Due on day 14, at go-live.',
     description: 'Final milestone for the Miracle Education website and lead automation, due at launch and handover.',
     includes: ['Site live on your domain', 'Automation switched on', 'Staff walkthrough and handover'],
