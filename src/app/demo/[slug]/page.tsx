@@ -80,7 +80,7 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
         <div className="demo-stage">
           {frames.map((f, i) => (
             <div key={i} className={`demo-frame${i === 0 ? ' is-active is-shown' : ''}`} data-frame={i} data-float={JSON.stringify(f.float ?? STUDIO_FLOAT[i % 3])}>
-              {f.image ? <img src={f.image} alt={inScene && heroItem ? heroItem.title : ''} style={{ objectPosition: `${f.float?.x ?? 60}% 22%` }} fetchPriority={i === 0 ? 'high' : 'auto'} loading="eager" decoding="async" /> : <div className={`demo-studio s${i % 3}`} aria-hidden="true"><i /><i /><i /></div>}
+              {f.image ? <img src={f.image} alt={inScene && heroItem ? heroItem.title : ''} data-fx={f.float?.x ?? 60} style={{ objectPosition: `${f.float?.x ?? 60}% 22%` }} fetchPriority={i === 0 ? 'high' : 'auto'} loading="eager" decoding="async" /> : <div className={`demo-studio s${i % 3}`} aria-hidden="true"><i /><i /><i /></div>}
             </div>
           ))}
           <div className="demo-hero-scrim" aria-hidden="true" />
