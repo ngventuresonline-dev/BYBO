@@ -5,6 +5,16 @@ import type { CrmLead } from '@/lib/crm/db';
 import { ago, api, demoAction, demoLink, display, initials, SOURCE_LABEL, type DemoRow } from './shared';
 
 type Demo = DemoRow;
+
+/** The link to prefill for a lead: its live demo if it has one, else the usual hand-built demo address. */
+function suggestedUrl(l: CrmLead, demos: DemoRow[]) {
+  const d = demos.find((x) => x.lead_id === l.id && x.status !== 'rejected');
+  if (d) return d.kind === 'custom' && d.url ? d.url : `https://bybo.in/demo/${d.slug}`;
+  const intel = (l.intel ?? {}) as { business?: { name?: string | null } };
+  const name = intel.business?.name || l.company || l.name || 'demo';
+  const slug = name.split(/[\n,.(]/)[0]!.toLowerCase().normalize('NFKD').replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-').slice(0, 40) || 'demo';
+  return `https://bybo-demos.vercel.app/${slug}/`;
+}
 type Intel = { business?: { name?: string | null; industry?: string | null; location?: string | null; website?: string | null; what_they_do?: string | null }; reasons?: string[]; pitch?: string; package?: string; error?: string };
 
 
@@ -75,6 +85,7 @@ export function AutopilotSection({ leads, now, onOpen, onToast, onChanged }: { l
   const qualified = lane(['qualified']);
   const failed = lane(['failed', 'held']);
   const awaiting = (demos ?? []).filter((d) => d.status === 'awaiting_approval' || d.status === 'approved');
+  const pendingFor = custom.lead_id ? awaiting.find((d) => d.lead_id === custom.lead_id) ?? null : null;
   const sent = (demos ?? []).filter((d) => d.status === 'sent');
 
   const steps = [
@@ -196,13 +207,22 @@ export function AutopilotSection({ leads, now, onOpen, onToast, onChanged }: { l
         <div className="crm-panel-head"><h2>Add a custom demo for approval</h2></div>
         <p className="crm-muted">For hand-built demos like Bigshot: paste the link, approve it above, and it is emailed to the client.</p>
         <div className="crm-custom-row">
-          <select value={custom.lead_id} onChange={(e) => setCustom((c) => ({ ...c, lead_id: e.target.value }))} required>
+          <select value={custom.lead_id} onChange={(e) => { const l = byLead.get(e.target.value); setCustom({ lead_id: e.target.value, url: l ? suggestedUrl(l, demos ?? []) : '' }); }} required>
             <option value="">Choose a lead</option>
             {open.map((l) => <option key={l.id} value={l.id}>{display(l)}{l.company && l.name ? ` · ${l.company}` : ''}</option>)}
           </select>
           <input type="url" placeholder="https://…" value={custom.url} onChange={(e) => setCustom((c) => ({ ...c, url: e.target.value }))} required />
-          <button className="crm-btn" disabled={!!busy}>{busy === 'custom' ? 'Adding…' : 'Add for approval'}</button>
+          <button className="crm-btn" disabled={!!busy || !!pendingFor}>{busy === 'custom' ? 'Adding…' : 'Add for approval'}</button>
         </div>
+        {pendingFor ? (
+          <div className="crm-approve">
+            <p className="crm-muted">This lead already has a demo waiting for approval. Approve it here instead of adding another.</p>
+            <footer>
+              <a className="crm-btn is-ghost" href={demoLink(pendingFor)} target="_blank" rel="noreferrer">Preview</a>
+              <button type="button" className="crm-btn" disabled={!!busy || !byLead.get(pendingFor.lead_id)?.email} onClick={() => act(`send-${pendingFor.id}`, { action: 'approve_send', demo_id: pendingFor.id })}>{busy === `send-${pendingFor.id}` ? 'Sending…' : 'Approve & email client'}</button>
+            </footer>
+          </div>
+        ) : custom.lead_id ? <p className="crm-muted crm-gap">Link filled in from the lead{custom.url.includes('bybo-demos') ? ': the usual address for a hand-built demo. Change it if the build lives elsewhere.' : '.'}</p> : null}
       </form>
     </div>
   );
@@ -257,8 +277,8 @@ export function DemoPanel({ demos, leads, now, onOpen, onToast, onChanged, go }:
 /** The lead's demos inside its drawer, with approval. */
 export function LeadDemos({ lead, demos, onToast, onChanged }: { lead: CrmLead; demos: DemoRow[]; onToast: (t: string) => void; onChanged: () => void }) {
   const [busy, setBusy] = useState<string | null>(null);
-  const [url, setUrl] = useState('');
   const mine = demos.filter((d) => d.lead_id === lead.id);
+  const [url, setUrl] = useState(() => (mine.some((d) => d.status !== 'rejected') ? '' : suggestedUrl(lead, demos)));
   async function act(key: string, body: Record<string, string>) {
     setBusy(key);
     onToast(await demoAction(body));
