@@ -49,12 +49,50 @@ describe('Meta lead polling', () => {
 
     assert.deepEqual(leads.map((lead) => (lead as { id: string }).id), ['old', 'new']);
     assert.equal((leads[1] as { form_name: string }).form_name, 'Form one');
-    assert.equal(auth[0], 'Bearer user-token');
-    assert.ok(auth.slice(1).every((value) => value === 'Bearer page-token'));
+    assert.deepEqual(auth.slice(0, 2), ['Bearer user-token', 'Bearer user-token']);
+    assert.ok(auth.slice(2).every((value) => value === 'Bearer page-token'));
     assert.ok(urls.every((url) => !url.href.includes('token=') && !url.href.includes('page-token')));
 
     const filtering = JSON.parse(urls.at(-1)!.searchParams.get('filtering')!) as Array<{ value: number }>;
     assert.equal(filtering[0]!.value, Math.floor(Date.parse(POLL_FROM) / 1000));
+  });
+
+  it('uses a token that is already this Page’s token', async () => {
+    const { fetchImpl, auth } = graph({
+      '/me': { id: 'page-1', name: 'BYBO' },
+      '/page-1/leadgen_forms': { data: [] },
+    });
+    await fetchRecentMetaLeads({ token: 'page-token', pageId: 'page-1', now: NOW, fetchImpl });
+    assert.ok(auth.every((value) => value === 'Bearer page-token'));
+  });
+
+  it('finds the Page token among the accounts a user token manages', async () => {
+    const { fetchImpl, auth } = graph({
+      '/me/accounts': { data: [{ id: 'other', access_token: 'other-token' }, { id: 'page-1', access_token: 'page-token' }] },
+      '/me': { id: 'user-9', name: 'Owner' },
+      '/page-1/leadgen_forms': { data: [] },
+    });
+    await fetchRecentMetaLeads({ token: 'user-token', pageId: 'page-1', now: NOW, fetchImpl });
+    assert.equal(auth.at(-1), 'Bearer page-token');
+  });
+
+  it('falls back to the next token, and names whose tokens failed', async () => {
+    const first = graph({ '/me': { id: 'page-2', name: 'Other page' }, '/leadgen_forms': { data: [] } });
+    const tried: string[] = [];
+    const fetchImpl = (async (input: URL, init?: RequestInit) => {
+      const token = String((init?.headers as Record<string, string>).Authorization).slice(7);
+      tried.push(token);
+      if (token === 'ig-token' && input.pathname.endsWith('/page-1')) return new Response(JSON.stringify({ access_token: 'page-token' }));
+      return first.fetchImpl(input, init);
+    }) as unknown as typeof fetch;
+    await fetchRecentMetaLeads({ token: 'wrong-page-token', fallbackTokens: ['ig-token'], pageId: 'page-1', now: NOW, fetchImpl });
+    assert.equal(tried.at(-1), 'page-token');
+
+    const { fetchImpl: refusing } = graph({ '/me': { id: 'page-2', name: 'Other page' }, '/leadgen_forms': { error: { message: '(#190) This method must be called with a Page Access Token' } } }, 400);
+    await assert.rejects(
+      fetchRecentMetaLeads({ token: 'wrong-page-token', pageId: 'page-1', now: NOW, fetchImpl: refusing }),
+      /Page Access Token; tokens seen: invalid or expired/,
+    );
   });
 
   it('surfaces a Graph refusal', async () => {
