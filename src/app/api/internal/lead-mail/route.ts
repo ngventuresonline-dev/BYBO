@@ -8,7 +8,7 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 /** SHA-256 of the one-off token that may send a branded note to a lead. */
-const TOKEN_SHA256 = '357ee1283fe1fcb415fbfe285a4b0d060946a21595c5220bda7c0debf783e39b';
+const TOKEN_SHA256 = 'df139d5ac8b5b5f47184472185d274e0123d6695be4a0bae935eb0b41097ff70';
 
 type Body = {
   key: string;
