@@ -24,6 +24,7 @@ export async function GET(request: Request) {
     const leads = await fetchRecentMetaLeads({ token, fallbackTokens, pageId, now: new Date() });
     const result = await processMetaLeads(leads);
     if (result.failed > 0) console.error('meta lead poll incomplete', result);
+    else console.log('meta lead poll', result);
     return NextResponse.json({ ok: result.failed === 0, ...result }, { status: result.failed === 0 ? 200 : 500 });
   } catch (err) {
     const detail = err instanceof Error ? err.message : 'error';
