@@ -7,7 +7,7 @@
  * quietly does nothing, so a missing CRM never breaks a form, a call or a payment.
  */
 
-export const STAGES = ['new', 'contacted', 'call_booked', 'proposal', 'won', 'lost'] as const;
+export const STAGES = ['new', 'contacted', 'demo_sent', 'call_booked', 'proposal', 'won', 'lost'] as const;
 export type Stage = (typeof STAGES)[number];
 export const SOURCES = ['enquiry', 'meta', 'b_chat', 'booking', 'payment', 'voice', 'manual'] as const;
 export type Source = (typeof SOURCES)[number];

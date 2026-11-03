@@ -3,6 +3,7 @@ import type { CrmLead, Source, Stage } from '@/lib/crm/db';
 export const STAGES: { id: Stage; label: string }[] = [
   { id: 'new', label: 'New' },
   { id: 'contacted', label: 'Contacted' },
+  { id: 'demo_sent', label: 'Demo sent' },
   { id: 'call_booked', label: 'Call booked' },
   { id: 'proposal', label: 'Proposal' },
   { id: 'won', label: 'Won' },
