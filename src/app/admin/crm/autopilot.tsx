@@ -2,12 +2,11 @@
 
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import type { CrmLead } from '@/lib/crm/db';
-import { ago, api, display, initials, SOURCE_LABEL } from './shared';
+import { ago, api, demoAction, demoLink, display, initials, SOURCE_LABEL, type DemoRow } from './shared';
 
-type Demo = { id: string; lead_id: string; created_at: string; slug: string; kind: 'auto' | 'custom'; status: string; url: string | null; content: { brand?: string; hero?: { headline?: string } }; sent_at: string | null; note: string | null };
+type Demo = DemoRow;
 type Intel = { business?: { name?: string | null; industry?: string | null; location?: string | null; website?: string | null; what_they_do?: string | null }; reasons?: string[]; pitch?: string; package?: string; error?: string };
 
-const demoLink = (d: Demo) => (d.kind === 'custom' && d.url ? d.url : `/demo/${d.slug}`);
 
 export function QualityChip({ lead }: { lead: Pick<CrmLead, 'quality' | 'quality_score'> }) {
   if (!lead.quality) return null;
@@ -205,6 +204,94 @@ export function AutopilotSection({ leads, now, onOpen, onToast, onChanged }: { l
           <button className="crm-btn" disabled={!!busy}>{busy === 'custom' ? 'Adding…' : 'Add for approval'}</button>
         </div>
       </form>
+    </div>
+  );
+}
+
+const DEMO_STATUS: Record<DemoRow['status'], string> = { drafting: 'Drafting', awaiting_approval: 'Waiting for your approval', approved: 'Approved, not sent (no email)', sent: 'Sent to client', rejected: 'Rejected' };
+
+/** Demo numbers plus one-click approval, for the Overview. */
+export function DemoPanel({ demos, leads, now, onOpen, onToast, onChanged, go }: {
+  demos: DemoRow[]; leads: CrmLead[]; now: number; onOpen: (id: string) => void; onToast: (t: string) => void; onChanged: () => void; go: (s: string) => void;
+}) {
+  const [busy, setBusy] = useState<string | null>(null);
+  const byLead = new Map(leads.map((l) => [l.id, l]));
+  const awaiting = demos.filter((d) => d.status === 'awaiting_approval' || d.status === 'approved');
+  const sent = demos.filter((d) => d.status === 'sent');
+  const rejected = demos.filter((d) => d.status === 'rejected');
+  const decided = sent.length + rejected.length;
+  const review = leads.filter((l) => l.autopilot === 'needs_review').length;
+  async function approve(d: DemoRow) {
+    setBusy(d.id);
+    onToast(await demoAction({ action: 'approve_send', demo_id: d.id }));
+    setBusy(null);
+    onChanged();
+  }
+  return (
+    <section className="crm-panel">
+      <div className="crm-panel-head"><h2>Demos</h2><button className="crm-link" onClick={() => go('autopilot')}>Open autopilot</button></div>
+      <div className="crm-demo-stats">
+        <div><strong>{demos.filter((d) => d.status !== 'rejected').length}</strong><small>Made</small></div>
+        <div className={awaiting.length ? 'is-warn' : ''}><strong>{awaiting.length}</strong><small>Need approval</small></div>
+        <div><strong>{sent.length}</strong><small>Sent to clients</small></div>
+        <div><strong>{decided ? `${Math.round((sent.length / decided) * 100)}%` : '—'}</strong><small>Approval rate</small></div>
+        <div className={review ? 'is-warn' : ''}><strong>{review}</strong><small>Leads to review</small></div>
+      </div>
+      {awaiting.slice(0, 4).map((d) => {
+        const l = byLead.get(d.lead_id);
+        return (
+          <div key={d.id} className="crm-due-item">
+            <span className={`crm-avatar t-${l?.temperature ?? 'none'}`}>{l ? initials(l) : '?'}</span>
+            <span className="crm-due-text"><b>{l ? display(l) : 'Lead'}</b><small>{d.content.brand ?? (d.kind === 'custom' ? 'Custom demo' : 'Auto demo')} · {ago(d.created_at, now)}</small></span>
+            <a className="crm-chipbtn" href={demoLink(d)} target="_blank" rel="noreferrer">Preview</a>
+            <button className="crm-chipbtn is-on" disabled={!!busy || !l?.email} onClick={() => approve(d)}>{busy === d.id ? 'Sending…' : 'Approve & send'}</button>
+            {l ? <button className="crm-chipbtn" onClick={() => onOpen(l.id)}>Lead</button> : null}
+          </div>
+        );
+      })}
+      {!awaiting.length ? <p className="crm-muted">No demos waiting. Sent: {sent.length}{sent[0]?.sent_at ? `, latest ${ago(sent[0].sent_at, now)}` : ''}.</p> : null}
+    </section>
+  );
+}
+
+/** The lead's demos inside its drawer, with approval. */
+export function LeadDemos({ lead, demos, onToast, onChanged }: { lead: CrmLead; demos: DemoRow[]; onToast: (t: string) => void; onChanged: () => void }) {
+  const [busy, setBusy] = useState<string | null>(null);
+  const [url, setUrl] = useState('');
+  const mine = demos.filter((d) => d.lead_id === lead.id);
+  async function act(key: string, body: Record<string, string>) {
+    setBusy(key);
+    onToast(await demoAction(body));
+    setBusy(null);
+    onChanged();
+  }
+  return (
+    <div className="crm-intel crm-lead-demos">
+      <p className="crm-label">Demo</p>
+      {mine.length ? mine.map((d) => (
+        <div key={d.id} className={`crm-demo-row s-${d.status}`}>
+          <span className="crm-due-text"><b>{d.content.brand ?? (d.kind === 'custom' ? 'Custom demo' : 'Auto demo')}</b><small>{DEMO_STATUS[d.status]}{d.sent_at ? ` · ${new Date(d.sent_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}` : ''}</small></span>
+          <a className="crm-chipbtn" href={demoLink(d)} target="_blank" rel="noreferrer">Preview</a>
+          {d.status === 'awaiting_approval' ? <>
+            <button className="crm-chipbtn is-on" disabled={!!busy || !lead.email} onClick={() => act(`s${d.id}`, { action: 'approve_send', demo_id: d.id })}>{busy === `s${d.id}` ? 'Sending…' : lead.email ? 'Approve & email' : 'No email'}</button>
+            {d.kind === 'auto' ? <button className="crm-chipbtn" disabled={!!busy} onClick={() => act(`g${d.id}`, { action: 'regenerate', demo_id: d.id })}>{busy === `g${d.id}` ? 'Redrafting…' : 'Redraft'}</button> : null}
+            <button className="crm-chipbtn" disabled={!!busy} onClick={() => act(`r${d.id}`, { action: 'reject', demo_id: d.id })}>Reject</button>
+          </> : null}
+        </div>
+      )) : <p className="crm-muted">{lead.autopilot === 'needs_review' ? 'Held as a likely fake. Confirm it to get a demo.' : 'No demo yet. Autopilot drafts one once the lead qualifies.'}</p>}
+      {lead.autopilot === 'needs_review' ? (
+        <div className="crm-demo-actions">
+          <button className="crm-chipbtn" disabled={!!busy} onClick={() => act('real', { action: 'confirm_real', lead_id: lead.id })}>It’s real: make a demo</button>
+          <button className="crm-chipbtn" disabled={!!busy} onClick={() => act('fake', { action: 'confirm_fake', lead_id: lead.id })}>Fake: move to Lost</button>
+        </div>
+      ) : null}
+      {lead.stage !== 'won' && lead.stage !== 'lost' ? (
+        <div className="crm-demo-actions">
+          <input type="url" placeholder="Paste a custom demo link for approval" value={url} onChange={(e) => setUrl(e.target.value)} />
+          <button className="crm-chipbtn" disabled={!!busy || !/^https:\/\//.test(url)} onClick={() => { act('c', { action: 'custom', lead_id: lead.id, url }); setUrl(''); }}>Add</button>
+          {!mine.some((d) => d.status !== 'rejected') && lead.autopilot !== 'researching' ? <button className="crm-chipbtn" disabled={!!busy} onClick={() => act('q', { action: 'requeue', lead_id: lead.id })}>{busy === 'q' ? 'Running…' : 'Run autopilot on this lead'}</button> : null}
+        </div>
+      ) : null}
     </div>
   );
 }

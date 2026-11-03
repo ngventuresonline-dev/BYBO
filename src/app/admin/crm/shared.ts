@@ -32,7 +32,15 @@ export type QueueItem = { id: string; name: string; phone: string | null; email:
 export type IgSummary = { counts: Record<string, number>; next: { caption: string; scheduledAt: string | null; status: string }[]; recent: { caption: string; publishedAt: string | null; permalink: string | null }[] };
 export type Slot = { id: string; label: string };
 export type Product = { id: string; name: string; price: number; group: string };
-export type Overview = { health: Health[]; automations: Automation[]; feed: FeedItem[] | null; queue: QueueItem[] | null; ig: IgSummary | null; slots: Slot[]; products: Product[] };
+export type DemoRow = { id: string; lead_id: string; created_at: string; slug: string; kind: 'auto' | 'custom'; status: 'drafting' | 'awaiting_approval' | 'approved' | 'sent' | 'rejected'; url: string | null; content: { brand?: string; hero?: { headline?: string } }; approved_at: string | null; sent_at: string | null; note: string | null };
+export type Overview = { health: Health[]; automations: Automation[]; feed: FeedItem[] | null; demos: DemoRow[]; queue: QueueItem[] | null; ig: IgSummary | null; slots: Slot[]; products: Product[] };
+export const demoLink = (d: Pick<DemoRow, 'kind' | 'url' | 'slug'>) => (d.kind === 'custom' && d.url ? d.url : `/demo/${d.slug}`);
+
+/** Approve, reject, redraft and other autopilot decisions. Resolves with the message to show. */
+export async function demoAction(body: Record<string, string>): Promise<string> {
+  try { return (await api<{ message: string }>('/api/admin/crm/demos', { method: 'POST', body: JSON.stringify(body) })).message; }
+  catch (x) { return (x as Error & { data?: { message?: string } }).data?.message || 'That didn’t work. Try again.'; }
+}
 
 export const DAY = 86_400_000;
 export const inr = (n: number) => `₹${Math.round(n).toLocaleString('en-IN')}`;

@@ -213,7 +213,7 @@ export function CrmApp() {
           <div className="crm-kpis">{Array.from({ length: 6 }, (_, i) => <div key={i} className="crm-skel" />)}</div>
         ) : (
           <>
-            {section === 'overview' ? <OverviewSection leads={leads ?? []} feed={feed} queue={extra?.queue ?? null} health={extra?.health ?? []} now={now} onOpen={setOpenId} go={go} /> : null}
+            {section === 'overview' ? <OverviewSection leads={leads ?? []} demos={extra?.demos ?? []} onToast={setToast} onChanged={load} feed={feed} queue={extra?.queue ?? null} health={extra?.health ?? []} now={now} onOpen={setOpenId} go={go} /> : null}
             {section === 'autopilot' ? <AutopilotSection leads={leads ?? []} now={now} onOpen={setOpenId} onToast={setToast} onChanged={load} /> : null}
             {section === 'pipeline' ? <Board leads={filtered} now={now} fresh={fresh} onOpen={setOpenId} onMove={move} /> : null}
             {section === 'leads' ? <List leads={filtered} now={now} onOpen={setOpenId} /> : null}
@@ -228,7 +228,7 @@ export function CrmApp() {
         )}
       </div>
 
-      {open ? <Drawer key={open.id} lead={open} now={now} products={extra?.products ?? []} slots={extra?.slots ?? []} onClose={() => setOpenId(null)} onSaved={patchLocal} onMove={move} onToast={setToast}
+      {open ? <Drawer key={open.id} lead={open} now={now} products={extra?.products ?? []} slots={extra?.slots ?? []} demos={extra?.demos ?? []} onChanged={load} onClose={() => setOpenId(null)} onSaved={patchLocal} onMove={move} onToast={setToast}
         onDeleted={(id) => { setLeads((ls) => ls?.filter((l) => l.id !== id) ?? ls); setOpenId(null); setToast('Lead deleted'); }} /> : null}
       {adding ? <AddLead onClose={() => setAdding(false)} onAdded={async (id) => { setAdding(false); await load(); setOpenId(id); setToast('Lead added'); }} /> : null}
       {toast ? <div className="crm-toast" role="status">{toast}</div> : null}

@@ -4,9 +4,9 @@ import { useMemo, useState, type FormEvent } from 'react';
 import type { CrmLead, Source, Stage } from '@/lib/crm/db';
 import {
   ago, api, DAY, display, EVENT_ICON, EVENT_LABEL, feedLead, initials, inr, SOURCE_LABEL, STAGE_LABEL, STAGES, until, when,
-  type Automation, type FeedItem, type Health, type IgSummary, type Product, type QueueItem,
+  type Automation, type DemoRow, type FeedItem, type Health, type IgSummary, type Product, type QueueItem,
 } from './shared';
-import { QualityChip } from './autopilot';
+import { DemoPanel, QualityChip } from './autopilot';
 
 export function Kpi({ label, value, sub, accent, trend }: { label: string; value: string; sub?: string; accent?: boolean; trend?: number | null }) {
   return (
@@ -39,8 +39,8 @@ function FeedRow({ f, now, onOpen }: { f: FeedItem; now: number; onOpen: (id: st
 
 /* ───────────────────────── Overview ───────────────────────── */
 
-export function OverviewSection({ leads, feed, queue, health, now, onOpen, go }: {
-  leads: CrmLead[]; feed: FeedItem[]; queue: QueueItem[] | null; health: Health[]; now: number; onOpen: (id: string) => void; go: (section: string, source?: Source) => void;
+export function OverviewSection({ leads, demos, onToast, onChanged, feed, queue, health, now, onOpen, go }: {
+  leads: CrmLead[]; demos: DemoRow[]; onToast: (t: string) => void; onChanged: () => void; feed: FeedItem[]; queue: QueueItem[] | null; health: Health[]; now: number; onOpen: (id: string) => void; go: (section: string, source?: Source) => void;
 }) {
   const s = useMemo(() => {
     const open = leads.filter((l) => l.stage !== 'won' && l.stage !== 'lost');
@@ -80,6 +80,7 @@ export function OverviewSection({ leads, feed, queue, health, now, onOpen, go }:
   const maxSource = Math.max(1, ...s.bySource.map(([, n]) => n));
   const top = Math.max(1, s.funnel[0]?.reached ?? 1);
   const down = health.filter((h) => !h.ok);
+  const awaitingDemos = demos.filter((d) => d.status === 'awaiting_approval').length;
 
   return (
     <div className="crm-stack">
@@ -91,6 +92,8 @@ export function OverviewSection({ leads, feed, queue, health, now, onOpen, go }:
         <Kpi label="Won" value={inr(s.wonValue)} sub={`${s.won.length} deal${s.won.length === 1 ? '' : 's'} · ${inr(s.revenue30)} in 30d`} accent />
         <Kpi label="Win rate" value={s.winRate == null ? '—' : `${s.winRate}%`} sub="Of closed leads" />
       </section>
+
+      {awaitingDemos ? <div className="crm-alerts"><button className="crm-alert is-warn" onClick={() => go('autopilot')}>⚡ {awaitingDemos} demo{awaitingDemos === 1 ? ' is' : 's are'} waiting for your approval</button></div> : null}
 
       {s.untouched || down.length ? (
         <div className="crm-alerts">
@@ -157,6 +160,8 @@ export function OverviewSection({ leads, feed, queue, health, now, onOpen, go }:
           )) : <p className="crm-muted">No hot leads. B marks them when someone is ready to buy.</p>}
         </Panel>
       </div>
+
+      <DemoPanel demos={demos} leads={leads} now={now} onOpen={onOpen} onToast={onToast} onChanged={onChanged} go={go} />
 
       <Panel title="Latest activity" action={<button className="crm-link" onClick={() => go('activity')}>See all</button>}>
         <div className="crm-feed">{feed.filter((f) => f.kind !== 'created' && f.kind !== 'edit').slice(0, 10).map((f) => <FeedRow key={f.id} f={f} now={now} onOpen={onOpen} />)}{!feed.length ? <p className="crm-muted">Activity appears as leads come in.</p> : null}</div>
