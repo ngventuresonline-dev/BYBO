@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { inr, readLink } from '@/lib/payments/link';
 import { orderStatus, phonepeConfigured, type OrderStatus } from '@/lib/payments/phonepe';
 import { sendReceipts } from '@/lib/payments/mail';
+import { captureLead } from '@/lib/crm/db';
 import { CONTACT } from '@/lib/site';
 import '../pay.css';
 
@@ -32,6 +33,11 @@ export default async function PayResult({ searchParams }: { searchParams: Promis
   if (paid && !receipted.has(orderId)) {
     receipted.add(orderId);
     await sendReceipts(link!, { orderId, transactionId: status!.transactionId, mode: status!.paymentMode, paidAt: new Date() }).catch(() => {});
+    await captureLead({
+      source: 'payment', name: link!.name, email: link!.email, phone: link!.phone, company: link!.company,
+      need: link!.purpose, value: link!.amount, stage: 'won',
+      event: { kind: 'paid', title: `Paid ${inr(link!.amount)} for ${link!.purpose}`, meta: { ref: link!.id, order: orderId, transaction: status!.transactionId ?? null } },
+    });
   }
 
   return (

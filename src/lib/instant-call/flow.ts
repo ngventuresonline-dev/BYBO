@@ -1,3 +1,4 @@
+import { captureLead as captureCrm } from '@/lib/crm/db';
 import { allowlistAllows } from './allowlist';
 import { placeOutboundCall } from './dial';
 import { isWithinCallingHours, nextRetryStart, nextWindowStart } from './hours';
@@ -91,6 +92,7 @@ export async function captureLead(draft: Lead, consent: boolean, deps: FlowDeps)
   try {
     stored = await deps.store.insert(lead, deps.now);
   } catch (err) {
+    await recordInCrm(lead);
     if (err instanceof LeadStoreUnavailable) {
       log('lead store is not configured');
       return { lead, action: 'unconfigured' };
@@ -99,6 +101,7 @@ export async function captureLead(draft: Lead, consent: boolean, deps: FlowDeps)
     return { lead, action: 'insert_failed' };
   }
   if (!stored.created) return { lead: stored.lead, action: 'duplicate' };
+  await recordInCrm(stored.lead);
 
   if (decision.action === 'dry_run') {
     log('would dial', { leadId: stored.lead.id, phone: stored.lead.phone_e164 });
@@ -114,6 +117,37 @@ export async function captureLead(draft: Lead, consent: boolean, deps: FlowDeps)
 
   return dialClaimed(stored.lead, deps, { requireDue: false });
 }
+
+/** Mirror a new lead into the CRM. Best effort; never blocks the call flow. */
+async function recordInCrm(lead: Lead) {
+  const services = Array.isArray(lead.raw.services) ? (lead.raw.services as unknown[]).map(String) : [];
+  await captureCrm({
+    source: lead.source === 'meta' ? 'meta' : 'enquiry',
+    name: lead.name,
+    email: lead.email,
+    phone: lead.phone_e164,
+    company: lead.business,
+    need: lead.enquiry.split('\n')[0],
+    summary: lead.enquiry,
+    services,
+    external_id: lead.external_id ? `${lead.source}:${lead.external_id}` : null,
+    meta: { lead_source: lead.raw.lead_source ?? null, area: lead.area || null },
+    event: {
+      kind: lead.source === 'meta' ? 'meta' : 'enquiry',
+      title: lead.source === 'meta' ? `Meta lead form (${String(lead.raw.lead_source ?? 'Meta')})` : 'Website enquiry',
+      body: lead.enquiry,
+    },
+  });
+}
+
+const CALL_TITLES: Partial<Record<CallStatus, string>> = {
+  done: 'AI call answered',
+  answered: 'AI call answered',
+  no_answer: 'AI call: no answer',
+  busy: 'AI call: line busy',
+  failed: 'AI call failed',
+  whatsapp_only: 'AI call: no answer twice, follow up on WhatsApp',
+};
 
 async function dialClaimed(lead: Lead, deps: FlowDeps, opts: { requireDue: boolean }): Promise<{ lead: Lead; action: string }> {
   const log = deps.log ?? logDefault;
@@ -181,6 +215,17 @@ export async function applyCallUpdate(lead: Lead, update: CallUpdate, deps: Flow
     if (sent) next.raw = { ...next.raw, emailed_attempt: next.call_attempts };
   }
   await deps.store.save(next);
+  const callTitle = CALL_TITLES[next.call_status];
+  if (callTitle && next.call_status !== lead.call_status) {
+    await captureCrm({
+      source: 'voice',
+      email: next.email,
+      phone: next.phone_e164,
+      external_id: next.external_id ? `${next.source}:${next.external_id}` : null,
+      stage: next.call_status === 'done' || next.call_status === 'answered' ? 'contacted' : undefined,
+      event: { kind: 'call', title: callTitle, body: next.call_summary ?? undefined, meta: { attempts: next.call_attempts } },
+    });
+  }
   return next;
 }
 
@@ -321,7 +366,7 @@ export async function importMetaLeads(
       });
       try {
         const result = await deps.store.insert(lead, deps.now);
-        if (result.created) inserted += 1;
+        if (result.created) { inserted += 1; await recordInCrm(result.lead); }
         else duplicates += 1;
       } catch (err) {
         if (err instanceof LeadStoreUnavailable) throw err;
