@@ -1,6 +1,8 @@
 import { randomBytes } from 'node:crypto';
 import { rpc, type CrmLead } from './db';
 import { normaliseUrl, scanSite, type SiteScan } from './sitescan';
+import { generateScenes, scenesConfigured } from './scenes';
+import { demoQuality } from './quality';
 
 /**
  * The lead autopilot. Each new lead moves through:
@@ -55,10 +57,13 @@ export type DemoContent = {
   hero_float?: string | null;
   spotlight?: { image: string; title: string; kicker: string; callouts: string[] } | null;
   /** Hero scenes. `float` places the floating product for that scene: centre x and y in % of the screen, s = scale. */
-  scenes?: { image: string | null; kicker: string; title: string; text: string; float?: { x: number; y: number; s: number } }[];
+  scenes?: { image: string | null; brief?: string; kicker: string; title: string; text: string; float?: { x: number; y: number; s: number } }[];
   hero_float_pos?: { x: number; y: number; s: number };
   /** An art-directed scene photo for the first hero frame (made for the demo, never lifted from their site). */
   hero_scene?: string | null;
+  /** The art direction brief for the first hero scene photo. */
+  hero_brief?: string;
+  quality?: { score: number; issues: string[] };
   /** True when the scene photos already show their product: no floating cut-out, a shoppable hotspot instead. */
   scenes_show_product?: boolean;
   /** Their full catalogue (from their store), for the demo's shop, product and cart pages. */
@@ -178,14 +183,16 @@ Art direction:
 - font: "editorial" (beauty, fashion, jewellery, lifestyle), "modern" (tech, gadgets, fitness, B2B), "soft" (food, kids, wellness, education).
 - Images are referenced by index into the site media list (judge by file name and alt text). hero: their best wide hero, close-up or lifestyle photo (the hero is a full-screen photo scene); set hero_cutout true only if its file name suggests a transparent cut-out or it is a .png/.webp hero. hero_product: index into the scan's products for the product that floats in front of the hero (their signature product). spotlight: their best single product render or close-up. scenes: 2-3 more hero scenes, each a caption that continues the product's story (media: null; BYBO art-directs the visuals). gallery: 4-6 more photos. Never use logos, icons, avatars, banners with text, or blog thumbnails.
 Reply with JSON only:
-{"brand":"","tagline":"","industry":"","font":"editorial|modern|soft","theme":{"bg":"#","ink":"#","accent":"#","soft":"#"},"hero":{"eyebrow":"","headline":"","sub":""},"hero_media":0,"hero_cutout":false,"hero_product":0,"spotlight":{"media":0,"kicker":"","title":"","callouts":["",""]},"scenes":[{"media":null,"kicker":"","title":"","text":""}],"gallery":[0],"products":[{"i":0,"line":""}],"categories":[""],"facts":[""],"offer":[{"title":"","text":""}],"flow":[{"step":"","text":""}],"redesign":[{"was":"","now":""}],"cta":{"headline":"","sub":""}}
-hero.headline: 3-7 words. spotlight.callouts: 3-4 short feature lines (max 6 words each). scenes: title 2-6 words, text one sentence. products[].i: indexes into the scan's products (best 4-8, line = one benefit). categories: 3-6. facts: 2-5 trust lines from the scan. offer: 3 reasons to choose them. flow: 4 steps of the customer journey. redesign: 3 kind, concrete comparisons of their current site ("was") with the new one ("now"); [] if no site.`;
+{"brand":"","tagline":"","industry":"","font":"editorial|modern|soft","theme":{"bg":"#","ink":"#","accent":"#","soft":"#"},"hero":{"eyebrow":"","headline":"","sub":"","scene":""},"hero_media":0,"hero_cutout":false,"hero_product":0,"spotlight":{"media":0,"kicker":"","title":"","callouts":["",""]},"scenes":[{"media":null,"kicker":"","title":"","text":"","scene":""}],"gallery":[0],"products":[{"i":0,"line":""}],"categories":[""],"facts":[""],"offer":[{"title":"","text":""}],"flow":[{"step":"","text":""}],"redesign":[{"was":"","now":""}],"cta":{"headline":"","sub":""}}
+hero.headline: 3-7 words. spotlight.callouts: 3-4 short feature lines (max 6 words each). scenes: title 2-6 words, text one sentence. products[].i: indexes into the scan's products (best 4-8, line = one benefit). categories: 3-6. facts: 2-5 trust lines from the scan. offer: 3 reasons to choose them. flow: 4 steps of the customer journey. Scene briefs (hero.scene and each scenes[].scene): one or two sentences art-directing a photograph for that frame, like a luxury campaign. For a store, the brand's real product is supplied as a reference image, so describe the product's setting and action only (e.g. "standing on a blush marble plinth with silk and petals", "held near the brow of a woman with glowing skin", "in a hand beside an open handbag", "lying on rippled silk with water droplets"); vary them: studio hero, in use, in context, macro texture. For a service business, describe their place, people or results (a bright clinic reception, a calm classroom). Use their palette.
+redesign: 3 kind, concrete comparisons of their current site ("was") with the new one ("now"); [] if no site.`;
   const user = `Lead:\n${leadFacts(l)}\n\nResearch:\n${JSON.stringify({ ...intel, site: undefined })}${site ? `\n\nWebsite scan:\n${JSON.stringify(compactSite(site))}\n\nSite colours (most used first): ${(site.colors ?? []).join(' ')}\n\nSite media:\n${JSON.stringify(compactMedia(site))}` : ''}`;
   const { text } = await claude(system, user, { maxTokens: 3500 });
-  type Raw = Omit<DemoContent, 'products' | 'spotlight' | 'scenes' | 'gallery'> & {
+  type Raw = Omit<DemoContent, 'products' | 'spotlight' | 'scenes' | 'gallery' | 'hero'> & {
+    hero: DemoContent['hero'] & { scene?: string };
     hero_media?: number | null; hero_product?: number | null; products?: { i: number; line: string }[];
     spotlight?: { media?: number; kicker?: string; title?: string; callouts?: string[] } | null;
-    scenes?: { media?: number; kicker?: string; title?: string; text?: string }[]; gallery?: number[];
+    scenes?: { media?: number; kicker?: string; title?: string; text?: string; scene?: string }[]; gallery?: number[];
   };
   const raw = json<Raw>(text);
   const hex = (v: unknown, d: string) => (typeof v === 'string' && /^#[0-9a-f]{6}$/i.test(v) ? v : d);
@@ -209,13 +216,38 @@ hero.headline: 3-7 words. spotlight.callouts: 3-4 short feature lines (max 6 wor
   const spot = pick(raw.spotlight?.media) ?? c.products[0]?.image ?? null;
   c.spotlight = spot && raw.spotlight ? { image: spot, kicker: String(raw.spotlight.kicker ?? ''), title: String(raw.spotlight.title ?? ''), callouts: (raw.spotlight.callouts ?? []).slice(0, 4).map(String) } : null;
   // Hero scenes are captions over studio sets; art-directed scene photos are added by the team.
-  c.scenes = (raw.scenes ?? []).map((x) => ({ image: null, kicker: String(x.kicker ?? ''), title: String(x.title ?? ''), text: String(x.text ?? '') })).filter((x) => x.title).slice(0, 3);
+  c.scenes = (raw.scenes ?? []).map((x) => ({ image: null, brief: String(x.scene ?? '').slice(0, 400), kicker: String(x.kicker ?? ''), title: String(x.title ?? ''), text: String(x.text ?? '') })).filter((x) => x.title).slice(0, 3);
+  c.hero_brief = String(raw.hero?.scene ?? '').slice(0, 400);
+  c.hero = { eyebrow: raw.hero?.eyebrow ?? '', headline: raw.hero?.headline ?? c.brand, sub: raw.hero?.sub ?? '' };
   c.hero_scene = null;
   const used = new Set([c.hero_image, spot]);
   c.gallery = (raw.gallery ?? []).map(pick).filter((x): x is string => !!x && !used.has(x)).slice(0, 6);
   c.catalog = sp.map((p, i) => ({ title: p.title, handle: p.handle ?? `item-${i + 1}`, price: p.price, compare: p.compare, image: p.image, images: p.images, type: p.type, description: p.description ?? '' }));
   c.site_url = site?.url ?? null;
   c.logo = site?.logo ?? null;
+  return c;
+}
+
+/**
+ * Art-direct the demo: generate the hero scene photos (their real product in
+ * every frame for a store) and score how ready it is to send.
+ */
+export async function artDirect(c: DemoContent, slug: string): Promise<DemoContent> {
+  const briefs = [c.hero_brief, ...(c.scenes ?? []).map((x) => x.brief)].map((b) => (b ?? '').trim());
+  if (scenesConfigured() && briefs.some(Boolean)) {
+    const store = (c.catalog?.length ?? 0) > 0;
+    const product = store ? c.hero_float ?? c.products?.[0]?.image ?? c.catalog?.[0]?.image ?? null : null;
+    const palette = c.theme ? `${c.theme.bg}, ${c.theme.soft}, ${c.theme.accent}` : 'their brand colours';
+    const made = await generateScenes(slug, briefs.map((b) => b || `${c.brand}, ${c.industry}`), { productImage: product, palette });
+    c.hero_scene = made[0] ?? null;
+    c.scenes = (c.scenes ?? []).map((x, i) => ({ ...x, image: made[i + 1] ?? null }));
+    // Scenes are composed with the subject about 62% across; the hotspot and phone crop follow it.
+    const spot = { x: 62, y: 45, s: 1 };
+    c.hero_float_pos = spot;
+    c.scenes = c.scenes.map((x) => ({ ...x, float: spot }));
+    c.scenes_show_product = !!product && made.filter(Boolean).length >= 2;
+  }
+  c.quality = demoQuality(c);
   return c;
 }
 
@@ -251,6 +283,7 @@ async function requestApproval(l: CrmLead, d: Demo, intel: Intel) {
     `${intel.business?.name ?? l.company ?? 'Business unknown'}${intel.business?.industry ? `, ${intel.business.industry}` : ''}${intel.business?.location ? `, ${intel.business.location}` : ''}.`,
     `Lead quality: ${intel.quality ?? 'unknown'} (${intel.score ?? '?'} / 100). ${intel.pitch ?? ''}`,
     `Preview the demo: ${demoUrl(d.slug)}`,
+    ...(() => { const q = (d.content as DemoContent).quality; return q ? [`Ready score: ${q.score}/100.${q.issues.length ? ` To check: ${q.issues.join('; ')}.` : ''}`] : []; })(),
     'Approve it in the lead desk and it is emailed to the client straight away. Nothing has been sent to them yet.',
   ], { href: 'https://bybo.in/admin/crm#autopilot', label: 'Review and approve' }, { key: `demo-approval/${d.id}` });
 }
@@ -284,11 +317,11 @@ export async function step(l: CrmLead): Promise<string> {
       return `${who}: demo already exists`;
     }
     try {
-      const content = await draftDemo(l, intel);
-      const slug = `${slugify(content.brand || l.company || l.name || 'demo')}-${randomBytes(2).toString('hex')}`;
+      const slug = `${slugify(intel.business?.name || l.company || l.name || 'demo')}-${randomBytes(2).toString('hex')}`;
+      const content = await artDirect(await draftDemo(l, intel), slug);
       const demo = await rpc<Demo>('bybo_demo_upsert', { p: { lead_id: l.id, slug, kind: 'auto', status: 'awaiting_approval', content } });
       await rpc('bybo_ap_set', { p_lead: l.id, p: { autopilot: 'awaiting_approval' } });
-      await log(l.id, 'demo', 'Demo drafted: waiting for your approval', demoUrl(slug), { slug });
+      await log(l.id, 'demo', `Demo drafted (ready score ${content.quality?.score ?? '?'}/100): waiting for your approval`, [demoUrl(slug), ...(content.quality?.issues ?? []).map((i) => `• ${i}`)].join('\n'), { slug });
       await requestApproval(l, demo, intel);
       return `${who}: demo drafted`;
     } catch (err) {
@@ -303,25 +336,34 @@ export async function step(l: CrmLead): Promise<string> {
 export async function runAutopilot(limit = 2): Promise<string[]> {
   const due = await rpc<CrmLead[]>('bybo_ap_due', { p_limit: limit });
   const out: string[] = [];
-  for (const l of due) out.push(await step(l));
+  // Drafting a demo makes several images; one per run keeps it inside the time limit.
+  let drafted = false;
+  for (const l of due) {
+    if (l.autopilot === 'qualified') { if (drafted) continue; drafted = true; }
+    out.push(await step(l));
+  }
   return out;
 }
 
 /** Approved by a person: email the demo to the client and move the lead on. */
-export async function sendDemo(demo: Demo, lead: CrmLead): Promise<{ ok: boolean; reason?: string }> {
+export async function sendDemo(demo: Demo, lead: CrmLead, message?: string): Promise<{ ok: boolean; reason?: string }> {
   if (!lead.email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(lead.email)) return { ok: false, reason: 'no_email' };
   const link = demo.kind === 'custom' && demo.url ? demo.url : demoUrl(demo.slug);
   const first = (lead.name ?? '').trim().split(/\s+/)[0] || 'there';
   const brand = (demo.content as DemoContent).brand || lead.company || 'your business';
-  const ok = await email([lead.email], `Your BYBO demo for ${brand} is ready`, `${first}, here is what we would build for ${brand}`, [
-    `Hi ${first},`,
-    `Thanks for your interest in BYBO. We put together a short demo of how ${brand} could look and work online, with every enquiry captured and answered quickly.`,
-    'Have a look, and reply with a time that suits you for a 20-minute walkthrough. We can tailor every part of it to you.',
-  ], { href: link, label: 'See your demo' }, { bcc: ['byboonline@gmail.com'], key: `demo-send/${demo.id}` });
+  // A person can write their own note when approving; otherwise the standard one.
+  const body = message?.trim()
+    ? message.trim().split(/\n\s*\n/).map((x) => x.trim()).filter(Boolean).slice(0, 8)
+    : [
+      `Hi ${first},`,
+      `Thanks for your interest in BYBO. We put together a short demo of how ${brand} could look and work online, with every enquiry captured and answered quickly.`,
+      'Have a look, and reply with a time that suits you for a 20-minute walkthrough. We can tailor every part of it to you.',
+    ];
+  const ok = await email([lead.email], `Your BYBO demo for ${brand} is ready`, `${first}, here is what we would build for ${brand}`, body, { href: link, label: 'See your demo' }, { bcc: ['byboonline@gmail.com'], key: `demo-send/${demo.id}` });
   if (!ok) return { ok: false, reason: 'send_failed' };
   await rpc('bybo_demo_upsert', { p: { id: demo.id, status: 'sent' } });
   await rpc('bybo_ap_set', { p_lead: lead.id, p: { autopilot: 'sent' } });
   if (['new', 'contacted', 'call_booked'].includes(lead.stage)) await rpc('bybo_crm_update', { p_lead: lead.id, p: { stage: 'proposal' } }).catch(() => null);
-  await log(lead.id, 'email', `Demo approved and emailed: ${brand}`, link, { slug: demo.slug });
+  await log(lead.id, 'email', `Demo approved and emailed: ${brand}`, [link, ...body].join('\n\n'), { slug: demo.slug });
   return { ok: true };
 }

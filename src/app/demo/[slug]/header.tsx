@@ -52,20 +52,24 @@ export function StoreHeader({ base, brand, logo, cats, items, featured }: { base
         </button>
         <Link href={base} className="demo-logo">{logo ? <img src={logo} alt={brand} /> : brand}</Link>
         <nav className="st-nav" onMouseLeave={close}>
-          <Link href={`${base}/shop`} className={`st-nav-shop${mega ? ' is-on' : ''}`} onMouseEnter={open} onFocus={open} aria-expanded={mega}>Shop <i aria-hidden="true">⌄</i></Link>
+          {items.length ? <Link href={`${base}/shop`} className={`st-nav-shop${mega ? ' is-on' : ''}`} onMouseEnter={open} onFocus={open} aria-expanded={mega}>Shop <i aria-hidden="true">⌄</i></Link> : <Link href={`${base}#why`}>Services</Link>}
           {cats.slice(0, 3).map((k) => <Link key={k} href={`${base}/shop?c=${encodeURIComponent(k)}`} onMouseEnter={close}>{k}</Link>)}
           <Link href={`${base}/about`} onMouseEnter={close}>Our story</Link>
           <Link href={`${base}/contact`} onMouseEnter={close}>Contact</Link>
         </nav>
         <div className="st-icons">
-          <button type="button" className="st-icon" onClick={() => setSearch(true)} aria-label="Search products">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6" /><path d="m20 20-4.5-4.5" /></svg>
-          </button>
-          <CartButton />
+          {items.length ? (
+            <>
+              <button type="button" className="st-icon" onClick={() => setSearch(true)} aria-label="Search products">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6" /><path d="m20 20-4.5-4.5" /></svg>
+              </button>
+              <CartButton />
+            </>
+          ) : <Link className="demo-btn is-small" href={`${base}/contact`}>Enquire</Link>}
         </div>
 
         {/* Mega menu */}
-        <div className={`st-mega${mega ? ' is-open' : ''}`} onMouseEnter={open} onMouseLeave={close}>
+        <div className={`st-mega${mega && items.length ? ' is-open' : ''}`} onMouseEnter={open} onMouseLeave={close}>
           <div className="st-mega-cats">
             <p className="demo-kicker">Shop by need</p>
             {cats.map((k) => (

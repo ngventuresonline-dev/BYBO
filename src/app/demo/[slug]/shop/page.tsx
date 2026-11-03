@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import type { DemoContent } from '@/lib/crm/autopilot';
 import { DemoMotion } from '../DemoMotion';
 import { catalog, featured, loadDemo } from '../data';
@@ -15,6 +15,7 @@ export default async function Shop({ params, searchParams }: { params: Promise<{
   if (!demo) notFound();
   const c = demo.content as DemoContent;
   const items = catalog(c);
+  if (!items.length) redirect(`/demo/${slug}/contact`);
   // Featured products lead the default order.
   const best = featured(c, items);
   const ordered = [...best, ...items.filter((i) => !best.includes(i))];

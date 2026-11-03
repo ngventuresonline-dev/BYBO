@@ -35,7 +35,7 @@ export async function POST(request: Request) {
       if (!demo) return NextResponse.json({ ok: false, reason: 'not_found' }, { status: 404 });
       const l = leads.find((x) => x.id === demo.lead_id);
       if (!l) return NextResponse.json({ ok: false, reason: 'not_found' }, { status: 404 });
-      const r = await sendDemo(demo, l);
+      const r = await sendDemo(demo, l, typeof b.message === 'string' ? b.message.slice(0, 3000) : undefined);
       if (!r.ok) {
         if (r.reason === 'no_email') await rpc('bybo_demo_upsert', { p: { id: demo.id, status: 'approved' } });
         return NextResponse.json({ ok: false, reason: r.reason, message: r.reason === 'no_email' ? 'Approved, but this lead has no email. Share the link on WhatsApp.' : 'The email could not be sent.' }, { status: 400 });
