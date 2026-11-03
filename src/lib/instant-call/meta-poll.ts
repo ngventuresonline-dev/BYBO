@@ -19,6 +19,8 @@ export function pollStart(now: Date): number {
 
 type PollOptions = {
   token: string;
+  /** More tokens to try, in order, when `token` cannot produce a Page token. */
+  fallbackTokens?: string[];
   pageId: string;
   now: Date;
   fetchImpl?: typeof fetch;
@@ -44,11 +46,11 @@ export async function fetchRecentMetaLeads(opts: PollOptions): Promise<unknown[]
     return asRecord(json);
   };
 
-  // Lead reads need a Page token. A user token can be exchanged for one here.
-  const page = await get(opts.pageId, { fields: 'access_token' }, opts.token).catch(() => ({} as Record<string, unknown>));
-  const token = typeof page.access_token === 'string' && page.access_token ? page.access_token : opts.token;
+  const { token, seen } = await resolvePageToken(get, opts.pageId, [opts.token, ...(opts.fallbackTokens ?? [])]);
 
-  const forms = await get(`${opts.pageId}/leadgen_forms`, { fields: 'id,name', limit: '100' }, token);
+  const forms = await get(`${opts.pageId}/leadgen_forms`, { fields: 'id,name', limit: '100' }, token).catch((err: Error) => {
+    throw new Error(seen.length ? `${err.message}; tokens seen: ${seen.join(', ')}` : err.message);
+  });
   const since = Math.floor(pollStart(opts.now) / 1000);
   const filtering = JSON.stringify([{ field: 'time_created', operator: 'GREATER_THAN', value: since }]);
 
@@ -63,6 +65,29 @@ export async function fetchRecentMetaLeads(opts: PollOptions): Promise<unknown[]
   }
   const time = (lead: unknown) => Date.parse(String(asRecord(lead).created_time)) || 0;
   return leads.sort((a, b) => time(a) - time(b));
+}
+
+type GraphGet = (path: string, params: Record<string, string>, token: string) => Promise<Record<string, unknown>>;
+
+/**
+ * Lead reads need a Page token for this Page. Each token may already be one, or
+ * be a user or system-user token that can be exchanged for one. When none works,
+ * the first token is used so Graph's own refusal is reported, along with whose
+ * token each one turned out to be.
+ */
+async function resolvePageToken(get: GraphGet, pageId: string, tokens: string[]): Promise<{ token: string; seen: string[] }> {
+  const seen: string[] = [];
+  for (const candidate of tokens.filter(Boolean)) {
+    const owner = await get('me', { fields: 'id,name' }, candidate).catch(() => ({} as Record<string, unknown>));
+    if (String(owner.id ?? '') === pageId) return { token: candidate, seen };
+    const page = await get(pageId, { fields: 'access_token' }, candidate).catch(() => ({} as Record<string, unknown>));
+    if (typeof page.access_token === 'string' && page.access_token) return { token: page.access_token, seen };
+    const accounts = await get('me/accounts', { fields: 'id,access_token', limit: '100' }, candidate).catch(() => ({} as Record<string, unknown>));
+    const match = (Array.isArray(accounts.data) ? accounts.data : []).map(asRecord).find((a) => String(a.id) === pageId);
+    if (typeof match?.access_token === 'string' && match.access_token) return { token: match.access_token, seen };
+    seen.push(owner.id ? `${String(owner.name ?? 'unnamed')} (${String(owner.id)})` : 'invalid or expired');
+  }
+  return { token: tokens[0] ?? '', seen };
 }
 
 type ProcessDeps = {
