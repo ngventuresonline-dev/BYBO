@@ -375,7 +375,8 @@ export async function sendDemo(demo: Demo, lead: CrmLead, message?: string): Pro
   if (!ok) return { ok: false, reason: 'send_failed' };
   await rpc('bybo_demo_upsert', { p: { id: demo.id, status: 'sent' } });
   await rpc('bybo_ap_set', { p_lead: lead.id, p: { autopilot: 'sent' } });
-  if (['new', 'contacted', 'call_booked'].includes(lead.stage)) await rpc('bybo_crm_update', { p_lead: lead.id, p: { stage: 'proposal' } }).catch(() => null);
+  // A demo is not a proposal: it moves a lead to Demo sent, and never backwards.
+  if (['new', 'contacted'].includes(lead.stage)) await rpc('bybo_crm_update', { p_lead: lead.id, p: { stage: 'demo_sent' } }).catch(() => null);
   await log(lead.id, 'email', `Demo approved and emailed: ${brand}`, [link, ...body].join('\n\n'), { slug: demo.slug });
   return { ok: true };
 }
