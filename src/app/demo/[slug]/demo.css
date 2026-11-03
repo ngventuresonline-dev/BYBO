@@ -336,3 +336,6 @@ body:has(.demo) .skip-link { display: none !important; }
   .demo-story-no { font-size: 40px; }
   .demo-ba { aspect-ratio: 4 / 5; border-radius: 22px; }
 }
+.demo-story-rail li { text-shadow: 0 2px 14px rgba(0, 0, 0, .7); }
+.demo-story-rail { padding: 16px 18px; border-radius: 16px; background: rgba(10, 8, 8, .32); backdrop-filter: blur(8px); }
+.demo:has(.demo-story) .demo-rail:has(li.is-active[data-rail='how']) { opacity: 0; pointer-events: none; }
