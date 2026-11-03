@@ -7,6 +7,7 @@ import {
   type Automation, type DemoRow, type FeedItem, type Health, type IgSummary, type Product, type QueueItem,
 } from './shared';
 import { DemoPanel, QualityChip } from './autopilot';
+import { Icon, type IconName } from './icons';
 
 export function Kpi({ label, value, sub, accent, trend }: { label: string; value: string; sub?: string; accent?: boolean; trend?: number | null }) {
   return (
@@ -16,6 +17,11 @@ export function Kpi({ label, value, sub, accent, trend }: { label: string; value
       <small>{trend != null ? <span className={trend >= 0 ? 'crm-up' : 'crm-down'}>{trend >= 0 ? '▲' : '▼'} {Math.abs(trend)}% </span> : null}{sub}</small>
     </div>
   );
+}
+
+/** The shared empty state: an icon, one line, and room to breathe. */
+export function Empty({ text, icon = 'sparkle' }: { text: string; icon?: IconName }) {
+  return <div className="crm-empty-state is-sm"><span className="crm-empty-icon"><Icon name={icon} size={20} /></span><p>{text}</p></div>;
 }
 
 function Panel({ title, action, children, className = '' }: { title: string; action?: React.ReactNode; children: React.ReactNode; className?: string }) {
@@ -290,7 +296,7 @@ export function List({ leads, now, onOpen }: { leads: CrmLead[]; now: number; on
       <button onClick={() => setSort((s) => ({ key, dir: s.key === key ? (s.dir === 1 ? -1 : 1) : key === 'name' ? 1 : -1 }))}>{label}{sort.key === key ? (sort.dir === 1 ? ' ↑' : ' ↓') : ''}</button>
     </th>
   );
-  if (!rows.length) return <div className="crm-panel"><p className="crm-muted">No leads match.</p></div>;
+  if (!rows.length) return <Empty text="No leads match." />;
   return (
     <div className="crm-panel crm-table-wrap">
       <table className="crm-table">
@@ -336,7 +342,7 @@ export function ActivitySection({ feed, now, onOpen }: { feed: FeedItem[]; now: 
           <div className="crm-feed">{items.map((f) => <FeedRow key={f.id} f={f} now={now} onOpen={onOpen} />)}</div>
         </Panel>
       ))}
-      {!rows.length ? <div className="crm-panel"><p className="crm-muted">No activity yet.</p></div> : null}
+      {!rows.length ? <Empty text="No activity yet." /> : null}
     </div>
   );
 }
@@ -464,7 +470,7 @@ export function ChatsSection({ feed, now, onOpen }: { feed: FeedItem[]; now: num
           );
         })}
       </div>
-      {!chats.length ? <div className="crm-panel"><p className="crm-muted">When B writes a brief, sends a summary or flags a hot lead, the conversation shows up here.</p></div> : null}
+      {!chats.length ? <Empty text="When B writes a brief, sends a summary or flags a hot lead, the conversation shows up here." /> : null}
     </div>
   );
 }
@@ -481,7 +487,7 @@ export function InstagramSection({ ig, feed, now }: { ig: IgSummary | null; feed
         {['draft', 'approved', 'scheduled', 'published', 'failed'].map((s) => <Kpi key={s} label={IG_LABEL[s]!} value={ig ? String(ig.counts[s] ?? 0) : '—'} sub={s === 'published' ? '@byboindia' : undefined} accent={s === 'published'} />)}
         <Kpi label="Leads from Meta forms" value={String(meta)} sub="Instagram + Facebook" />
       </section>
-      {ig === null ? <div className="crm-panel"><p className="crm-muted">The Instagram post store isn’t connected on this deployment.</p></div> : (
+      {ig === null ? <Empty text="The Instagram post store isn’t connected on this deployment." /> : (
         <div className="crm-grid-2">
           <Panel title="Up next" action={<a className="crm-btn is-ghost" href="/admin/instagram">Open Instagram desk</a>}>
             {ig.next.length ? ig.next.map((p, i) => (

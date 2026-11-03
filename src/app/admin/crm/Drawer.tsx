@@ -3,7 +3,9 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import type { CrmEvent, CrmLead, Stage } from '@/lib/crm/db';
 import { IntelPanel, LeadDemos } from './autopilot';
-import { ago, api, display, EVENT_ICON, initials, inr, localInput, SOURCE_LABEL, STAGES, waLink, when, type DemoRow, type Product, type Slot } from './shared';
+import { Icon } from './icons';
+import { idleDays } from './intel';
+import { ago, api, DAY, display, EVENT_ICON, initials, inr, localInput, SOURCE_LABEL, STAGE_LABEL, STAGES, waLink, when, type Brief, type DemoRow, type Product, type Slot } from './shared';
 
 type Tool = 'email' | 'pay' | 'book' | 'whatsapp' | null;
 
@@ -103,6 +105,16 @@ export function Drawer({ lead, now, products, slots, demos, onChanged, onClose, 
           </div>
           <button className="crm-x" onClick={onClose} aria-label="Close">×</button>
         </header>
+
+        <div className="crm-dstrip" aria-label="Lead at a glance">
+          <span className={`crm-dstrip-cell stage-${lead.stage}`}><small>Stage</small><b><i className="crm-dstrip-dot" />{STAGE_LABEL[lead.stage]}</b></span>
+          <span className="crm-dstrip-cell"><small>In pipeline</small><b>{Math.max(0, Math.floor((now - Date.parse(lead.created_at)) / DAY))}d</b></span>
+          <span className={`crm-dstrip-cell ${idleDays(lead, now) >= 5 ? 'is-late' : ''}`}><small>Idle</small><b>{Math.max(0, idleDays(lead, now))}d</b></span>
+          <span className={`crm-dstrip-cell q-${lead.quality ?? 'none'}`}><small>Score</small><b>{lead.quality_score != null ? `${lead.quality_score}` : '—'}</b></span>
+          <span className={`crm-dstrip-cell t-${lead.temperature ?? 'none'}`}><small>Temp</small><b>{lead.temperature ? lead.temperature[0]!.toUpperCase() + lead.temperature.slice(1) : '—'}</b></span>
+        </div>
+
+        <BriefPanel lead={lead} onToast={onToast} />
 
         <div className="crm-actions" role="toolbar" aria-label="Actions">
           <button className={`crm-act ${tool === 'email' ? 'is-on' : ''}`} onClick={() => setTool(tool === 'email' ? null : 'email')} disabled={!lead.email}><span>✉</span>Email</button>
@@ -289,5 +301,61 @@ function BookTool({ lead, slots, onDone }: { lead: CrmLead; slots: Slot[]; onDon
       {err ? <p className="crm-err">{err}</p> : null}
       <div className="crm-form-foot"><button className="crm-btn" onClick={book} disabled={busy || !ready || !slot}>{busy ? 'Booking…' : 'Book and send invite'}</button></div>
     </div>
+  );
+}
+
+function CopyBtn({ text, label, onToast }: { text: string; label: string; onToast: (t: string) => void }) {
+  return (
+    <button type="button" className="crm-chipbtn crm-copy" onClick={() => { navigator.clipboard?.writeText(text).then(() => onToast(`${label} copied`), () => onToast('Couldn’t copy')); }}>
+      <Icon name="copy" size={13} />Copy
+    </button>
+  );
+}
+
+/** Asks Claude for a read of the lead from its data and history only, with drafts the founder sends by hand. */
+function BriefPanel({ lead, onToast }: { lead: CrmLead; onToast: (t: string) => void }) {
+  const [brief, setBrief] = useState<Brief | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState('');
+  async function run() {
+    setBusy(true);
+    setErr('');
+    try { setBrief((await api<{ brief: Brief }>(`/api/admin/crm/leads/${lead.id}/brief`, { method: 'POST' })).brief); }
+    catch (x) { setErr((x as Error).message === 'anthropic_not_configured' ? 'AI is not set up: add ANTHROPIC_API_KEY.' : 'Couldn’t write the brief. Try again.'); }
+    setBusy(false);
+  }
+  const first = (lead.name ?? '').split(' ')[0] || 'there';
+  if (!brief) {
+    return (
+      <div className="crm-brief is-idle">
+        <span className="crm-brief-ico"><Icon name="sparkle" size={16} /></span>
+        <span className="crm-due-text"><b>AI brief</b><small>{err || 'Summary, risks, next step and drafts from this lead’s data only.'}</small></span>
+        <button className="crm-btn" onClick={run} disabled={busy}>{busy ? 'Thinking…' : 'Write brief'}</button>
+      </div>
+    );
+  }
+  return (
+    <section className="crm-brief" aria-label="AI brief">
+      <header><span className="crm-brief-ico"><Icon name="sparkle" size={16} /></span><b>AI brief</b><button className="crm-link" onClick={run} disabled={busy}>{busy ? 'Rewriting…' : 'Regenerate'}</button></header>
+      {brief.summary ? <p>{brief.summary}</p> : null}
+      {brief.stage_read ? <p className="crm-brief-read"><small>Stage read</small>{brief.stage_read}</p> : null}
+      {brief.risks.length ? <div><small className="crm-brief-k">Risks</small><ul>{brief.risks.map((r) => <li key={r}>{r}</li>)}</ul></div> : null}
+      {brief.next_step ? <p className="crm-brief-next"><Icon name="open" size={14} />{brief.next_step}</p> : null}
+      {brief.whatsapp_draft ? (
+        <div className="crm-brief-draft">
+          <small className="crm-brief-k">WhatsApp draft</small>
+          <p>{brief.whatsapp_draft}</p>
+          <span className="crm-brief-acts"><CopyBtn text={brief.whatsapp_draft} label="WhatsApp draft" onToast={onToast} />{lead.phone ? <a className="crm-chipbtn" href={waLink(lead.phone, brief.whatsapp_draft)} target="_blank" rel="noreferrer">Open in WhatsApp</a> : null}</span>
+        </div>
+      ) : null}
+      {brief.email_draft ? (
+        <div className="crm-brief-draft">
+          <small className="crm-brief-k">Email draft</small>
+          <p>{brief.email_draft}</p>
+          <span className="crm-brief-acts"><CopyBtn text={brief.email_draft} label="Email draft" onToast={onToast} />{lead.email ? <a className="crm-chipbtn" href={`mailto:${lead.email}?subject=${encodeURIComponent(`BYBO for ${lead.company || first}`)}&body=${encodeURIComponent(brief.email_draft)}`}>Open in mail</a> : null}</span>
+        </div>
+      ) : null}
+      {err ? <p className="crm-err">{err}</p> : null}
+    </section>
   );
 }

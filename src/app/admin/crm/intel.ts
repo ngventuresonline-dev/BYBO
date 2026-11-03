@@ -47,7 +47,7 @@ export const forecast = (leads: CrmLead[]) => leads.filter(openStage).reduce((t,
 
 /** Share of leads that reached each stage or beyond (lost excluded). */
 export function funnel(leads: CrmLead[], order: Stage[]) {
-  const live = order.filter((s) => s !== 'lost');
+  const live: Stage[] = order.filter((s) => s !== 'lost');
   const rank = (s: Stage) => live.indexOf(s);
   const reached = (s: Stage) => leads.filter((l) => l.stage !== 'lost' && rank(l.stage) >= rank(s)).length;
   const top = Math.max(1, reached(live[0]!));
