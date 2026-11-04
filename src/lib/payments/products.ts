@@ -23,6 +23,7 @@ export type Product = {
 
 const MIRACLE = { name: 'Navdeep Singh', email: 'Navdeepsinghkainth1976@gmail.com', company: 'Miracle Education' };
 const LEVEL = { name: 'Aditya', email: 'thelevelfurniture@gmail.com', company: 'The Level Furniture' };
+const ORBELAN = { name: 'Iftekhar', email: 'iftekharshaikh14300@gmail.com', company: 'ORBelan' };
 
 export const PRODUCTS: Product[] = [
   {
@@ -128,6 +129,25 @@ export const PRODUCTS: Product[] = [
     lead: 'Due on day 14, at go-live.',
     description: 'Final milestone for The Level Furniture website and lead automation, due at launch and handover.',
     includes: ['Site live on your domain', 'Automation switched on', 'Team walkthrough and handover'],
+  },
+  // ORBelan (Royaleway Club): Shopify storefront redesign, ₹45,000 in three milestones.
+  {
+    id: 'orbelan-advance', name: 'ORBelan: 60% advance', price: 27000, group: 'Your quote', unlisted: true, payer: ORBELAN,
+    lead: 'Starts the 14-day build.',
+    description: 'Advance for the ORBelan storefront redesign, as set out in the proposal (₹45,000 in total).',
+    includes: ['Kick-off and brand assets', 'Design begins on day 1', 'Full concept unlocked for your review'],
+  },
+  {
+    id: 'orbelan-midway', name: 'ORBelan: 20% on design approval', price: 9000, group: 'Your quote', unlisted: true, payer: ORBELAN,
+    lead: 'Due when you approve the design.',
+    description: 'Second milestone for the ORBelan storefront redesign, due when the design is approved and the build moves to Shopify.',
+    includes: ['Approved design', 'Build on your Shopify begins'],
+  },
+  {
+    id: 'orbelan-final', name: 'ORBelan: 20% at launch', price: 9000, group: 'Your quote', unlisted: true, payer: ORBELAN,
+    lead: 'Due at go-live.',
+    description: 'Final milestone for the ORBelan storefront redesign, due when the new store is live.',
+    includes: ['New store live on orbelan.com', 'Walkthrough and handover', '30 days of support'],
   },
 ];
 
