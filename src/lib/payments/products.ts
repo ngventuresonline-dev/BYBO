@@ -1,4 +1,4 @@
-﻿/**
+/**
  * What can be bought on /pay. Prices are set here, on the server: the browser
  * only sends a product id, so an amount can't be changed in the page.
  *
@@ -92,11 +92,11 @@ export const PRODUCTS: Product[] = [
     description: 'A 30-second brand or product film made by our production system and directed by people. You approve the cut.',
     includes: ['Brief and style frames', 'Directed, edited 30-second film', 'Cut to the ratios each channel needs'],
   },
-  // Miracle Education, Patiala: website and lead automation, â‚¹59,000 in three milestones.
+  // Miracle Education, Patiala: website and lead automation, ₹59,000 in three milestones.
   {
     id: 'miracle-edu-advance', name: 'Miracle Education: 60% advance', price: 35400, group: 'Your quote', unlisted: true, payer: MIRACLE,
     lead: 'Starts the 14-day build.',
-    description: 'Advance for the Miracle Education website and lead automation, as set out in the proposal (â‚¹59,000 in total).',
+    description: 'Advance for the Miracle Education website and lead automation, as set out in the proposal (₹59,000 in total).',
     includes: ['Kick-off and content collection', 'Website build begins on day 1', 'Lead automation set up alongside'],
   },
   {
@@ -111,11 +111,11 @@ export const PRODUCTS: Product[] = [
     description: 'Final milestone for the Miracle Education website and lead automation, due at launch and handover.',
     includes: ['Site live on your domain', 'Automation switched on', 'Staff walkthrough and handover'],
   },
-  // The Level Furniture, Bengaluru: website (100 products) and lead automation, â‚¹1,20,000 in three milestones.
+  // The Level Furniture, Bengaluru: website (100 products) and lead automation, ₹1,20,000 in three milestones.
   {
     id: 'level-advance', name: 'The Level Furniture: 60% advance', price: 72000, group: 'Your quote', unlisted: true, payer: LEVEL,
     lead: 'Starts the 14-day build.',
-    description: 'Advance for The Level Furniture website and lead automation, as set out in the proposal (â‚¹1,20,000 in total).',
+    description: 'Advance for The Level Furniture website and lead automation, as set out in the proposal (₹1,20,000 in total).',
     includes: ['Kick-off and product collection', 'Website build begins on day 1', 'Lead automation set up alongside'],
   },
   {
@@ -130,11 +130,11 @@ export const PRODUCTS: Product[] = [
     description: 'Final milestone for The Level Furniture website and lead automation, due at launch and handover.',
     includes: ['Site live on your domain', 'Automation switched on', 'Team walkthrough and handover'],
   },
-  // ORBelan (Royaleway Club): Shopify storefront redesign, â‚¹45,000 in three milestones.
+  // ORBelan (Royaleway Club): Shopify storefront redesign, ₹45,000 in three milestones.
   {
     id: 'orbelan-advance', name: 'ORBelan: 60% advance', price: 27000, group: 'Your quote', unlisted: true, payer: ORBELAN,
-    lead: 'Starts the 14-day build.',
-    description: 'Advance for the ORBelan storefront redesign, as set out in the proposal (â‚¹45,000 in total).',
+    lead: 'Starts the 4–7 day build.',
+    description: 'Advance for the ORBelan storefront redesign, as set out in the proposal (₹45,000 in total).',
     includes: ['Kick-off and brand assets', 'Design begins on day 1', 'Full concept unlocked for your review'],
   },
   {
