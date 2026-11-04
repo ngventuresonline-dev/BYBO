@@ -29,6 +29,9 @@ export const CONTACT = {
  * Every /apply enquiry is delivered here. Public pages keep using CONTACT.email.
  * ENQUIRY_TO may add more addresses (comma-separated) but cannot drop these two.
  */
+/** Where client demos are published. bybo.in/demo/... redirects here. */
+export const DEMO_ORIGIN = "https://bybo-demos.vercel.app";
+
 export const ENQUIRY_INBOXES = [
   "support@bybo.in",
   "byboonline@gmail.com",

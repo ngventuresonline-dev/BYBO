@@ -1,3 +1,4 @@
+import { DEMO_ORIGIN } from '@/lib/site';
 import type { CrmLead, Source, Stage } from '@/lib/crm/db';
 
 export const STAGES: { id: Stage; label: string }[] = [
@@ -37,7 +38,7 @@ export type DemoRow = { id: string; lead_id: string; created_at: string; slug: s
 export type Overview = { health: Health[]; automations: Automation[]; feed: FeedItem[] | null; demos: DemoRow[]; queue: QueueItem[] | null; ig: IgSummary | null; slots: Slot[]; products: Product[] };
 /** What the AI brief route returns for one lead. */
 export type Brief = { summary: string; stage_read: string; risks: string[]; next_step: string; whatsapp_draft: string; email_draft: string };
-export const demoLink = (d: Pick<DemoRow, 'kind' | 'url' | 'slug'>) => (d.kind === 'custom' && d.url ? d.url : `/demo/${d.slug}`);
+export const demoLink = (d: Pick<DemoRow, 'kind' | 'url' | 'slug'>) => (d.kind === 'custom' && d.url ? d.url : `${DEMO_ORIGIN}/demo/${d.slug}`);
 
 /** Approve, reject, redraft and other autopilot decisions. Resolves with the message to show. */
 export async function demoAction(body: Record<string, string>): Promise<string> {

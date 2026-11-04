@@ -1,4 +1,5 @@
 import { randomBytes } from 'node:crypto';
+import { DEMO_ORIGIN } from '@/lib/site';
 import { allBlueprints, blueprint, KINDS, LOOK_OPTIONS, type Kind } from './blueprints';
 import { rpc, type CrmLead } from './db';
 import { normaliseUrl, scanSite, type SiteScan } from './sitescan';
@@ -334,7 +335,7 @@ export async function artDirect(c: DemoContent, slug: string): Promise<DemoConte
 const slugify = (s: string) => s.toLowerCase().normalize('NFKD').replace(/[^\w\s-]/g, '').trim().replace(/[\s_]+/g, '-').replace(/-+/g, '-').slice(0, 40) || 'demo';
 /** Leads scoring below this are held for a person: no demo is drafted for them. */
 const HOLD_BELOW = Number(process.env.BYBO_LEAD_HOLD_BELOW ?? 50);
-export const demoUrl = (slug: string) => `https://bybo.in/demo/${slug}`;
+export const demoUrl = (slug: string) => `${DEMO_ORIGIN}/demo/${slug}`;
 
 async function log(lead: string, kind: string, title: string, body?: string, meta: Record<string, unknown> = {}) {
   await rpc('bybo_crm_log', { p_lead: lead, p_kind: kind, p_title: title, p_body: body ?? null, p_meta: meta }).catch(() => null);
