@@ -266,3 +266,11 @@
   .crm-tab-dot { position: absolute; top: 4px; right: calc(50% - 16px); width: 7px; height: 7px; border-radius: 50%; background: #ff7a45; }
   .v3 .crm-toast { bottom: 84px; }
 }
+
+/* Kill switch, at the foot of the lead drawer */
+.crm-kill { display: flex; gap: 14px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin: 18px 0; padding: 14px 16px; border-radius: 14px; border: 1px solid rgba(220, 60, 60, .35); background: rgba(220, 60, 60, .06); }
+.crm-kill p { margin: 0; font-size: 13px; line-height: 1.5; max-width: 46ch; }
+.crm-kill.is-killed { border-color: rgba(220, 60, 60, .7); background: rgba(220, 60, 60, .12); }
+.crm-kill-confirm { display: inline-flex; gap: 8px; align-items: center; }
+.crm-btn.is-danger { background: #c62828; color: #fff; border-color: #c62828; }
+.crm-btn.is-danger-ghost { background: transparent; color: #e05555; border: 1px solid rgba(220, 60, 60, .55); }

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { linksConfigured, MAX_INR, MIN_INR } from '@/lib/payments/link';
 import { phonepeConfigured } from '@/lib/payments/phonepe';
 import { productById } from '@/lib/payments/products';
+import { payerKilled } from '@/lib/crm/kill';
 import { startCheckout } from '@/lib/payments/start';
 
 /**
@@ -29,6 +30,7 @@ export async function POST(request: Request) {
   const b = await request.json().catch(() => null) as Record<string, unknown> | null;
   // A listed product's price always comes from the catalogue, never the browser.
   const product = productById(s(b?.product, 40));
+  if (product?.payer && await payerKilled(product.payer.email)) return NextResponse.json({ ok: false, reason: 'inactive' }, { status: 410 });
   const amount = product ? product.price : Math.round(Number(b?.amount) * 100) / 100;
   const ref = s(b?.reference, 40).replace(/[^a-zA-Z0-9_-]/g, '');
   const link = {

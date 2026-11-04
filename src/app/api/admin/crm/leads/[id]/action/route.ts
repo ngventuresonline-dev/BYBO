@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { killLead } from '@/lib/crm/kill';
 import { adminAuthorized } from '@/lib/instagram/auth';
 import { crmConfigured, rpc, type CrmEvent, type CrmLead } from '@/lib/crm/db';
 import { brandedEmail, brandedEmailText } from '@/lib/email-layout';
@@ -96,6 +97,12 @@ export async function POST(request: Request, ctx: { params: Promise<{ id: string
     const event = await log(id, 'payment', sent ? `Payment link emailed: ${product.name} (${inr(product.price)})` : `Payment link created: ${product.name} (${inr(product.price)})`, url, { product: product.id });
     await rpc('bybo_crm_update', { p_lead: id, p: { ...(lead.value ? {} : { value: String(product.price) }), ...(['new', 'contacted', 'call_booked'].includes(lead.stage) ? { stage: 'proposal' } : {}) } }).catch(() => null);
     return NextResponse.json({ ok: true, url, event, message: sent ? `Payment link sent to ${lead.email}` : 'Payment link copied' });
+  }
+
+  if (b?.type === 'kill') {
+    const on = b.on !== false;
+    const r = await killLead(id, on);
+    return NextResponse.json({ ok: true, ...r, message: on ? `Kill switch on: ${r.demos} demo${r.demos === 1 ? '' : 's'} and ${r.proposals} proposal${r.proposals === 1 ? '' : 's'} disabled, lead archived` : 'Kill switch off: links restored' });
   }
 
   if (b?.type === 'book') {

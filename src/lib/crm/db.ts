@@ -36,6 +36,8 @@ export type CrmLead = {
   quality: 'good' | 'maybe' | 'fake' | null;
   quality_score: number | null;
   intel: Record<string, unknown>;
+  /** Set when the kill switch is on: every link we sent this lead is off. */
+  killed_at?: string | null;
   autopilot_at: string | null;
 };
 
