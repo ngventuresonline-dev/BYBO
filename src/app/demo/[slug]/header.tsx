@@ -124,7 +124,7 @@ export function StoreHeader({ base, brand, logo, cats, items, featured, quote, b
       {/* Full-screen menu on phones */}
       <div className={`st-fullmenu${menu ? ' is-open' : ''}`} aria-hidden={!menu}>
         <nav>
-          {[{ href: `${base}/shop`, label: 'Shop all' }, ...cats.map((k) => ({ href: `${base}/shop?c=${encodeURIComponent(k)}`, label: k })), { href: `${base}/about`, label: 'Our story' }, { href: `${base}/contact`, label: 'Contact' }].map((l, i) => (
+          {[items.length ? { href: `${base}/shop`, label: 'Shop all' } : { href: `${base}#why`, label: 'Services' }, ...cats.map((k) => ({ href: `${base}/shop?c=${encodeURIComponent(k)}`, label: k })), { href: `${base}/about`, label: 'Our story' }, { href: `${base}/contact`, label: 'Contact' }].map((l, i) => (
             <Link key={l.href + l.label} href={l.href} style={{ '--i': i } as React.CSSProperties}><span>{String(i + 1).padStart(2, '0')}</span>{l.label}</Link>
           ))}
         </nav>

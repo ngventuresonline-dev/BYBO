@@ -115,7 +115,8 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
             ))}
           </div>
           <div className="demo-hero-cta">
-            <Link className="demo-btn" data-magnet href={`${base}/shop`}>Shop the range</Link>
+            {/* A studio or service with nothing to buy asks for the project instead. */}
+            {items.length ? <Link className="demo-btn" data-magnet href={`${base}/shop`}>Shop the range</Link> : <Link className="demo-btn" data-magnet href={`${base}/contact`}>Start your project</Link>}
             {heroItem?.price != null ? <AddToCart item={{ handle: heroItem.handle, title: heroItem.title, price: heroItem.price, image: heroItem.image }} className="demo-btn is-ghost" label={`Add to bag · ${inr(heroItem.price)}`} /> : <Link className="demo-btn is-ghost" href={`${base}/contact`}>{w.call}</Link>}
           </div>
           <div className="demo-dots" aria-hidden="true">{frames.map((f, i) => <i key={i} data-frame={i} className={i === 0 ? 'is-active' : ''} />)}</div>
