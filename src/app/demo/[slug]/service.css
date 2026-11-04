@@ -131,3 +131,12 @@
 .db-main, .db-grid > *, .db-kpis > * { min-width: 0; }
 .db-card { overflow-x: auto; }
 .db-table { min-width: 520px; }
+
+/* Dark looks, finished: a soft glow in the accent like a lit room, a whisper of film grain,
+   and hairlines in the accent instead of grey. */
+.demo.is-dark { background: radial-gradient(120% 70% at 50% -10%, color-mix(in srgb, var(--accent) 9%, transparent), transparent 60%), var(--bg); background-attachment: fixed; --line: color-mix(in srgb, var(--accent) 18%, transparent); }
+.demo.is-dark::after { content: ''; position: fixed; inset: 0; z-index: 90; pointer-events: none; opacity: .06; mix-blend-mode: overlay; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+.demo.is-dark .sv-card, .demo.is-dark .sv-band, .demo.is-dark .st-summary { border: 1px solid color-mix(in srgb, var(--accent) 16%, transparent); background: linear-gradient(160deg, color-mix(in srgb, var(--soft) 92%, var(--accent) 8%), var(--soft)); }
+.demo.is-dark .sv-tile { box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 14%, transparent); }
+.demo.is-dark .demo-kicker { letter-spacing: .3em; }
+@media (prefers-reduced-motion: reduce) { .demo.is-dark { background-attachment: scroll; } }

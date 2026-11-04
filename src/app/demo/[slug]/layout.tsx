@@ -50,6 +50,8 @@ export default async function DemoLayout({ children, params }: { children: React
 
   return (
     <div className={`demo f-${c.font ?? 'editorial'} s-${c.style ?? 'luxe'} k-${bp.kind}${isDark(theme.bg) ? ' is-dark' : ''} ${editorial.variable} ${soft.variable} ${modern.variable} ${body.variable}`} style={style}>
+      {/* The page behind the demo takes its background too, so nothing flashes the site's own colour. */}
+      <style>{`html,body{background:${theme.bg}}`}</style>
       <CartProvider slug={slug}>
         <div className="demo-ribbon">{c.sample_note ? <>{c.sample_note} · </> : null}A demo prepared by <b>BYBO</b> for {c.brand}{c.site_url ? <> · <a href={c.site_url} target="_blank" rel="noreferrer">see the current site</a></> : null} · <Link href={`${base}/dashboard`}>open the owner dashboard</Link> · <a href={wa} target="_blank" rel="noreferrer">talk to BYBO</a></div>
         {facts.length ? <div className="st-announce"><div>{[0, 1].map((k) => <span key={k}>{facts.map((f) => <em key={f + k}>{f}</em>)}</span>)}</div></div> : null}
