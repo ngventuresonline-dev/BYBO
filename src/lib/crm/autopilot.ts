@@ -57,10 +57,12 @@ export type DemoContent = {
   hero_float?: string | null;
   spotlight?: { image: string; title: string; kicker: string; callouts: string[] } | null;
   /** Hero scenes. `float` places the floating product for that scene: centre x and y in % of the screen, s = scale. */
-  scenes?: { image: string | null; brief?: string; kicker: string; title: string; text: string; float?: { x: number; y: number; s: number } }[];
+  scenes?: { image: string | null; brief?: string; product?: string; kicker: string; title: string; text: string; float?: { x: number; y: number; s: number } }[];
   hero_float_pos?: { x: number; y: number; s: number };
   /** An art-directed scene photo for the first hero frame (made for the demo, never lifted from their site). */
   hero_scene?: string | null;
+  /** The product handle the first hero scene's hotspot points at. */
+  hero_product?: string;
   /** The art direction brief for the first hero scene photo. */
   hero_brief?: string;
   quality?: { score: number; issues: string[] };
@@ -70,6 +72,12 @@ export type DemoContent = {
   origins?: { name: string; region: string; text: string; image: string | null }[];
   /** Set when the products shown are a sample range, not their real catalogue. */
   sample_note?: string;
+  /** A pinned, scroll-driven "how it works" chapter: each step a close-up with labelled callouts. */
+  story?: { kicker: string; title: string; steps: { image: string | null; title: string; text: string; callouts: string[] }[] } | null;
+  /** A draggable before/after comparison, e.g. waxing versus trimming. Marked as an illustration. */
+  compare?: { kicker: string; title: string; left: { image: string | null; label: string }; right: { image: string | null; label: string }; note?: string } | null;
+  /** Words that change with the business: saree shops "enquire about this saree", wholesalers "get a bulk quote". */
+  labels?: { origins_kicker?: string; origins_title?: string; featured_kicker?: string; featured_title?: string; ask?: string; ask_short?: string; call?: string; price_note?: string };
   /** True when the scene photos already show their product: no floating cut-out, a shoppable hotspot instead. */
   scenes_show_product?: boolean;
   /** Their full catalogue (from their store), for the demo's shop, product and cart pages. */

@@ -25,7 +25,7 @@ export default async function About({ params }: { params: Promise<{ slug: string
           <p className="demo-kicker">Our story</p>
           <h1>{c.tagline}</h1>
           <p>{c.hero.sub}</p>
-          <Link className="demo-btn" href={`/demo/${slug}/shop`}>Shop the range</Link>
+          {items.length ? <Link className="demo-btn" href={`/demo/${slug}/shop`}>Shop the range</Link> : <Link className="demo-btn" href={`/demo/${slug}/contact`}>Start your project</Link>}
         </div>
         <div className="ab-stack" aria-hidden="true">{hero.map((i, k) => <img key={i.handle} src={i.image!} alt="" style={{ '--k': k } as React.CSSProperties} />)}</div>
       </section>

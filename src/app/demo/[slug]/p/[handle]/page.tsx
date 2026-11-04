@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { DemoContent } from '@/lib/crm/autopilot';
 import { DemoMotion } from '../../DemoMotion';
-import { catalog, inr, loadDemo, off } from '../../data';
+import { catalog, inr, loadDemo, off, words } from '../../data';
 import { AddToCart, BuyBox, Gallery } from '../../store';
 
 export const dynamic = 'force-dynamic';
@@ -31,6 +31,7 @@ export default async function Product({ params }: { params: Promise<{ slug: stri
   const { c, items, item } = found;
   const base = `/demo/${slug}`;
   const pct = off(item);
+  const w = words(c);
   const facts = c.facts ?? [];
   const paras = item.description.split('\n').map((s) => s.trim()).filter(Boolean);
   const related = items.filter((i) => i !== item && i.category === item.category).concat(items.filter((i) => i !== item && i.category !== item.category)).slice(0, 4);
@@ -47,14 +48,14 @@ export default async function Product({ params }: { params: Promise<{ slug: stri
           <h1>{item.title}</h1>
           {item.line ? <p className="pd-line">{item.line}</p> : null}
           <div className="pd-price">
-            {item.price != null ? <b>{inr(item.price)}</b> : <b>Price on request</b>}
+            {item.price != null ? <b>{inr(item.price)}</b> : <b>{w.priceNote}</b>}
             {pct ? <><s>{inr(item.compare!)}</s><span className="demo-off">Save {pct}%</span></> : null}
           </div>
           {item.price != null ? <p className="pd-tax">Inclusive of all taxes</p> : null}
           {buy ? <BuyBox item={buy} facts={facts.slice(0, 3)} /> : (
             <div className="pd-buy">
-              <Link className="demo-btn pd-now" href={`${base}/contact?p=${encodeURIComponent(item.title)}`}>Enquire about this saree</Link>
-              <Link className="demo-btn is-ghost pd-now" href={`${base}/contact?p=${encodeURIComponent(`${item.title} (video call)`)}`}>Book a video call to see it</Link>
+              <Link className="demo-btn pd-now" href={`${base}/contact?p=${encodeURIComponent(item.title)}`}>{w.ask}</Link>
+              <Link className="demo-btn is-ghost pd-now" href={`${base}/contact?p=${encodeURIComponent(`${item.title} (call)`)}`}>{w.call}</Link>
               {facts.length ? <ul className="pd-facts">{facts.slice(0, 3).map((f) => <li key={f}>{f}</li>)}</ul> : null}
             </div>
           )}
@@ -63,14 +64,13 @@ export default async function Product({ params }: { params: Promise<{ slug: stri
               <details open><summary>Description</summary>{paras.slice(0, 8).map((p) => <p key={p}>{p}</p>)}</details>
             ) : null}
             {facts.length ? <details><summary>Delivery & returns</summary><ul>{facts.map((f) => <li key={f}>{f}</li>)}</ul></details> : null}
-            <details><summary>Payment</summary><p>UPI, cards and cash on delivery.</p></details>
           </div>
         </div>
       </section>
 
       {related.length ? (
         <section className="st-wrap pd-related">
-          <div className="demo-head" data-reveal><p className="demo-kicker">You may also like</p><h2>Complete the routine</h2></div>
+          <div className="demo-head" data-reveal><p className="demo-kicker">You may also like</p><h2>More to explore</h2></div>
           <div className="sh-grid">
             {related.map((p) => (
               <article key={p.handle} className="sh-card" data-reveal>

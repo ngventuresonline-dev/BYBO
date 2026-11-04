@@ -4,8 +4,9 @@ import { notFound } from 'next/navigation';
 import type { DemoContent } from '@/lib/crm/autopilot';
 import { CONTACT } from '@/lib/site';
 import { DemoMotion } from './DemoMotion';
-import { catalog, featured, inr, isCutout, loadDemo, off, pad } from './data';
+import { catalog, featured, inr, isCutout, loadDemo, off, pad, words } from './data';
 import { AddToCart } from './store';
+import { Compare } from './compare';
 
 export const dynamic = 'force-dynamic';
 
@@ -25,6 +26,7 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
   const c = demo.content as DemoContent;
   const base = `/demo/${slug}`;
   const items = catalog(c);
+  const w = words(c);
   const best = featured(c, items);
   const facts = c.facts ?? [];
   const scenes = c.scenes ?? [];
@@ -44,11 +46,12 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
   // Hero frames: art-directed scene photos when we have them, otherwise studio sets drawn in their colours.
   // Their own site photos are never reused here: the redesign tells their story in a new way.
   const frames = [
-    { image: c.hero_scene ?? null, kicker: c.hero.eyebrow, title: c.hero.headline, text: c.hero.sub, float: c.hero_float_pos },
+    { image: c.hero_scene ?? null, kicker: c.hero.eyebrow, title: c.hero.headline, text: c.hero.sub, float: c.hero_float_pos, product: c.hero_product },
     ...scenes.map((x) => ({ ...x, image: x.image ?? null })),
   ].slice(0, 4);
   const chapters = [
     { id: 'top', label: 'Intro' },
+    ...(c.story?.steps?.length ? [{ id: 'how', label: 'How it works' }] : []),
     ...(cats.length > 1 ? [{ id: 'cats', label: 'Categories' }] : []),
     ...(shop ? [{ id: 'shop', label: 'Bestsellers' }] : []),
     ...(spotlight ? [{ id: 'spotlight', label: 'Product' }] : []),
@@ -78,8 +81,8 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
       <section className={`demo-pin demo-hero${inScene ? ' is-in-scene' : ''}`} id="top" data-pin data-frames={frames.length} data-chapter="top" style={{ '--n': frames.length, '--fx': frames[0]?.float?.x ?? 66, '--fy': frames[0]?.float?.y ?? 48, '--fs': frames[0]?.float?.s ?? 0.92 } as React.CSSProperties}>
         <div className="demo-stage">
           {frames.map((f, i) => (
-            <div key={i} className={`demo-frame${i === 0 ? ' is-active' : ''}`} data-frame={i} data-float={JSON.stringify(f.float ?? STUDIO_FLOAT[i % 3])}>
-              {f.image ? <img src={f.image} alt={inScene && heroItem ? heroItem.title : ''} style={{ objectPosition: `${f.float?.x ?? 60}% 22%` }} fetchPriority={i === 0 ? 'high' : 'auto'} loading={i === 0 ? 'eager' : 'lazy'} /> : <div className={`demo-studio s${i % 3}`} aria-hidden="true"><i /><i /><i /></div>}
+            <div key={i} className={`demo-frame${i === 0 ? ' is-active is-shown' : ''}`} data-frame={i} data-float={JSON.stringify(f.float ?? STUDIO_FLOAT[i % 3])}>
+              {f.image ? <img src={f.image} alt={inScene && heroItem ? heroItem.title : ''} data-fx={f.float?.x ?? 60} style={{ objectPosition: `${f.float?.x ?? 60}% 22%` }} fetchPriority={i === 0 ? 'high' : 'auto'} loading="eager" decoding="async" /> : <div className={`demo-studio s${i % 3}`} aria-hidden="true"><i /><i /><i /></div>}
             </div>
           ))}
           <div className="demo-hero-scrim" aria-hidden="true" />
@@ -91,12 +94,17 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
               {heroItem?.price != null ? <span className="demo-float-tag"><b>{heroItem.title}</b>{inr(heroItem.price)}</span> : null}
             </Link>
           ) : null}
-          {inScene && heroItem ? (
-            <Link href={`${base}/p/${heroItem.handle}`} className="demo-hotspot" aria-label={`${heroItem.title}, view product`}>
-              <span className="demo-hotspot-dot" />
-              <span className="demo-hotspot-tag"><b>{heroItem.title}</b>{heroItem.price != null ? inr(heroItem.price) : 'View'} →</span>
-            </Link>
-          ) : null}
+          {/* One hotspot per scene, on that scene's own product; it fades with its scene. */}
+          {inScene ? frames.map((f, i) => {
+            const item = items.find((x) => x.handle === f.product) ?? (i === 0 ? heroItem : undefined);
+            return item ? (
+              <Link key={i} href={`${base}/p/${item.handle}`} className={`demo-hotspot${i === 0 ? ' is-active' : ''}`} data-frame={i} aria-label={`${item.title}, view product`}
+                style={{ '--hx': f.float?.x ?? 64, '--hy': f.float?.y ?? 45 } as React.CSSProperties}>
+                <span className="demo-hotspot-dot" />
+                <span className="demo-hotspot-tag"><b>{item.title}</b>{item.price != null ? inr(item.price) : 'View'} →</span>
+              </Link>
+            ) : null;
+          }) : null}
           <div className="demo-captions">
             {frames.map((f, i) => (
               <div key={f.title + i} className={`demo-caption${i === 0 ? ' is-active' : ''}`} data-frame={i}>
@@ -107,13 +115,38 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
             ))}
           </div>
           <div className="demo-hero-cta">
-            <Link className="demo-btn" data-magnet href={`${base}/shop`}>Shop the range</Link>
-            {heroItem?.price != null ? <AddToCart item={{ handle: heroItem.handle, title: heroItem.title, price: heroItem.price, image: heroItem.image }} className="demo-btn is-ghost" label={`Add to bag · ${inr(heroItem.price)}`} /> : <Link className="demo-btn is-ghost" href={`${base}/contact`}>Book a video call</Link>}
+            {/* A studio or service with nothing to buy asks for the project instead. */}
+            {items.length ? <Link className="demo-btn" data-magnet href={`${base}/shop`}>Shop the range</Link> : <Link className="demo-btn" data-magnet href={`${base}/contact`}>Start your project</Link>}
+            {heroItem?.price != null ? <AddToCart item={{ handle: heroItem.handle, title: heroItem.title, price: heroItem.price, image: heroItem.image }} className="demo-btn is-ghost" label={`Add to bag · ${inr(heroItem.price)}`} /> : <Link className="demo-btn is-ghost" href={`${base}/contact`}>{w.call}</Link>}
           </div>
           <div className="demo-dots" aria-hidden="true">{frames.map((f, i) => <i key={i} data-frame={i} className={i === 0 ? 'is-active' : ''} />)}</div>
           <div className="demo-scroll-hint" aria-hidden="true"><span />Scroll</div>
         </div>
       </section>
+
+      {/* How it works: pinned while each step's close-up and callouts play in turn. */}
+      {c.story?.steps?.length ? (
+        <section className="demo-pin demo-story" id="how" data-pin data-frames={c.story.steps.length} data-chapter="how" style={{ '--n': c.story.steps.length } as React.CSSProperties}>
+          <div className="demo-stage">
+            {c.story.steps.map((s, i) => (
+              <div key={i} className={`demo-frame${i === 0 ? ' is-active is-shown' : ''}`} data-frame={i}>
+                {s.image ? <img src={s.image} alt={s.title} loading="eager" decoding="async" /> : null}
+              </div>
+            ))}
+            <div className="demo-story-shade" aria-hidden="true" />
+            <div className="demo-story-head"><p className="demo-kicker">{c.story.kicker}</p><h2>{c.story.title}</h2></div>
+            {c.story.steps.map((s, i) => (
+              <div key={i} className={`demo-story-step${i === 0 ? ' is-active' : ''}`} data-frame={i}>
+                <span className="demo-story-no">{pad(i + 1)}<i>/ {pad(c.story!.steps.length)}</i></span>
+                <h3>{s.title}</h3>
+                <p>{s.text}</p>
+                <ul>{s.callouts.map((t, k) => <li key={t} style={{ '--k': k } as React.CSSProperties}><span />{t}</li>)}</ul>
+              </div>
+            ))}
+            <ol className="demo-story-rail" aria-hidden="true">{c.story.steps.map((s, i) => <li key={i} data-frame={i} className={i === 0 ? 'is-active' : ''}><b>{pad(i + 1)}</b>{s.title}</li>)}</ol>
+          </div>
+        </section>
+      ) : null}
 
       {facts.length ? (
         <div className="demo-marquee" aria-hidden="true">
@@ -123,7 +156,7 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
 
       {c.origins?.length ? (
         <section className="demo-section hm-origins" id="origins">
-          <div className="demo-head is-center" data-reveal><p className="demo-kicker">Every weave tells where it was born</p><h2><Words text="Sarees by origin" /></h2></div>
+          <div className="demo-head is-center" data-reveal><p className="demo-kicker">{w.originsKicker}</p><h2><Words text={w.originsTitle} /></h2></div>
           <div className="hm-origin-row">
             {c.origins.map((o, i) => (
               <Link key={o.name} href={`${base}/shop?c=${encodeURIComponent(o.name)}`} className="hm-origin" data-reveal style={{ transitionDelay: `${i * 90}ms` }}>
@@ -156,8 +189,8 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
         <section className="demo-hscroll" id="shop" data-hscroll data-chapter="shop">
           <div className="demo-stage">
             <div className="demo-shop-head">
-              <p className="demo-kicker">{c.sample_note ? "Featured weaves" : "Bestsellers"}</p>
-              <h2>{c.sample_note ? `The ${c.brand} edit` : "Most-loved pieces"}</h2>
+              <p className="demo-kicker">{w.featuredKicker}</p>
+              <h2>{w.featuredTitle}</h2>
               <Link className="demo-shop-hint" href={`${base}/shop`}>View all {items.length} →</Link>
             </div>
             <div className="demo-track" data-track>
@@ -175,7 +208,7 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
                     <div className="demo-price">
                       {p.price != null ? <b>{inr(p.price)}</b> : null}
                       {pct ? <s>{inr(p.compare!)}</s> : null}
-                      {p.price != null ? <AddToCart item={{ handle: p.handle, title: p.title, price: p.price, image: p.image }} className="demo-add" /> : <><b className="is-ask">Price on request</b><Link className="demo-add" href={`${base}/contact?p=${encodeURIComponent(p.title)}`}>Enquire</Link></>}
+                      {p.price != null ? <AddToCart item={{ handle: p.handle, title: p.title, price: p.price, image: p.image }} className="demo-add" /> : <><b className="is-ask">{w.priceNote}</b><Link className="demo-add" href={`${base}/contact?p=${encodeURIComponent(p.title)}`}>{w.askShort}</Link></>}
                     </div>
                   </article>
                 );
@@ -185,6 +218,8 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
           </div>
         </section>
       ) : null}
+
+      {c.compare?.left.image && c.compare.right.image ? <Compare data={c.compare} /> : null}
 
       {/* Product spotlight: the product turns as feature callouts arrive one by one. */}
       {spotlight ? (
@@ -235,7 +270,7 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
 
       {c.flow?.length ? (
         <section className="demo-section demo-journey" data-reveal>
-          <div className="demo-head"><p className="demo-kicker">From browse to doorstep</p><h2>Simple, start to finish.</h2></div>
+          <div className="demo-head"><p className="demo-kicker">How ordering works</p><h2>Simple, start to finish.</h2></div>
           <ol>{c.flow.map((f, i) => <li key={f.step} style={{ transitionDelay: `${i * 120}ms` }}><span>{pad(i + 1)}</span><h3>{f.step}</h3><p>{f.text}</p></li>)}</ol>
         </section>
       ) : null}

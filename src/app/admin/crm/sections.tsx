@@ -7,6 +7,7 @@ import {
   type Automation, type DemoRow, type FeedItem, type Health, type IgSummary, type Product, type QueueItem,
 } from './shared';
 import { DemoPanel, QualityChip } from './autopilot';
+import { Icon, type IconName } from './icons';
 
 export function Kpi({ label, value, sub, accent, trend }: { label: string; value: string; sub?: string; accent?: boolean; trend?: number | null }) {
   return (
@@ -16,6 +17,11 @@ export function Kpi({ label, value, sub, accent, trend }: { label: string; value
       <small>{trend != null ? <span className={trend >= 0 ? 'crm-up' : 'crm-down'}>{trend >= 0 ? '▲' : '▼'} {Math.abs(trend)}% </span> : null}{sub}</small>
     </div>
   );
+}
+
+/** The shared empty state: an icon, one line, and room to breathe. */
+export function Empty({ text, icon = 'sparkle' }: { text: string; icon?: IconName }) {
+  return <div className="crm-empty-state is-sm"><span className="crm-empty-icon"><Icon name={icon} size={20} /></span><p>{text}</p></div>;
 }
 
 function Panel({ title, action, children, className = '' }: { title: string; action?: React.ReactNode; children: React.ReactNode; className?: string }) {
@@ -172,10 +178,32 @@ export function OverviewSection({ leads, demos, onToast, onChanged, feed, queue,
 
 /* ───────────────────────── Pipeline / Leads ───────────────────────── */
 
+const AP_BADGE: Partial<Record<CrmLead['autopilot'], string>> = {
+  researching: 'Researching', qualified: 'Drafting demo', awaiting_approval: 'Demo to approve', sent: 'Demo sent', held: 'Held', needs_review: 'Check: maybe fake', failed: 'Autopilot failed',
+};
+/** "sell_products_online" reads as "Sell products online". */
+const humanise = (s: string) => (/^[a-z]+(_[a-z]+)+$/.test(s) ? s.replace(/_/g, ' ').replace(/^./, (c) => c.toUpperCase()) : s);
+
+/** The lead's research score as a small ring. */
+function ScoreRing({ lead }: { lead: CrmLead }) {
+  if (lead.quality_score == null && !lead.quality) return null;
+  const score = Math.max(0, Math.min(100, Number(lead.quality_score ?? 0)));
+  const c = 2 * Math.PI * 15;
+  return (
+    <span className={`crm-ring q-${lead.quality ?? 'maybe'}`} title={`Lead score ${score}/100 (${lead.quality ?? 'unrated'})`}>
+      <svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="15" /><circle cx="18" cy="18" r="15" style={{ strokeDasharray: `${(score / 100) * c} ${c}` }} /></svg>
+      <b>{score}</b>
+    </span>
+  );
+}
+
 export function Card({ lead, now, fresh, onOpen, draggable }: { lead: CrmLead; now: number; fresh?: boolean; onOpen: () => void; draggable?: boolean }) {
+  const overdue = !!lead.next_follow_up && Date.parse(lead.next_follow_up) < now;
+  const upcoming = !!lead.next_follow_up && !overdue;
+  const badge = AP_BADGE[lead.autopilot];
   return (
     <button
-      className={`crm-card ${fresh ? 'is-fresh' : ''}`}
+      className={`crm-card t-${lead.temperature ?? 'none'} ${fresh ? 'is-fresh' : ''}`}
       onClick={onOpen}
       draggable={draggable}
       onDragStart={(e) => { e.dataTransfer.setData('text/plain', lead.id); e.dataTransfer.effectAllowed = 'move'; e.currentTarget.classList.add('is-dragging'); }}
@@ -184,14 +212,17 @@ export function Card({ lead, now, fresh, onOpen, draggable }: { lead: CrmLead; n
       <span className="crm-card-top">
         <span className={`crm-avatar t-${lead.temperature ?? 'none'}`}>{initials(lead)}</span>
         <span className="crm-card-name"><b>{display(lead)}</b>{lead.company && lead.name ? <small>{lead.company}</small> : null}</span>
-        {lead.temperature === 'hot' ? <span className="crm-hot" title="Hot lead">●</span> : null}
+        <ScoreRing lead={lead} />
       </span>
-      {lead.quality ? <QualityChip lead={lead} /> : null}
-      {lead.need ? <span className="crm-card-need">{lead.need}</span> : null}
+      {lead.need ? <span className="crm-card-need">{humanise(lead.need)}</span> : null}
+      <span className="crm-card-tags">
+        {lead.temperature ? <span className={`crm-temp t-${lead.temperature}`}>{lead.temperature === 'hot' ? '🔥 Hot' : lead.temperature === 'warm' ? 'Warm' : 'Cold'}</span> : null}
+        {badge ? <span className={`crm-apb ap-${lead.autopilot}`}>{badge}</span> : null}
+        {lead.value ? <span className="crm-card-value">{inr(lead.value)}</span> : null}
+      </span>
       <span className="crm-card-foot">
         <span className={`crm-chip src-${lead.source}`}>{SOURCE_LABEL[lead.source]}</span>
-        {lead.value ? <span className="crm-card-value">{inr(lead.value)}</span> : null}
-        {lead.next_follow_up && Date.parse(lead.next_follow_up) < now ? <span className="crm-late">Overdue</span> : null}
+        {overdue ? <span className="crm-late">Follow-up overdue</span> : upcoming ? <span className="crm-next">Next: {when(lead.next_follow_up!)}</span> : null}
         <span className="crm-card-ago">{ago(lead.last_activity_at, now)}</span>
       </span>
     </button>
@@ -200,29 +231,56 @@ export function Card({ lead, now, fresh, onOpen, draggable }: { lead: CrmLead; n
 
 export function Board({ leads, now, fresh, onOpen, onMove }: { leads: CrmLead[]; now: number; fresh: Set<string>; onOpen: (id: string) => void; onMove: (id: string, s: Stage) => void }) {
   const [over, setOver] = useState<Stage | null>(null);
+  const open = leads.filter((l) => l.stage !== 'won' && l.stage !== 'lost');
+  const value = open.reduce((t, l) => t + (l.value ?? 0), 0);
+  const hot = open.filter((l) => l.temperature === 'hot').length;
+  const late = open.filter((l) => l.next_follow_up && Date.parse(l.next_follow_up) < now).length;
+  const won = leads.filter((l) => l.stage === 'won');
+  // Score-led order inside a column: hot first, then the best-scored, then the most recent.
+  const rank = (l: CrmLead) => (l.temperature === 'hot' ? 1000 : l.temperature === 'warm' ? 500 : 0) + Number(l.quality_score ?? 0);
   return (
-    <div className="crm-board">
-      {STAGES.map((s) => {
-        const col = leads.filter((l) => l.stage === s.id);
-        const total = col.reduce((t, l) => t + (l.value ?? 0), 0);
-        return (
-          <section key={s.id} className={`crm-col stage-${s.id} ${over === s.id ? 'is-over' : ''}`}
-            onDragOver={(e) => { e.preventDefault(); setOver(s.id); }}
-            onDragLeave={() => setOver((o) => (o === s.id ? null : o))}
-            onDrop={(e) => { e.preventDefault(); setOver(null); const id = e.dataTransfer.getData('text/plain'); if (id) onMove(id, s.id); }}
-            aria-label={`${s.label}, ${col.length} leads`}>
-            <header className="crm-col-head">
-              <span className="crm-col-dot" /><h2>{s.label}</h2><span className="crm-col-n">{col.length}</span>
-              {total ? <span className="crm-col-v">{inr(total)}</span> : null}
-            </header>
-            <div className="crm-col-body">
-              {col.map((l) => <Card key={l.id} lead={l} now={now} fresh={fresh.has(l.id)} onOpen={() => onOpen(l.id)} draggable />)}
-              {!col.length ? <p className="crm-col-empty">Drop a lead here</p> : null}
-            </div>
-          </section>
-        );
-      })}
-    </div>
+    <>
+      <div className="crm-pipe-sum">
+        <div className="crm-pipe-stats">
+          <span><b>{open.length}</b>open leads</span>
+          <span><b>{inr(value)}</b>in pipeline</span>
+          <span className="is-hot"><b>{hot}</b>hot</span>
+          <span className={late ? 'is-late' : ''}><b>{late}</b>follow-ups overdue</span>
+          <span className="is-won"><b>{inr(won.reduce((t, l) => t + (l.value ?? 0), 0))}</b>won</span>
+        </div>
+        <div className="crm-pipe-bar" aria-label="Leads by stage">
+          {STAGES.map((s) => {
+            const n = leads.filter((l) => l.stage === s.id).length;
+            return n ? <span key={s.id} className={`stage-${s.id}`} style={{ flexGrow: n }} title={`${s.label}: ${n}`}><i>{s.label}</i><b>{n}</b></span> : null;
+          })}
+        </div>
+      </div>
+      {/* Busy stages get the room; empty ones fold to a slim drop zone so the board fits without sideways scrolling. */}
+      <div className="crm-board" style={{ gridTemplateColumns: STAGES.map((s) => (leads.some((l) => l.stage === s.id) ? 'minmax(158px, 1fr)' : 'minmax(108px, .42fr)')).join(' ') }}>
+        {STAGES.map((s) => {
+          const col = leads.filter((l) => l.stage === s.id).sort((x, y) => rank(y) - rank(x) || Date.parse(y.last_activity_at) - Date.parse(x.last_activity_at));
+          const total = col.reduce((t, l) => t + (l.value ?? 0), 0);
+          const share = leads.length ? Math.round((col.length / leads.length) * 100) : 0;
+          return (
+            <section key={s.id} className={`crm-col stage-${s.id} ${over === s.id ? 'is-over' : ''}`}
+              onDragOver={(e) => { e.preventDefault(); setOver(s.id); }}
+              onDragLeave={() => setOver((o) => (o === s.id ? null : o))}
+              onDrop={(e) => { e.preventDefault(); setOver(null); const id = e.dataTransfer.getData('text/plain'); if (id) onMove(id, s.id); }}
+              aria-label={`${s.label}, ${col.length} leads`}>
+              <header className="crm-col-head">
+                <span className="crm-col-dot" /><h2>{s.label}</h2><span className="crm-col-n">{col.length}</span>
+                <span className="crm-col-v">{total ? inr(total) : `${share}%`}</span>
+                <span className="crm-col-meter" aria-hidden="true"><i style={{ width: `${share}%` }} /></span>
+              </header>
+              <div className="crm-col-body">
+                {col.map((l) => <Card key={l.id} lead={l} now={now} fresh={fresh.has(l.id)} onOpen={() => onOpen(l.id)} draggable />)}
+                {!col.length ? <p className="crm-col-empty"><span>＋</span>Drag a lead here</p> : null}
+              </div>
+            </section>
+          );
+        })}
+      </div>
+    </>
   );
 }
 
@@ -246,7 +304,7 @@ export function List({ leads, now, onOpen }: { leads: CrmLead[]; now: number; on
       <button role="tab" aria-selected={view === 'live'} className={`crm-chipbtn ${view === 'live' ? 'is-on' : ''}`} onClick={() => pick('live')}>As they come</button>
     </div>
   );
-  if (!rows.length) return <div className="crm-stack">{tabs}<div className="crm-panel"><p className="crm-muted">No leads match.</p></div></div>;
+  if (!rows.length) return <div className="crm-stack">{tabs}<Empty text="No leads match." /></div>;
   if (view === 'live') return <div className="crm-stack">{tabs}<Incoming leads={leads} now={now} onOpen={onOpen} /></div>;
   return (
     <div className="crm-stack">{tabs}
@@ -324,7 +382,7 @@ export function ActivitySection({ feed, now, onOpen }: { feed: FeedItem[]; now: 
           <div className="crm-feed">{items.map((f) => <FeedRow key={f.id} f={f} now={now} onOpen={onOpen} />)}</div>
         </Panel>
       ))}
-      {!rows.length ? <div className="crm-panel"><p className="crm-muted">No activity yet.</p></div> : null}
+      {!rows.length ? <Empty text="No activity yet." /> : null}
     </div>
   );
 }
@@ -452,7 +510,7 @@ export function ChatsSection({ feed, now, onOpen }: { feed: FeedItem[]; now: num
           );
         })}
       </div>
-      {!chats.length ? <div className="crm-panel"><p className="crm-muted">When B writes a brief, sends a summary or flags a hot lead, the conversation shows up here.</p></div> : null}
+      {!chats.length ? <Empty text="When B writes a brief, sends a summary or flags a hot lead, the conversation shows up here." /> : null}
     </div>
   );
 }
@@ -469,7 +527,7 @@ export function InstagramSection({ ig, feed, now }: { ig: IgSummary | null; feed
         {['draft', 'approved', 'scheduled', 'published', 'failed'].map((s) => <Kpi key={s} label={IG_LABEL[s]!} value={ig ? String(ig.counts[s] ?? 0) : '—'} sub={s === 'published' ? '@byboindia' : undefined} accent={s === 'published'} />)}
         <Kpi label="Leads from Meta forms" value={String(meta)} sub="Instagram + Facebook" />
       </section>
-      {ig === null ? <div className="crm-panel"><p className="crm-muted">The Instagram post store isn’t connected on this deployment.</p></div> : (
+      {ig === null ? <Empty text="The Instagram post store isn’t connected on this deployment." /> : (
         <div className="crm-grid-2">
           <Panel title="Up next" action={<a className="crm-btn is-ghost" href="/admin/instagram">Open Instagram desk</a>}>
             {ig.next.length ? ig.next.map((p, i) => (

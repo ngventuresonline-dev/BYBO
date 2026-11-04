@@ -39,6 +39,16 @@ export function featured(c: DemoContent, items: Item[]): Item[] {
   return picked.length ? picked : items.slice(0, 8);
 }
 
+/** Business-specific wording with plain defaults. */
+export function words(c: DemoContent) {
+  const l = c.labels ?? {};
+  return {
+    originsKicker: l.origins_kicker ?? 'Shop by collection', originsTitle: l.origins_title ?? 'Collections',
+    featuredKicker: l.featured_kicker ?? (c.sample_note ? 'Featured' : 'Bestsellers'), featuredTitle: l.featured_title ?? (c.sample_note ? `The ${c.brand} edit` : 'Most-loved pieces'),
+    ask: l.ask ?? 'Enquire about this product', askShort: l.ask_short ?? 'Enquire', call: l.call ?? 'Book a video call', priceNote: l.price_note ?? 'Price on request',
+  };
+}
+
 export const inr = (n: number) => `₹${Math.round(n).toLocaleString('en-IN')}`;
 export const pad = (n: number) => String(n).padStart(2, '0');
 export const off = (i: Pick<Item, 'price' | 'compare'>) => (i.price && i.compare && i.compare > i.price ? Math.round((1 - i.price / i.compare) * 100) : null);
