@@ -6,7 +6,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { readRecords, useCart, type DemoEnquiry, type DemoOrder } from './store';
 
 type P = { title: string; handle: string; image: string | null; price: number | null };
-const inr = (n: number) => `₹${Math.round(n).toLocaleString('en-IN')}`;
 const CITIES = ['Mumbai', 'Bengaluru', 'Delhi', 'Pune', 'Hyderabad', 'Chennai', 'Kolkata', 'Jaipur', 'Ahmedabad', 'Lucknow'];
 const NAMES = ['Priya S.', 'Rahul M.', 'Neha K.', 'Imran A.', 'Kavya R.', 'Vikram J.', 'Pooja D.', 'Sanjay N.', 'Meera T.', 'Arjun P.'];
 
@@ -25,7 +24,7 @@ const SECTIONS = ['Overview', 'Orders', 'Customers', 'Campaigns', 'Automations',
  * is clearly marked sample data.
  */
 export function Dashboard({ brand, products }: { brand: string; products: P[] }) {
-  const { base, lines } = useCart();
+  const { base, lines, money: inr } = useCart();
   const [tab, setTab] = useState<(typeof SECTIONS)[number]>('Overview');
   const [orders, setOrders] = useState<DemoOrder[]>([]);
   const [enquiries, setEnquiries] = useState<DemoEnquiry[]>([]);
@@ -160,6 +159,7 @@ export function Dashboard({ brand, products }: { brand: string; products: P[] })
 }
 
 function Orders({ live, sample, compact, priced = true }: { live: DemoOrder[]; sample: { id: string; name: string; city: string; item: string; qty: number; total: number; status: string; pay: string }[]; compact?: boolean; priced?: boolean }) {
+  const { money: inr } = useCart();
   const rows = [
     ...live.map((o) => ({ id: o.id, name: o.name, city: o.city, item: o.items.map((i) => `${i.title} × ${i.qty}`).join(', '), total: o.total, status: 'New', pay: o.pay.toUpperCase(), live: true })),
     ...sample.map((s) => ({ ...s, item: `${s.item}${s.qty > 1 ? ` × ${s.qty}` : ''}`, live: false })),

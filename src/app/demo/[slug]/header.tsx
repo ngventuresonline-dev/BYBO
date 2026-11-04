@@ -4,16 +4,16 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
-import { CartButton } from './store';
+import { CartButton, useCart } from './store';
 
 type NavItem = { title: string; handle: string; image: string | null; price: number | null; category: string };
-const inr = (n: number) => `₹${Math.round(n).toLocaleString('en-IN')}`;
 
 /**
  * The demo store's header: a mega menu with real products per category, live
  * product search, and a full-screen menu on phones.
  */
 export function StoreHeader({ base, brand, logo, cats, items, featured, quote, badge = 'Bestseller', pages = [], action = 'Enquire' }: { base: string; brand: string; logo: string | null; cats: string[]; items: NavItem[]; featured: NavItem | null; quote?: string | null; badge?: string; pages?: { href: string; label: string }[]; action?: string }) {
+  const { money: inr } = useCart();
   const [mega, setMega] = useState(false);
   const [active, setActive] = useState(cats[0] ?? '');
   const [search, setSearch] = useState(false);

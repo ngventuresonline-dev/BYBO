@@ -7,12 +7,13 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 export type Line = { handle: string; title: string; price: number; image: string | null; qty: number };
 type Cart = {
   base: string; lines: Line[]; count: number; subtotal: number; open: boolean;
-  add: (l: Omit<Line, 'qty'>, qty?: number) => void; setQty: (handle: string, qty: number) => void; clear: () => void; setOpen: (o: boolean) => void;
+  add: (l: Omit<Line, 'qty'>, qty?: number) => void; money: (n: number) => string; currency: string; setQty: (handle: string, qty: number) => void; clear: () => void; setOpen: (o: boolean) => void;
 };
 
 const Ctx = createContext<Cart | null>(null);
 export const useCart = () => useContext(Ctx)!;
-const inr = (n: number) => `₹${Math.round(n).toLocaleString('en-IN')}`;
+import { money } from './data';
+import { PersonaliseBox, type Swatch } from './personalise';
 
 /** Orders and enquiries made on a demo, kept in this browser so the owner dashboard can show them. */
 export type DemoOrder = { id: string; at: string; name: string; city: string; pay: string; items: { title: string; qty: number; price: number }[]; total: number };
@@ -25,7 +26,7 @@ export function addRecord<T>(base: string, kind: 'orders' | 'enquiries', rec: T)
 }
 
 /** The demo shop's cart: kept in this browser only, per demo. */
-export function CartProvider({ slug, children }: { slug: string; children: React.ReactNode }) {
+export function CartProvider({ slug, currency = 'INR', children }: { slug: string; currency?: string; children: React.ReactNode }) {
   const key = `bybo-demo-cart:${slug}`;
   const [lines, setLines] = useState<Line[]>([]);
   const [open, setOpen] = useState(false);
@@ -41,9 +42,9 @@ export function CartProvider({ slug, children }: { slug: string; children: React
   }, [lines, save]);
   const setQty = useCallback((handle: string, qty: number) => save(qty <= 0 ? lines.filter((x) => x.handle !== handle) : lines.map((x) => (x.handle === handle ? { ...x, qty: Math.min(10, qty) } : x))), [lines, save]);
   const value = useMemo<Cart>(() => ({
-    base: `/demo/${slug}`, lines, open, setOpen, add, setQty, clear: () => save([]),
+    base: `/demo/${slug}`, lines, open, setOpen, add, setQty, clear: () => save([]), currency, money: (n: number) => money(n, currency),
     count: lines.reduce((n, l) => n + l.qty, 0), subtotal: lines.reduce((n, l) => n + l.qty * l.price, 0),
-  }), [slug, lines, open, add, setQty, save]);
+  }), [slug, lines, open, add, setQty, save, currency]);
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
 
@@ -68,25 +69,30 @@ export function AddToCart({ item, qty = 1, label = 'Add to bag', className = 'de
 }
 
 /** Product page buy box: quantity, add to bag, buy now. */
-export function BuyBox({ item, facts }: { item: Omit<Line, 'qty'>; facts: string[] }) {
+export function BuyBox({ item: base0, facts, personalise = null, swatch = null }: { item: Omit<Line, 'qty'>; facts: string[]; personalise?: { name_label: string; initials_label?: string; max: number; note?: string } | null; swatch?: Swatch | null }) {
   const [qty, setQty] = useState(1);
+  const [mark, setMark] = useState({ name: '', initials: '' });
   const { add, base } = useCart();
+  // A personalised piece is its own line in the bag, with the name in its title.
+  const item = personalise && mark.name ? { ...base0, handle: `${base0.handle}--${mark.name.toLowerCase().replace(/[^a-z]/g, '')}-${mark.initials.toLowerCase()}`, title: `${base0.title} · ${mark.name}${mark.initials ? ` / ${mark.initials}` : ''}` } : base0;
+  const blocked = !!personalise && mark.name.length < 2;
   return (
     <div className="pd-buy">
+      {personalise ? <PersonaliseBox item={base0} rules={personalise} swatch={swatch} onChange={setMark} /> : null}
       <div className="pd-qty" role="group" aria-label="Quantity">
         <button type="button" onClick={() => setQty(Math.max(1, qty - 1))} aria-label="Less">−</button>
         <span>{qty}</span>
         <button type="button" onClick={() => setQty(Math.min(10, qty + 1))} aria-label="More">+</button>
       </div>
-      <AddToCart item={item} qty={qty} className="demo-btn pd-add" />
-      <Link className="demo-btn is-ghost pd-now" href={`${base}/checkout`} onClick={() => add(item, qty)}>Buy it now</Link>
+      {blocked ? <button type="button" className="demo-btn pd-add" disabled>Add your name first</button> : <AddToCart item={item} qty={qty} className="demo-btn pd-add" label={personalise ? `Add ${mark.name} to bag` : 'Add to bag'} />}
+      {blocked ? null : <Link className="demo-btn is-ghost pd-now" href={`${base}/checkout`} onClick={() => add(item, qty)}>Buy it now</Link>}
       {facts.length ? <ul className="pd-facts">{facts.map((f) => <li key={f}>{f}</li>)}</ul> : null}
     </div>
   );
 }
 
 export function CartDrawer() {
-  const { lines, open, setOpen, setQty, subtotal, base } = useCart();
+  const { lines, open, setOpen, setQty, subtotal, base, money: inr } = useCart();
   useEffect(() => {
     const esc = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
     window.addEventListener('keydown', esc);
@@ -108,6 +114,7 @@ export function CartDrawer() {
 }
 
 function CartLines({ lines, setQty }: { lines: Line[]; setQty: (h: string, q: number) => void }) {
+  const { money: inr } = useCart();
   return (
     <ul className="st-lines">
       {lines.map((l) => (
@@ -130,7 +137,7 @@ function CartLines({ lines, setQty }: { lines: Line[]; setQty: (h: string, q: nu
 }
 
 export function CartPage({ free }: { free: string | null }) {
-  const { lines, setQty, subtotal, base } = useCart();
+  const { lines, setQty, subtotal, base, money: inr } = useCart();
   if (!lines.length) return <div className="st-page-empty"><p>Your bag is empty.</p><Link className="demo-btn" href={`${base}/shop`}>Start shopping</Link></div>;
   return (
     <div className="st-cart">
@@ -148,8 +155,9 @@ export function CartPage({ free }: { free: string | null }) {
 
 /** Checkout: a working form and order confirmation. Demo only: nothing is charged or sent. */
 export function Checkout({ brand }: { brand: string }) {
-  const { lines, subtotal, clear, base } = useCart();
-  const [pay, setPay] = useState('upi');
+  const { lines, subtotal, clear, base, money: inr, currency } = useCart();
+  const abroad = currency !== 'INR';
+  const [pay, setPay] = useState(currency === 'INR' ? 'upi' : 'card');
   const [order, setOrder] = useState<{ id: string; total: number; name: string; items: number } | null>(null);
   if (order) {
     return (
@@ -179,16 +187,17 @@ export function Checkout({ brand }: { brand: string }) {
       <div className="co-form">
         <fieldset><legend>Contact</legend>
           <label>Full name<input name="name" required autoComplete="name" /></label>
-          <label>Mobile number<input name="phone" required inputMode="tel" pattern="[0-9 +]{10,14}" autoComplete="tel" /></label>
+          <label>Mobile number<input name="phone" required inputMode="tel" pattern={abroad ? '[0-9 +()-]{7,18}' : '[0-9 +]{10,14}'} autoComplete="tel" /></label>
           <label>Email<input name="email" type="email" autoComplete="email" /></label>
         </fieldset>
         <fieldset><legend>Delivery address</legend>
           <label className="is-wide">Address<input name="address" required autoComplete="street-address" /></label>
           <label>City<input name="city" required autoComplete="address-level2" /></label>
-          <label>PIN code<input name="pin" required inputMode="numeric" pattern="[0-9]{6}" autoComplete="postal-code" /></label>
+          {abroad ? <label>Postcode or ZIP<input name="pin" required autoComplete="postal-code" /></label> : <label>PIN code<input name="pin" required inputMode="numeric" pattern="[0-9]{6}" autoComplete="postal-code" /></label>}
+          {abroad ? <label>Country<select name="country" defaultValue="United States">{['United States', 'Canada', 'United Kingdom', 'Australia', 'New Zealand', 'United Arab Emirates', 'India', 'Other'].map((k) => <option key={k}>{k}</option>)}</select></label> : null}
         </fieldset>
         <fieldset><legend>Payment</legend>
-          {[['upi', 'UPI', 'GPay, PhonePe, Paytm'], ['card', 'Card', 'Credit or debit card'], ['cod', 'Cash on delivery', 'Pay when it arrives']].map(([v, t, d]) => (
+          {(abroad ? [['card', 'Card', 'Visa, Mastercard, Amex'], ['wallet', 'Apple Pay or Google Pay', 'One tap on your phone'], ['paypal', 'PayPal', 'Pay with your PayPal account']] : [['upi', 'UPI', 'GPay, PhonePe, Paytm'], ['card', 'Card', 'Credit or debit card'], ['cod', 'Cash on delivery', 'Pay when it arrives']]).map(([v, t, d]) => (
             <label key={v} className={`co-pay ${pay === v ? 'is-on' : ''}`}><input type="radio" name="pay" value={v} checked={pay === v} onChange={() => setPay(v!)} /><b>{t}</b><span>{d}</span></label>
           ))}
         </fieldset>
@@ -206,6 +215,7 @@ export function Checkout({ brand }: { brand: string }) {
 
 /** Shop grid with category filters and sorting. */
 export function ShopGrid({ items, cats, base, initial = 'All', ask = 'Enquire', priceNote = 'Price on request' }: { ask?: string; priceNote?: string; initial?: string; items: { title: string; handle: string; price: number | null; compare: number | null; image: string | null; category: string; line: string }[]; cats: string[]; base: string }) {
+  const { money: inr } = useCart();
   const [cat, setCat] = useState(initial);
   const [sort, setSort] = useState('featured');
   const list = items.filter((i) => cat === 'All' || i.category === cat).sort((a, b) => sort === 'low' ? (a.price ?? 0) - (b.price ?? 0) : sort === 'high' ? (b.price ?? 0) - (a.price ?? 0) : 0);

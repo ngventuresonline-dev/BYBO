@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { DemoContent } from '@/lib/crm/autopilot';
 import { DemoMotion } from '../../DemoMotion';
-import { catalog, inr, loadDemo, off, words } from '../../data';
+import { catalog, money, loadDemo, off, words } from '../../data';
 import { AddToCart, BuyBox, Gallery } from '../../store';
 
 export const dynamic = 'force-dynamic';
@@ -29,6 +29,7 @@ export default async function Product({ params }: { params: Promise<{ slug: stri
   const found = await find(slug, handle);
   if (!found) notFound();
   const { c, items, item } = found;
+  const inr = (n: number) => money(n, c.currency);
   const base = `/demo/${slug}`;
   const pct = off(item);
   const w = words(c);
@@ -51,8 +52,8 @@ export default async function Product({ params }: { params: Promise<{ slug: stri
             {item.price != null ? <b>{inr(item.price)}</b> : <b>{w.priceNote}</b>}
             {pct ? <><s>{inr(item.compare!)}</s><span className="demo-off">Save {pct}%</span></> : null}
           </div>
-          {item.price != null ? <p className="pd-tax">Inclusive of all taxes</p> : null}
-          {buy ? <BuyBox item={buy} facts={facts.slice(0, 3)} /> : (
+          {item.price != null ? <p className="pd-tax">{c.personalise ? 'Personalised and made to order' : c.currency && c.currency !== 'INR' ? 'Taxes and duties shown at checkout' : 'Inclusive of all taxes'}</p> : null}
+          {buy ? <BuyBox item={buy} facts={facts.slice(0, 3)} personalise={c.personalise ?? null} swatch={item.swatch ?? null} /> : (
             <div className="pd-buy">
               <Link className="demo-btn pd-now" href={`${base}/contact?p=${encodeURIComponent(item.title)}`}>{w.ask}</Link>
               <Link className="demo-btn is-ghost pd-now" href={`${base}/contact?p=${encodeURIComponent(`${item.title} (call)`)}`}>{w.call}</Link>

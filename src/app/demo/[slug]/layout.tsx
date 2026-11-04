@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Cormorant_Garamond, Fraunces, Manrope, Space_Grotesk } from 'next/font/google';
+import { Cormorant_Garamond, Fraunces, Graduate, Manrope, Space_Grotesk } from 'next/font/google';
 import { notFound, redirect } from 'next/navigation';
 import type { DemoContent } from '@/lib/crm/autopilot';
 import { CONTACT } from '@/lib/site';
@@ -15,6 +15,7 @@ import './service.css';
 const editorial = Cormorant_Garamond({ subsets: ['latin'], weight: ['500', '600'], style: ['normal', 'italic'], variable: '--f-editorial', preload: false });
 const soft = Fraunces({ subsets: ['latin'], weight: ['500', '600'], style: ['normal', 'italic'], variable: '--f-soft', preload: false });
 const modern = Space_Grotesk({ subsets: ['latin'], weight: ['500', '600'], variable: '--f-modern', preload: false });
+const varsity = Graduate({ subsets: ['latin'], weight: '400', variable: '--f-varsity', preload: false });
 const body = Manrope({ subsets: ['latin'], weight: ['400', '500', '600'], variable: '--f-body', preload: false });
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
@@ -49,10 +50,10 @@ export default async function DemoLayout({ children, params }: { children: React
   const wa = `https://wa.me/${CONTACT.phone.replace(/\D/g, '')}?text=${encodeURIComponent(`Hi BYBO, I saw the demo for ${c.brand}. Let's talk.`)}`;
 
   return (
-    <div className={`demo f-${c.font ?? 'editorial'} s-${c.style ?? 'luxe'} k-${bp.kind}${isDark(theme.bg) ? ' is-dark' : ''} ${editorial.variable} ${soft.variable} ${modern.variable} ${body.variable}`} style={style}>
+    <div className={`demo f-${c.font ?? 'editorial'} s-${c.style ?? 'luxe'} k-${bp.kind}${isDark(theme.bg) ? ' is-dark' : ''} ${editorial.variable} ${soft.variable} ${modern.variable} ${body.variable} ${varsity.variable}`} style={style}>
       {/* The page behind the demo takes its background too, so nothing flashes the site's own colour. */}
       <style>{`html,body{background:${theme.bg}}`}</style>
-      <CartProvider slug={slug}>
+      <CartProvider slug={slug} currency={c.currency ?? 'INR'}>
         <div className="demo-ribbon">{c.sample_note ? <>{c.sample_note} · </> : null}A demo prepared by <b>BYBO</b> for {c.brand}{c.site_url ? <> · <a href={c.site_url} target="_blank" rel="noreferrer">see the current site</a></> : null} · <Link href={`${base}/dashboard`}>open the owner dashboard</Link> · <a href={wa} target="_blank" rel="noreferrer">talk to BYBO</a></div>
         {facts.length ? <div className="st-announce"><div>{[0, 1].map((k) => <span key={k}>{facts.map((f) => <em key={f + k}>{f}</em>)}</span>)}</div></div> : null}
         <StoreHeader
@@ -74,7 +75,7 @@ export default async function DemoLayout({ children, params }: { children: React
           <div><h4>{items.length ? 'Shop' : 'Explore'}</h4>{links.slice(0, 5).map((l) => <Link key={l.href} href={l.href}>{l.label}</Link>)}</div>
           <div><h4>Help</h4><Link href={`${base}/dashboard`}>Owner dashboard</Link><Link href={`${base}/contact`}>Contact us</Link><Link href={`${base}/about`}>Our story</Link>{items.length ? <Link href={`${base}/cart`}>Your bag</Link> : null}</div>
           <div><h4>Promise</h4>{facts.slice(0, 4).map((f) => <p key={f}>{f}</p>)}</div>
-          <p className="st-foot-base">© {c.brand} · Redesign by <a href="https://bybo.in">BYBO</a></p>
+          <p className="st-foot-base">© {c.brand} · {c.site_url ? 'Redesign' : 'Designed'} by <a href="https://bybo.in">BYBO</a></p>
         </footer>
         <Link href={`${base}/dashboard`} className="st-owner" aria-label="Open the owner dashboard"><i />Owner view</Link>
         <CartDrawer />

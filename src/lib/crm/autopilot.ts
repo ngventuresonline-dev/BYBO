@@ -82,7 +82,7 @@ export type DemoContent = {
   /** True when the scene photos already show their product: no floating cut-out, a shoppable hotspot instead. */
   scenes_show_product?: boolean;
   /** Their full catalogue (from their store), for the demo's shop, product and cart pages. */
-  catalog?: { title: string; handle: string; price: number | null; compare: number | null; image: string | null; images: string[]; type: string | null; description: string }[];
+  catalog?: { title: string; handle: string; price: number | null; compare: number | null; image: string | null; images: string[]; type: string | null; description: string; swatch?: { body: string; sleeve: string; letter: string; edge: string } }[];
   gallery?: string[];
   /** v4: the blueprint the demo follows (see blueprints.ts). Unset means a store when there is a catalogue. */
   kind?: Kind;
@@ -94,6 +94,10 @@ export type DemoContent = {
   work_note?: string;
   /** Section layouts, so two demos of the same kind do not look alike. */
   layout?: { services?: 'stack' | 'rows'; work?: 'grid' | 'rail' };
+  /** Price currency for brands selling abroad (default INR). */
+  currency?: 'INR' | 'USD' | 'GBP' | 'CAD' | 'AUD' | 'AED' | 'EUR';
+  /** Made-to-order personalisation: a name and initials stitched on, previewed live. */
+  personalise?: { name_label: string; initials_label?: string; max: number; note?: string } | null;
   /** The cities or localities they serve. */
   areas?: string[];
 };

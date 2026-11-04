@@ -4,10 +4,11 @@ import { notFound } from 'next/navigation';
 import type { DemoContent } from '@/lib/crm/autopilot';
 import { CONTACT } from '@/lib/site';
 import { DemoMotion } from './DemoMotion';
-import { blueprintOf, catalog, featured, inr, isCutout, loadDemo, off, pad, words } from './data';
+import { blueprintOf, catalog, featured, money, isCutout, loadDemo, off, pad, words } from './data';
 import { AddToCart } from './store';
 import { Compare } from './compare';
 import { MenuBlock, ServicesBlock, WorkBlock } from './services';
+import { Personaliser } from './personalise';
 
 export const dynamic = 'force-dynamic';
 
@@ -25,6 +26,7 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
   const demo = await loadDemo(slug);
   if (!demo) notFound();
   const c = demo.content as DemoContent;
+  const inr = (n: number) => money(n, c.currency);
   const base = `/demo/${slug}`;
   const items = catalog(c);
   const w = words(c);
@@ -123,7 +125,7 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
           <div className="demo-hero-cta">
             {/* A studio or service with nothing to buy asks for the booking or brief instead. */}
             {commerce ? <Link className="demo-btn" data-magnet href={`${base}/shop`}>{bp.cta.primary}</Link> : <Link className="demo-btn" data-magnet href={`${base}/contact`}>{bp.cta.primary}</Link>}
-            {!commerce ? <Link className="demo-btn is-ghost" href={`${base}/${proofPage}`}>{bp.cta.secondary}</Link> : heroItem?.price != null ? <AddToCart item={{ handle: heroItem.handle, title: heroItem.title, price: heroItem.price, image: heroItem.image }} className="demo-btn is-ghost" label={`Add to bag · ${inr(heroItem.price)}`} /> : <Link className="demo-btn is-ghost" href={`${base}/contact`}>{w.call}</Link>}
+            {!commerce ? <Link className="demo-btn is-ghost" href={`${base}/${proofPage}`}>{bp.cta.secondary}</Link> : c.personalise && heroItem?.price != null ? <a className="demo-btn is-ghost" href="#personalise">Add your name · {inr(heroItem.price)}</a> : heroItem?.price != null ? <AddToCart item={{ handle: heroItem.handle, title: heroItem.title, price: heroItem.price, image: heroItem.image }} className="demo-btn is-ghost" label={`Add to bag · ${inr(heroItem.price)}`} /> : <Link className="demo-btn is-ghost" href={`${base}/contact`}>{w.call}</Link>}
           </div>
           <div className="demo-dots" aria-hidden="true">{frames.map((f, i) => <i key={i} data-frame={i} className={i === 0 ? 'is-active' : ''} />)}</div>
           <div className="demo-scroll-hint" aria-hidden="true"><span />Scroll</div>
@@ -158,6 +160,15 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
         <div className="demo-marquee" aria-hidden="true">
           <div>{[0, 1].map((k) => <span key={k}>{[...facts, ...cats.map((x) => x.name)].map((t) => <em key={t + k}>{t}<i>✦</i></em>)}</span>)}</div>
         </div>
+      ) : null}
+
+      {/* Made-to-order brands: type the name, see the stitch proof, add to bag. */}
+      {c.personalise ? (
+        <Personaliser
+          kicker="Make it yours" title="Wear your name."
+          rules={c.personalise}
+          options={items.filter((i) => i.swatch && i.price != null).map((i) => ({ handle: i.handle, title: i.title, price: i.price!, image: i.image, back: i.images[1] ?? null, category: i.category, swatch: i.swatch! }))}
+        />
       ) : null}
 
       {c.origins?.length ? (
