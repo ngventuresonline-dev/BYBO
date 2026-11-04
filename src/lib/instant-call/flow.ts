@@ -241,7 +241,7 @@ export async function applyCallUpdate(lead: Lead, update: CallUpdate, deps: Flow
       phone: next.phone_e164,
       external_id: crmKey(next),
       stage: next.call_status === 'done' || next.call_status === 'answered' ? 'contacted' : undefined,
-      event: { kind: 'call', title: callTitle, body: next.call_summary ?? undefined, meta: { attempts: next.call_attempts } },
+      event: { kind: 'call', title: callTitle, body: next.call_summary ?? undefined, meta: { attempts: next.call_attempts, ...(next.conversation_id ? { conversation: next.conversation_id } : {}) } },
     });
   }
   return next;

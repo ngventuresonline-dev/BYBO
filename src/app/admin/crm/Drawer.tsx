@@ -158,6 +158,7 @@ export function Drawer({ lead, now, products, slots, demos, onChanged, onClose, 
         {lead.summary ? <div className="crm-summary"><p className="crm-label">Summary</p><p>{lead.summary}</p></div> : null}
         <IntelPanel lead={lead} />
         <LeadDemos lead={lead} demos={demos} onToast={onToast} onChanged={() => { setBump((n) => n + 1); onChanged(); }} />
+        {lead.phone ? <CallRecordings lead={lead} /> : null}
         {lead.services.length ? <div className="crm-tags">{lead.services.map((s) => <span key={s} className="crm-tag">{s}</span>)}</div> : null}
 
         <form className="crm-form" onSubmit={save}>
@@ -227,6 +228,39 @@ export function Drawer({ lead, now, products, slots, demos, onChanged, onClose, 
         </footer>
       </aside>
     </div>
+  );
+}
+
+type Recording = { id: string; at: string; seconds: number; status: string; summary: string | null; answered: boolean };
+
+/** Every AI call to this lead, newest first, each with its recording and summary. */
+function CallRecordings({ lead }: { lead: CrmLead }) {
+  const [calls, setCalls] = useState<Recording[] | null>(null);
+  const [err, setErr] = useState(false);
+  const [open, setOpen] = useState<string | null>(null);
+  useEffect(() => {
+    let live = true;
+    api<{ calls: Recording[] }>(`/api/admin/crm/leads/${lead.id}/recordings`).then((r) => { if (live) setCalls(r.calls); }).catch(() => { if (live) setErr(true); });
+    return () => { live = false; };
+  }, [lead.id]);
+  const len = (s: number) => `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, '0')}`;
+  return (
+    <section className="crm-calls" aria-label="Call recordings">
+      <p className="crm-label">AI call recordings{calls?.length ? ` · ${calls.length}` : ''}</p>
+      {err ? <p className="crm-calls-empty">Recordings couldn’t load. Try again in a minute.</p>
+        : !calls ? <p className="crm-calls-empty">Loading calls…</p>
+        : !calls.length ? <p className="crm-calls-empty">No AI calls to {lead.phone} yet.</p>
+        : <ul>{calls.map((c) => (
+          <li key={c.id}>
+            <div className="crm-calls-top">
+              <b>{new Date(c.at).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' })}</b>
+              <span className={`crm-calls-pill${c.answered ? ' is-on' : ''}`}>{c.answered ? `Answered · ${len(c.seconds)}` : 'Not answered'}</span>
+            </div>
+            {c.seconds > 0 ? <audio controls preload="none" src={`/api/admin/crm/recordings/${c.id}`} /> : null}
+            {c.summary ? <button type="button" className="crm-calls-sum" onClick={() => setOpen(open === c.id ? null : c.id)}>{open === c.id ? c.summary : `${c.summary.slice(0, 110)}${c.summary.length > 110 ? '… more' : ''}`}</button> : null}
+          </li>
+        ))}</ul>}
+    </section>
   );
 }
 
