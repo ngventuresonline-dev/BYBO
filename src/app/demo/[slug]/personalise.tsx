@@ -83,8 +83,10 @@ export function Personaliser({ options, rules, kicker, title }: { options: Optio
       if (options.some((x) => x.handle === h)) setPick(h);
       document.getElementById('personalise')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
+    const onName = (e: Event) => setName(clean((e as CustomEvent<string>).detail, rules.max));
     window.addEventListener('demo:pick', onPick);
-    return () => { clearTimeout(t); window.removeEventListener('demo:pick', onPick); };
+    window.addEventListener('demo:name', onName);
+    return () => { clearTimeout(t); window.removeEventListener('demo:pick', onPick); window.removeEventListener('demo:name', onName); };
   }, [options, rules.max]);
 
   const o = options.find((x) => x.handle === pick) ?? options[0];

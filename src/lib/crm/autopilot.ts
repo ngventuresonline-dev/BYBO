@@ -96,6 +96,8 @@ export type DemoContent = {
   layout?: { services?: 'stack' | 'rows'; work?: 'grid' | 'rail' };
   /** Price currency for brands selling abroad (default INR). */
   currency?: 'INR' | 'USD' | 'GBP' | 'CAD' | 'AUD' | 'AED' | 'EUR';
+  /** A real-time 3D name stage as the hero: names in chenille, cycling, rebuilt as the visitor types. */
+  stage?: { names: string[]; looks: string[] } | null;
   /** An interactive wardrobe opening the page: every piece on one rail, pick one to see it close up. */
   wardrobe?: { kicker: string; title: string } | null;
   /** Made-to-order personalisation: a name and initials stitched on, previewed live. */
