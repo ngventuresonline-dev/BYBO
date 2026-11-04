@@ -181,7 +181,24 @@ Reply with JSON only:
   intel.sources = [...new Set([...(site ? [site.url] : []), ...sources])].slice(0, 8);
   intel.site = site ? { ...site, text: site.text.slice(0, 2500) } : null;
   intel.researched_at = new Date().toISOString();
+  const flags = redFlags(l, intel);
+  if (flags.length) {
+    intel.quality = 'fake';
+    intel.score = Math.min(intel.score, 25);
+    intel.reasons = [...flags.map((f) => `Red flag: ${f}`), ...(intel.reasons ?? [])];
+  }
   return intel;
+}
+
+const SPAM_WORDS = /(?<![a-z])(lust|sexy|xxx|porn|escort|nude|horny|hookup|onlyfans)/i;
+/** Plain signs of spam that the model tends to excuse. Any one marks the lead as likely fake. */
+export function redFlags(l: Pick<CrmLead, 'name' | 'email'>, intel: Intel): string[] {
+  const flags: string[] = [];
+  if (SPAM_WORDS.test(`${l.name ?? ''} ${l.email?.split('@')[0] ?? ''}`)) flags.push('the name or email has adult or spam words');
+  if (/(?:^|\s)(?:\S\s+){2,}\S(?:\s|$)/.test(l.name ?? '')) flags.push('the name is spaced-out letters, not a real name');
+  const s = intel.signals ?? {};
+  if (s.name_looks_real === false && !s.business_found && s.email_type !== 'business') flags.push('the name does not look real, no business was found and the email is personal');
+  return flags;
 }
 
 const compactMedia = (s: SiteScan) => (s.media ?? s.images.map((src) => ({ src, alt: '' }))).map((m, i) => ({ i, file: m.src.split('/').pop()!.split('?')[0], alt: m.alt }));
