@@ -88,6 +88,19 @@ export function Drawer({ lead, now, products, slots, demos, onChanged, onClose, 
     catch { setErr('Couldn’t delete. Try again.'); }
   }
 
+  const [calling, setCalling] = useState(false);
+  async function callNow() {
+    setCalling(true);
+    try {
+      const r = await api<{ message: string }>(`/api/admin/crm/leads/${lead.id}/call`, { method: 'POST' });
+      onToast(r.message);
+      refresh();
+    } catch (x) {
+      onToast((x as Error & { data?: { message?: string } }).data?.message || 'That didn’t work. Try again.');
+    }
+    setCalling(false);
+  }
+
   const followIn = (days: number) => {
     const d = new Date(now + days * 86_400_000);
     d.setHours(11, 0, 0, 0);
@@ -120,6 +133,7 @@ export function Drawer({ lead, now, products, slots, demos, onChanged, onClose, 
           <button className={`crm-act ${tool === 'email' ? 'is-on' : ''}`} onClick={() => setTool(tool === 'email' ? null : 'email')} disabled={!lead.email}><span>✉</span>Email</button>
           <button className={`crm-act ${tool === 'whatsapp' ? 'is-on' : ''}`} onClick={() => setTool(tool === 'whatsapp' ? null : 'whatsapp')} disabled={!lead.phone}><span>◍</span>WhatsApp</button>
           <a className={`crm-act ${lead.phone ? '' : 'is-off'}`} href={lead.phone ? `tel:${lead.phone}` : undefined} aria-disabled={!lead.phone}><span>☏</span>Call</a>
+          <button className="crm-act" onClick={callNow} disabled={!lead.phone || calling} title="The AI agent calls this lead now"><span>⚡</span>{calling ? 'Dialling…' : 'AI call now'}</button>
           <button className={`crm-act ${tool === 'book' ? 'is-on' : ''}`} onClick={() => setTool(tool === 'book' ? null : 'book')}><span>◷</span>Book call</button>
           <button className={`crm-act ${tool === 'pay' ? 'is-on' : ''}`} onClick={() => setTool(tool === 'pay' ? null : 'pay')}><span>₹</span>Pay link</button>
         </div>

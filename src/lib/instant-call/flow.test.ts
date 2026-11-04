@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { afterEach, describe, it } from 'node:test';
-import { importMetaLeads, captureLead, runCadence, applyCallUpdate } from './flow';
+import { importMetaLeads, captureLead, runCadence, applyCallUpdate, callNow } from './flow';
 import { mapMetaFields } from './meta';
 import { MemoryLeadStore } from './store';
 import { newLead, type Lead } from './types';
@@ -60,6 +60,28 @@ function enable(allowlist = '+919686613899') {
   delete process.env.INSTANT_CALL_DRY_RUN;
   process.env.INSTANT_CALL_ALLOWLIST = allowlist;
 }
+
+describe('call now', () => {
+  it('redials a lead that already failed today, once per press', async () => {
+    enable();
+    const { store, calls, deps } = harness(SAT_10);
+    await store.insert({ ...draft(), call_status: 'failed', call_attempts: 1, last_call_at: SAT_10.toISOString() }, SAT_10);
+    const later = { ...deps, now: SAT_1330 };
+    const [a, b] = await Promise.all([callNow('lead-1', later), callNow('lead-1', later)]);
+    assert.deepEqual([a.action, b.action].sort(), ['dialed', 'not_claimed']);
+    assert.equal(calls.length, 1);
+    assert.equal((await store.get('lead-1'))?.call_attempts, 2);
+  });
+
+  it('never dials outside calling hours or when the switch is off', async () => {
+    const { store, calls, deps } = harness(SAT_10);
+    await store.insert({ ...draft(), call_status: 'failed', call_attempts: 1 }, SAT_10);
+    assert.equal((await callNow('lead-1', deps)).action, 'blocked');
+    enable();
+    assert.equal((await callNow('lead-1', { ...deps, now: new Date('2026-10-31T16:00:00.000Z') })).action, 'outside_hours');
+    assert.equal(calls.length, 0);
+  });
+});
 
 describe('instant call flow', () => {
   it('stores a lead and does not dial when the switch is off', async () => {

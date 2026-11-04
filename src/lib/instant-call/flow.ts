@@ -155,7 +155,19 @@ const CALL_TITLES: Partial<Record<CallStatus, string>> = {
   whatsapp_only: 'AI call: no answer twice, follow up on WhatsApp',
 };
 
-async function dialClaimed(lead: Lead, deps: FlowDeps, opts: { requireDue: boolean }): Promise<{ lead: Lead; action: string }> {
+/**
+ * A person asked for this lead to be called now. It skips the once-a-day and
+ * two-attempt limits, but still only dials inside calling hours.
+ */
+export async function callNow(id: string, deps: FlowDeps): Promise<{ lead: Lead | null; action: string }> {
+  const flags = loadFlags();
+  if (!isWithinCallingHours(deps.now, flags.hoursStart, flags.hoursEnd)) return { lead: null, action: 'outside_hours' };
+  const lead = await deps.store.get(id);
+  if (!lead) return { lead: null, action: 'not_found' };
+  return dialClaimed(lead, deps, { requireDue: false, manual: true });
+}
+
+async function dialClaimed(lead: Lead, deps: FlowDeps, opts: { requireDue: boolean; manual?: boolean }): Promise<{ lead: Lead; action: string }> {
   const log = deps.log ?? logDefault;
   if (process.env.INSTANT_CALL_ENABLED !== 'true' || process.env.INSTANT_CALL_DRY_RUN === 'true') {
     return { lead, action: 'blocked' };
