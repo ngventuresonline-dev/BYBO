@@ -192,6 +192,8 @@ export function Drawer({ lead, now, products, slots, demos, onChanged, onClose, 
           <button className="crm-btn" type="submit" disabled={!note.trim()}>Add note</button>
         </form>
 
+        <KillSwitch lead={lead} onToast={onToast} onChanged={() => { setBump((n) => n + 1); onChanged(); }} />
+
         <section className="crm-timeline" aria-label="Activity">
           <p className="crm-label">Activity</p>
           {events === null ? <div className="crm-skel" /> : events.length ? (
@@ -225,6 +227,36 @@ export function Drawer({ lead, now, products, slots, demos, onChanged, onClose, 
         </footer>
       </aside>
     </div>
+  );
+}
+
+/**
+ * The kill switch: one tap, then a confirm, and every link we sent this lead
+ * (demos, proposals, their payment links) stops working and the lead is archived.
+ * It can be switched back off.
+ */
+function KillSwitch({ lead, onToast, onChanged }: { lead: CrmLead; onToast: (m: string) => void; onChanged: () => void }) {
+  const [armed, setArmed] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const killed = !!lead.killed_at;
+  async function go(on: boolean) {
+    setBusy(true);
+    try {
+      const r = await api<{ message: string }>(`/api/admin/crm/leads/${lead.id}/action`, { method: 'POST', body: JSON.stringify({ type: 'kill', on }) });
+      onToast(r.message); setArmed(false); onChanged();
+    } catch { onToast('That didn’t work. Try again.'); }
+    setBusy(false);
+  }
+  return (
+    <section className={`crm-kill${killed ? ' is-killed' : ''}`} aria-label="Kill switch">
+      <div>
+        <p className="crm-label">Kill switch</p>
+        <p>{killed ? `On since ${new Date(lead.killed_at!).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}: their demos, proposals and payment links show nothing.` : 'Turns off every demo, proposal and payment link we have sent this lead, and archives them.'}</p>
+      </div>
+      {killed ? <button type="button" className="crm-btn is-ghost" disabled={busy} onClick={() => go(false)}>{busy ? 'Restoring…' : 'Restore links'}</button>
+        : armed ? <span className="crm-kill-confirm"><button type="button" className="crm-btn is-danger" disabled={busy} onClick={() => go(true)}>{busy ? 'Turning off…' : 'Yes, turn everything off'}</button><button type="button" className="crm-chipbtn" onClick={() => setArmed(false)}>Cancel</button></span>
+        : <button type="button" className="crm-btn is-danger-ghost" onClick={() => setArmed(true)}>Kill switch</button>}
+    </section>
   );
 }
 

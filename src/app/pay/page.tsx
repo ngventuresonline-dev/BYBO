@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { payerKilled } from '@/lib/crm/kill';
 import { pageMetadata } from '@/lib/seo';
 import { PayNow } from './PayNow';
 import { PRODUCTS } from '@/lib/payments/products';
@@ -14,7 +15,9 @@ export default async function Pay({ searchParams }: { searchParams: Promise<Reco
   const sp = await searchParams;
   const initial = typeof sp.product === 'string' ? sp.product : undefined;
   // A quote milestone is shown on its own, from its link; the public list never shows quotes.
-  const quote = PRODUCTS.find((p) => p.unlisted && p.id === initial);
+  // A quote for a lead whose kill switch is on is not shown at all.
+  const found = PRODUCTS.find((p) => p.unlisted && p.id === initial);
+  const quote = found && !(await payerKilled(found.payer?.email)) ? found : undefined;
   const products = quote ? [quote] : PRODUCTS.filter((p) => !p.unlisted);
   return (
     <main className="pay">

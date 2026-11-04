@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { linksConfigured } from '@/lib/payments/link';
 import { phonepeConfigured } from '@/lib/payments/phonepe';
 import { productById } from '@/lib/payments/products';
+import { payerKilled } from '@/lib/crm/kill';
 import { startCheckout } from '@/lib/payments/start';
 import { CONTACT } from '@/lib/site';
 
@@ -37,6 +38,7 @@ export async function POST(request: Request) {
   const form = await request.formData().catch(() => null);
   const product = productById(String(form?.get('product') ?? '').slice(0, 40));
   if (!product?.unlisted || !product.payer) return notice('This payment link is not valid.', 404);
+  if (await payerKilled(product.payer.email)) return notice('This payment link is no longer active.', 410);
   if (!phonepeConfigured() || !linksConfigured()) return notice('Online payment is being switched on.', 503);
 
   const link = {
