@@ -14,6 +14,15 @@ export const CONTACT = {
   city: "Bengaluru",
   parent: "N&G Ventures",
   partner: "Bcon Club",
+  /** N&G Ventures' office, shown in the footer and in the site's business details. */
+  address: {
+    lines: ["KOKARYA, No. 51, Old Site No. 1, Fifth Floor", "5th Main Road, Jayanagar", "Bengaluru, Karnataka"],
+    street: "KOKARYA, No. 51, Old Site No. 1, Fifth Floor, 5th Main Road, Jayanagar",
+    locality: "Bengaluru",
+    region: "Karnataka",
+    country: "IN",
+    mapHref: "https://www.google.com/maps/search/?api=1&query=KOKARYA%2C%20No.%2051%2C%205th%20Main%20Road%2C%20Jayanagar%2C%20Bengaluru",
+  },
 } as const;
 
 /**

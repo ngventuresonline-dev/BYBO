@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { CONTACT } from "./site";
 export const SITE = {
     name: "BYBO",
     url: "https://bybo.in",
@@ -89,6 +90,14 @@ export const organizationJsonLd = {
     url: SITE.url,
     logo: siteUrl("/icon.svg"),
     description: SITE.defaultDescription,
+    email: CONTACT.email,
+    address: {
+        "@type": "PostalAddress",
+        streetAddress: CONTACT.address.street,
+        addressLocality: CONTACT.address.locality,
+        addressRegion: CONTACT.address.region,
+        addressCountry: CONTACT.address.country,
+    },
     areaServed: {
         "@type": "Country",
         name: "India",
