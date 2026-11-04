@@ -50,7 +50,8 @@ export async function callsForPhone(phone: string, since: Date): Promise<CallRec
       seconds,
       status: String(d.status ?? c.status ?? ''),
       summary: typeof analysis.transcript_summary === 'string' ? analysis.transcript_summary : null,
-      answered: seconds > 0 && (c.call_successful ?? analysis.call_successful) !== 'failure',
+      // ElevenLabs' call_successful grades the call's goal, not whether anyone picked up.
+      answered: seconds > 0,
     } satisfies CallRecording;
   }));
   return found.filter((x): x is CallRecording => !!x).sort((a, b) => b.at.localeCompare(a.at));
