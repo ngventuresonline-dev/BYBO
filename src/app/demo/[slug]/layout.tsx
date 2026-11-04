@@ -35,7 +35,7 @@ export default async function DemoLayout({ children, params }: { children: React
   const style = { '--bg': theme.bg, '--ink': theme.ink, '--accent': theme.accent, '--soft': theme.soft } as React.CSSProperties;
   const items = catalog(c);
   const cats = [...new Set(items.map((i) => i.category))].slice(0, 4);
-  const links = [{ href: `${base}/shop`, label: 'Shop all' }, ...cats.map((k) => ({ href: `${base}/shop?c=${encodeURIComponent(k)}`, label: k })), { href: `${base}/about`, label: 'About' }, { href: `${base}/contact`, label: 'Contact' }];
+  const links = [items.length ? { href: `${base}/shop`, label: 'Shop all' } : { href: `${base}#why`, label: 'Services' }, ...cats.map((k) => ({ href: `${base}/shop?c=${encodeURIComponent(k)}`, label: k })), { href: `${base}/about`, label: 'About' }, { href: `${base}/contact`, label: 'Contact' }];
   const facts = c.facts ?? [];
   const wa = `https://wa.me/${CONTACT.phone.replace(/\D/g, '')}?text=${encodeURIComponent(`Hi BYBO, I saw the demo for ${c.brand}. Let's talk.`)}`;
 
@@ -59,8 +59,8 @@ export default async function DemoLayout({ children, params }: { children: React
             <p className="demo-logo">{c.brand}</p>
             <p>{c.tagline}</p>
           </div>
-          <div><h4>Shop</h4>{links.slice(0, 5).map((l) => <Link key={l.href} href={l.href}>{l.label}</Link>)}</div>
-          <div><h4>Help</h4><Link href={`${base}/dashboard`}>Owner dashboard</Link><Link href={`${base}/contact`}>Contact us</Link><Link href={`${base}/about`}>Our story</Link><Link href={`${base}/cart`}>Your bag</Link></div>
+          <div><h4>{items.length ? 'Shop' : 'Explore'}</h4>{links.slice(0, 5).map((l) => <Link key={l.href} href={l.href}>{l.label}</Link>)}</div>
+          <div><h4>Help</h4><Link href={`${base}/dashboard`}>Owner dashboard</Link><Link href={`${base}/contact`}>Contact us</Link><Link href={`${base}/about`}>Our story</Link>{items.length ? <Link href={`${base}/cart`}>Your bag</Link> : null}</div>
           <div><h4>Promise</h4>{facts.slice(0, 4).map((f) => <p key={f}>{f}</p>)}</div>
           <p className="st-foot-base">© {c.brand} · Redesign by <a href="https://bybo.in">BYBO</a></p>
         </footer>
