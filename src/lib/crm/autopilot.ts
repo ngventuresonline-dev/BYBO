@@ -371,6 +371,11 @@ async function requestApproval(l: CrmLead, d: Demo, intel: Intel) {
   ], { href: 'https://bybo.in/admin/crm#autopilot', label: 'Review and approve' }, { key: `demo-approval/${d.id}` });
 }
 
+/** The lead came for motion reels or AI films, by its tagged service, its need, or the package research picked. */
+export function wantsMotion(l: Pick<CrmLead, 'services' | 'need'>, intel: Pick<Intel, 'package'>): boolean {
+  return l.services.some((s) => /motion|reel|film/i.test(s)) || /\b(reels?|motion|ai films?)\b/i.test(l.need ?? '') || intel.package === 'ai-film';
+}
+
 /** One step for one lead. Returns what happened, for the run log. */
 export async function step(l: CrmLead): Promise<string> {
   const who = l.name || l.company || l.email || l.id.slice(0, 8);
@@ -395,7 +400,13 @@ export async function step(l: CrmLead): Promise<string> {
 
   if (l.autopilot === 'qualified') {
     const intel = (l.intel ?? {}) as Intel;
-    const existing = (await rpc<Demo[]>('bybo_demo_list', {})).find((d) => d.lead_id === l.id && d.status !== 'rejected');
+    // A motion reels lead wants films, not a website: no website demo, a person sends reel samples.
+    if (wantsMotion(l, intel)) {
+      await rpc('bybo_ap_set', { p_lead: l.id, p: { autopilot: 'done' } });
+      await log(l.id, 'alert', 'Motion reels lead: no website demo drafted', 'Send them reel samples on WhatsApp and book a call to scope their first film.');
+      return `${who}: motion reels lead, no website demo`;
+    }
+    const existing =(await rpc<Demo[]>('bybo_demo_list', {})).find((d) => d.lead_id === l.id && d.status !== 'rejected');
     if (existing) {
       await rpc('bybo_ap_set', { p_lead: l.id, p: { autopilot: existing.status === 'sent' ? 'sent' : 'awaiting_approval' } });
       return `${who}: demo already exists`;
