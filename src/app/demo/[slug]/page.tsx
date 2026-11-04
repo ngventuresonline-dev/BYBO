@@ -4,10 +4,13 @@ import { notFound } from 'next/navigation';
 import type { DemoContent } from '@/lib/crm/autopilot';
 import { CONTACT } from '@/lib/site';
 import { DemoMotion } from './DemoMotion';
-import { blueprintOf, catalog, featured, inr, isCutout, loadDemo, off, pad, words } from './data';
+import { blueprintOf, catalog, featured, money, isCutout, loadDemo, off, pad, words } from './data';
 import { AddToCart } from './store';
 import { Compare } from './compare';
 import { MenuBlock, ServicesBlock, WorkBlock } from './services';
+import { Personaliser } from './personalise';
+import { Wardrobe } from './wardrobe';
+import { NameStage } from './stage';
 
 export const dynamic = 'force-dynamic';
 
@@ -25,6 +28,7 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
   const demo = await loadDemo(slug);
   if (!demo) notFound();
   const c = demo.content as DemoContent;
+  const inr = (n: number) => money(n, c.currency);
   const base = `/demo/${slug}`;
   const items = catalog(c);
   const w = words(c);
@@ -67,9 +71,30 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
   return (
     <>
       <DemoMotion />
-      <ol className="demo-rail" aria-hidden="true">
+      {c.wardrobe ? null : <ol className="demo-rail" aria-hidden="true">
         {chapters.map((ch, i) => <li key={ch.id} data-rail={ch.id}><span>{pad(i + 1)}</span><em>{ch.label}</em></li>)}
-      </ol>
+      </ol>}
+
+      {/* The name stage: the family name in real 3D chenille, cycling and typed live. */}
+      {c.stage ? (
+        <NameStage
+          names={c.stage.names} font="/demos/nameborne/fonts/graduate.typeface.json"
+          kicker={c.hero.eyebrow} headline={c.hero.headline} sub={c.hero.sub}
+          looks={c.stage.looks.map((h) => items.find((i) => i.handle === h)).filter((i) => !!i?.swatch && i.price != null).map((i) => ({ title: i!.title, handle: i!.handle, price: i!.price!, swatch: i!.swatch! }))}
+        />
+      ) : null}
+
+      {/* The wardrobe: every piece on one rail, the chosen one steps forward. */}
+      {c.wardrobe ? (
+        <Wardrobe
+          kicker={c.wardrobe.kicker} title={c.wardrobe.title}
+          jackets={items.filter((i) => i.price != null).map((i) => {
+            const [role = '', ...rest] = i.description.split('\n');
+            const specs = rest.join(' ').split(/\.\s+/).map((x) => x.replace(/\.$/, '').trim()).filter((x) => /^(Body|Sleeves|Lettering|Fit|Collection): /.test(x));
+            return { handle: i.handle, code: i.handle.split('-')[0]!.toUpperCase(), title: i.title, price: i.price!, front: i.images[0] ?? i.image, back: i.images[1] ?? null, hanger: i.images[2] ?? null, category: i.category, role, specs };
+          })}
+        />
+      ) : null}
 
       {/* Intro: scroll into the fabric before the store opens. */}
       {c.intro_image ? (
@@ -84,7 +109,9 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
 
       {/* Hero: a pinned, full-screen scene with their product in front from the first second.
           Scenes cross-fade and slowly zoom while the captions change. */}
-      <section className={`demo-pin demo-hero${inScene ? ' is-in-scene' : ''}`} id="top" data-pin data-frames={frames.length} data-chapter="top" style={{ '--n': frames.length, '--fx': frames[0]?.float?.x ?? 66, '--fy': frames[0]?.float?.y ?? 48, '--fs': frames[0]?.float?.s ?? 0.92 } as React.CSSProperties}>
+      {/* With the 3D stage as the hero, the photo chapter would only repeat it. */}
+      {c.stage ? null : (
+      <section className={`demo-pin demo-hero${inScene ? ' is-in-scene' : ''}`} id={c.stage ? 'lookbook' : 'top'} data-pin data-frames={frames.length} data-chapter={c.stage ? 'lookbook' : 'top'} style={{ '--n': frames.length, '--fx': frames[0]?.float?.x ?? 66, '--fy': frames[0]?.float?.y ?? 48, '--fs': frames[0]?.float?.s ?? 0.92 } as React.CSSProperties}>
         <div className="demo-stage">
           {frames.map((f, i) => (
             <div key={i} className={`demo-frame${i === 0 ? ' is-active is-shown' : ''}`} data-frame={i} data-float={JSON.stringify(f.float ?? STUDIO_FLOAT[i % 3])}>
@@ -115,7 +142,7 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
             {frames.map((f, i) => (
               <div key={f.title + i} className={`demo-caption${i === 0 ? ' is-active' : ''}`} data-frame={i}>
                 <p className="demo-kicker">{f.kicker}</p>
-                {i === 0 ? <h1>{f.title}</h1> : <h2>{f.title}</h2>}
+                {i === 0 && !c.stage ? <h1>{f.title}</h1> : <h2>{f.title}</h2>}
                 <p className="demo-caption-text">{f.text}</p>
               </div>
             ))}
@@ -123,12 +150,13 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
           <div className="demo-hero-cta">
             {/* A studio or service with nothing to buy asks for the booking or brief instead. */}
             {commerce ? <Link className="demo-btn" data-magnet href={`${base}/shop`}>{bp.cta.primary}</Link> : <Link className="demo-btn" data-magnet href={`${base}/contact`}>{bp.cta.primary}</Link>}
-            {!commerce ? <Link className="demo-btn is-ghost" href={`${base}/${proofPage}`}>{bp.cta.secondary}</Link> : heroItem?.price != null ? <AddToCart item={{ handle: heroItem.handle, title: heroItem.title, price: heroItem.price, image: heroItem.image }} className="demo-btn is-ghost" label={`Add to bag · ${inr(heroItem.price)}`} /> : <Link className="demo-btn is-ghost" href={`${base}/contact`}>{w.call}</Link>}
+            {!commerce ? <Link className="demo-btn is-ghost" href={`${base}/${proofPage}`}>{bp.cta.secondary}</Link> : c.personalise && heroItem?.price != null ? <a className="demo-btn is-ghost" href="#personalise">Add your name · {inr(heroItem.price)}</a> : heroItem?.price != null ? <AddToCart item={{ handle: heroItem.handle, title: heroItem.title, price: heroItem.price, image: heroItem.image }} className="demo-btn is-ghost" label={`Add to bag · ${inr(heroItem.price)}`} /> : <Link className="demo-btn is-ghost" href={`${base}/contact`}>{w.call}</Link>}
           </div>
           <div className="demo-dots" aria-hidden="true">{frames.map((f, i) => <i key={i} data-frame={i} className={i === 0 ? 'is-active' : ''} />)}</div>
           <div className="demo-scroll-hint" aria-hidden="true"><span />Scroll</div>
         </div>
       </section>
+      )}
 
       {/* How it works: pinned while each step's close-up and callouts play in turn. */}
       {c.story?.steps?.length ? (
@@ -158,6 +186,15 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
         <div className="demo-marquee" aria-hidden="true">
           <div>{[0, 1].map((k) => <span key={k}>{[...facts, ...cats.map((x) => x.name)].map((t) => <em key={t + k}>{t}<i>✦</i></em>)}</span>)}</div>
         </div>
+      ) : null}
+
+      {/* Made-to-order brands: type the name, see the stitch proof, add to bag. */}
+      {c.personalise ? (
+        <Personaliser
+          kicker={c.stage ? "Order yours" : "Make it yours"} title={c.stage ? "Make it yours." : "Wear your name."}
+          rules={c.personalise}
+          options={items.filter((i) => i.swatch && i.price != null).map((i) => ({ handle: i.handle, title: i.title, price: i.price!, image: i.image, back: i.images[1] ?? null, category: i.category, swatch: i.swatch! }))}
+        />
       ) : null}
 
       {c.origins?.length ? (

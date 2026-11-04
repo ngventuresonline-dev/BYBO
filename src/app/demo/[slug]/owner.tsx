@@ -6,7 +6,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { readRecords, useCart, type DemoEnquiry, type DemoOrder } from './store';
 
 type P = { title: string; handle: string; image: string | null; price: number | null };
-const inr = (n: number) => `₹${Math.round(n).toLocaleString('en-IN')}`;
 const CITIES = ['Mumbai', 'Bengaluru', 'Delhi', 'Pune', 'Hyderabad', 'Chennai', 'Kolkata', 'Jaipur', 'Ahmedabad', 'Lucknow'];
 const NAMES = ['Priya S.', 'Rahul M.', 'Neha K.', 'Imran A.', 'Kavya R.', 'Vikram J.', 'Pooja D.', 'Sanjay N.', 'Meera T.', 'Arjun P.'];
 
@@ -17,15 +16,19 @@ function seeded(seed: string) {
   return () => { h = Math.imul(h ^ (h >>> 15), 2246822507); h = Math.imul(h ^ (h >>> 13), 3266489909); return ((h ^= h >>> 16) >>> 0) / 4294967296; };
 }
 
-const SECTIONS = ['Overview', 'Orders', 'Customers', 'Campaigns', 'Automations', 'Products'] as const;
+const SECTIONS = ['Overview', 'Orders', 'Production', 'Customers', 'Campaigns', 'Automations', 'Products'] as const;
+const WORLD = ['Toronto', 'Brampton', 'London', 'Vancouver', 'New York', 'Melbourne', 'Dubai', 'Auckland', 'Birmingham', 'Surrey BC'];
+const SURNAMES = ['DHILLON', 'BHULLAR', 'SIDHU', 'SANDHU', 'BRAR', 'MANGAT', 'PATEL', 'GREWAL', 'GILL', 'SHAH'];
+const STAGES = ['Proof sent', 'Approved', 'Stitching', 'Quality check', 'Shipped'];
 
 /**
  * The owner's side of the demo: what running the store on BYBO's system looks
  * like. Orders and enquiries made on this demo show up live; everything else
  * is clearly marked sample data.
  */
-export function Dashboard({ brand, products }: { brand: string; products: P[] }) {
-  const { base, lines } = useCart();
+export function Dashboard({ brand, products, personalised = false }: { brand: string; products: P[]; personalised?: boolean }) {
+  const { base, lines, money: inr, currency } = useCart();
+  const places = currency === 'INR' ? CITIES : WORLD;
   const [tab, setTab] = useState<(typeof SECTIONS)[number]>('Overview');
   const [orders, setOrders] = useState<DemoOrder[]>([]);
   const [enquiries, setEnquiries] = useState<DemoEnquiry[]>([]);
@@ -43,11 +46,11 @@ export function Dashboard({ brand, products }: { brand: string; products: P[] })
     const recent = Array.from({ length: 7 }, (_, i) => {
       const p = pool[Math.floor(r() * pool.length)];
       const qty = r() > 0.75 ? 2 : 1;
-      return { id: `${brand.slice(0, 3).toUpperCase()}-${String(482113 - i * 37)}`, name: NAMES[i % NAMES.length]!, city: CITIES[Math.floor(r() * CITIES.length)]!, item: p?.title ?? 'Order', qty, total: (p?.price ?? 0) * qty, status: (priced.length ? ['Packed', 'Shipped', 'Delivered', 'New', 'Shipped', 'Delivered', 'Delivered'] : ['Call booked', 'Quoted', 'Confirmed', 'New', 'Quoted', 'Confirmed', 'Call booked'])[i]!, pay: (priced.length ? ['UPI', 'COD', 'UPI', 'Card', 'UPI', 'COD', 'UPI'] : ['WhatsApp', 'Website', 'Instagram', 'WhatsApp', 'Website', 'WhatsApp', 'Instagram'])[i]! };
+      return { id: `${brand.slice(0, 3).toUpperCase()}-${String(482113 - i * 37)}`, name: NAMES[i % NAMES.length]!, city: places[Math.floor(r() * places.length)]!, item: p?.title ?? 'Order', qty, total: (p?.price ?? 0) * qty, status: (priced.length ? ['Packed', 'Shipped', 'Delivered', 'New', 'Shipped', 'Delivered', 'Delivered'] : ['Call booked', 'Quoted', 'Confirmed', 'New', 'Quoted', 'Confirmed', 'Call booked'])[i]!, pay: (priced.length ? ['UPI', 'COD', 'UPI', 'Card', 'UPI', 'COD', 'UPI'] : ['WhatsApp', 'Website', 'Instagram', 'WhatsApp', 'Website', 'WhatsApp', 'Instagram'])[i]! };
     });
     const top = pool.slice(0, 5).map((p) => ({ ...p, sold: Math.round(priced.length ? 40 + r() * 160 : 12 + r() * 40) })).sort((a, b) => b.sold - a.sold);
     return { priced: priced.length > 0, days, recent, top, aov: Math.round(priced.reduce((n, p) => n + (p.price ?? 0), 0) / Math.max(1, priced.length) * 1.3) };
-  }, [brand, products]);
+  }, [brand, products, places]);
 
   const live = orders.reduce((n, o) => n + o.total, 0);
   const today = sample.days.at(-1)! + orders.length;
@@ -59,7 +62,7 @@ export function Dashboard({ brand, products }: { brand: string; products: P[] })
     <div className="db">
       <aside className="db-side">
         <Link href={base} className="db-brand">{brand}<small>Owner dashboard</small></Link>
-        <nav>{SECTIONS.map((s) => <button key={s} type="button" className={s === tab ? 'is-on' : ''} onClick={() => setTab(s)}>{s}{s === 'Orders' && orders.length ? <i>{orders.length}</i> : s === 'Customers' && enquiries.length ? <i>{enquiries.length}</i> : null}</button>)}</nav>
+        <nav>{SECTIONS.filter((s) => s !== 'Production' || personalised).map((s) => <button key={s} type="button" className={s === tab ? 'is-on' : ''} onClick={() => setTab(s)}>{s}{s === 'Orders' && orders.length ? <i>{orders.length}</i> : s === 'Customers' && enquiries.length ? <i>{enquiries.length}</i> : null}</button>)}</nav>
         <p className="db-note">Powered by BYBO. Orders and messages you make on this demo appear here live; other figures are sample data.</p>
       </aside>
 
@@ -145,6 +148,8 @@ export function Dashboard({ brand, products }: { brand: string; products: P[] })
           </div>
         ) : null}
 
+        {tab === 'Production' ? <Production live={orders} products={products} places={places} brand={brand} /> : null}
+
         {tab === 'Products' ? (
           <article className="db-card">
             <header><h3>Products</h3><span className="db-tag">{products.length} live</span></header>
@@ -160,6 +165,7 @@ export function Dashboard({ brand, products }: { brand: string; products: P[] })
 }
 
 function Orders({ live, sample, compact, priced = true }: { live: DemoOrder[]; sample: { id: string; name: string; city: string; item: string; qty: number; total: number; status: string; pay: string }[]; compact?: boolean; priced?: boolean }) {
+  const { money: inr } = useCart();
   const rows = [
     ...live.map((o) => ({ id: o.id, name: o.name, city: o.city, item: o.items.map((i) => `${i.title} × ${i.qty}`).join(', '), total: o.total, status: 'New', pay: o.pay.toUpperCase(), live: true })),
     ...sample.map((s) => ({ ...s, item: `${s.item}${s.qty > 1 ? ` × ${s.qty}` : ''}`, live: false })),
@@ -172,5 +178,39 @@ function Orders({ live, sample, compact, priced = true }: { live: DemoOrder[]; s
         <tbody>{rows.map((r) => <tr key={r.id} className={r.live ? 'is-live' : ''}><td><b>{r.id}</b>{r.live ? <span className="db-pill is-on">Just now</span> : null}</td><td>{r.name}<small>{r.city}</small></td><td>{r.item}</td><td>{r.pay}</td>{priced ? <td>{inr(r.total)}</td> : null}<td><span className={`db-pill ${r.status === 'New' ? 'is-new' : 'is-on'}`}>{r.status}</span></td></tr>)}</tbody>
       </table>
     </article>
+  );
+}
+
+/**
+ * The stitch queue for made-to-order pieces: every name to digitise, its
+ * proof status and where it ships. Orders placed on the demo come first.
+ */
+function Production({ live, products, places, brand }: { live: DemoOrder[]; products: P[]; places: readonly string[]; brand: string }) {
+  const rows = useMemo(() => {
+    const r = seeded(`${brand}-stitch`);
+    const mine = live.flatMap((o) => o.items.map((it) => {
+      const [piece, mark = ''] = it.title.split(' · ');
+      const [name = '', ini = ''] = mark.split(' / ');
+      return { id: o.id, piece: piece!, name: name || '—', ini, to: o.city || '—', stage: 'Proof sent', live: true };
+    }));
+    const sample = Array.from({ length: 8 }, (_, i) => {
+      const name = SURNAMES[i % SURNAMES.length]!;
+      return { id: `${brand.slice(0, 3).toUpperCase()}-${String(30418 - i * 23)}`, piece: products[Math.floor(r() * products.length)]?.title ?? 'Jacket', name, ini: `${'AKJRNSGM'[i % 8]}${name[0]}`, to: places[Math.floor(r() * places.length)]!, stage: STAGES[Math.min(4, Math.floor(r() * 5))]!, live: false };
+    });
+    return [...mine, ...sample];
+  }, [live, products, places, brand]);
+  const count = (st: string) => rows.filter((x) => x.stage === st).length;
+  return (
+    <>
+      <div className="db-kpis">{STAGES.slice(0, 4).map((st) => <article key={st}><span>{st}</span><b>{count(st)}</b><em>{st === 'Proof sent' ? 'Waiting on the customer' : st === 'Approved' ? 'Ready to digitise' : st === 'Stitching' ? 'On the machines' : 'Before it ships'}</em></article>)}</div>
+      <article className="db-card">
+        <header><h3>Stitch queue</h3><span className="db-tag">{live.length ? `${live.length} live from this demo` : 'Sample'}</span></header>
+        <table className="db-table">
+          <thead><tr><th>Order</th><th>Name on the back</th><th>Initials</th><th>Colourway</th><th>Ships to</th><th>Status</th></tr></thead>
+          <tbody>{rows.map((x, i) => <tr key={x.id + i} className={x.live ? 'is-live' : ''}><td><b>{x.id}</b>{x.live ? <span className="db-pill is-on">New</span> : null}</td><td><span className="db-stitch">{x.name}</span></td><td>{x.ini || '—'}</td><td>{x.piece}</td><td>{x.to}</td><td><span className={`db-pill ${x.stage === 'Proof sent' ? 'is-new' : 'is-on'}`}>{x.stage}</span></td></tr>)}</tbody>
+        </table>
+        <p className="db-empty">Every name gets a proof on WhatsApp before stitching. Once the customer taps approve, it moves to digitising automatically.</p>
+      </article>
+    </>
   );
 }

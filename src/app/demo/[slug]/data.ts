@@ -3,7 +3,7 @@ import { crmConfigured, rpc } from '@/lib/crm/db';
 import type { Demo, DemoContent } from '@/lib/crm/autopilot';
 import { blueprint } from '@/lib/crm/blueprints';
 
-export type Item = { title: string; handle: string; price: number | null; compare: number | null; image: string | null; images: string[]; category: string; description: string; line: string };
+export type Item = { title: string; handle: string; price: number | null; compare: number | null; image: string | null; images: string[]; category: string; description: string; line: string; swatch?: { body: string; sleeve: string; letter: string; edge: string } };
 
 /** One demo per request, shared by the layout and every page under it. */
 export const loadDemo = cache(async (slug: string): Promise<Demo | null> => {
@@ -29,7 +29,7 @@ export function catalog(c: DemoContent): Item[] {
     let handle = slugify(p.handle || p.title);
     while (seen.has(handle)) handle += '-x';
     seen.add(handle);
-    return { title: p.title, handle, price: p.price, compare: p.compare, image: p.image, images: p.images.length ? p.images : p.image ? [p.image] : [], category: categorise(p.title, p.type), description: p.description, line: lines.get(p.title) ?? '' };
+    return { title: p.title, handle, price: p.price, compare: p.compare, image: p.image, images: p.images.length ? p.images : p.image ? [p.image] : [], category: categorise(p.title, p.type), description: p.description, line: lines.get(p.title) ?? '', swatch: 'swatch' in p ? p.swatch : undefined };
   });
 }
 
@@ -53,7 +53,12 @@ export function words(c: DemoContent) {
   };
 }
 
-export const inr = (n: number) => `₹${Math.round(n).toLocaleString('en-IN')}`;
+/** Prices in the demo's currency: rupees by default, dollars or pounds for brands selling abroad. */
+export function money(n: number, currency = 'INR') {
+  if (currency === 'INR') return `₹${Math.round(n).toLocaleString('en-IN')}`;
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency, maximumFractionDigits: 0 }).format(n);
+}
+export const inr = (n: number) => money(n);
 export const pad = (n: number) => String(n).padStart(2, '0');
 export const off = (i: Pick<Item, 'price' | 'compare'>) => (i.price && i.compare && i.compare > i.price ? Math.round((1 - i.price / i.compare) * 100) : null);
 export const isCutout = (u?: string | null) => !!u && /\.(png|webp)(\?|$)/i.test(u);
