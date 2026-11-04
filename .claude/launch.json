@@ -2,6 +2,14 @@
   "version": "0.0.1",
   "configurations": [
     {
+      "name": "bybo-demos",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "demos/serve.mjs"
+      ],
+      "port": 4310
+    },
+    {
       "name": "bybo-dev",
       "runtimeExecutable": "npm",
       "runtimeArgs": [
@@ -34,28 +42,6 @@
         "3002"
       ],
       "port": 3002
-    },
-    {
-      "name": "crm-stub",
-      "runtimeExecutable": "node",
-      "runtimeArgs": [
-        "C:/Users/grvsr/AppData/Local/Temp/claude/C--Users-grvsr-BYBO--claude-worktrees-bybo-repository-a788d5/4f16ccb8-7433-4162-8505-5838ded959dd/scratchpad/crm-stub/server.mjs"
-      ],
-      "port": 54329
-    },
-    {
-      "name": "new-age",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "--prefix",
-        "C:/Users/grvsr/BYBO/.claude/worktrees/agent-a88863bfdff3946aa",
-        "run",
-        "dev",
-        "--",
-        "-p",
-        "3004"
-      ],
-      "port": 3004
     }
   ]
 }
