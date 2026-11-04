@@ -29,6 +29,19 @@ describe('Meta field mapping', () => {
     assert.equal((mapped.raw.fields as Record<string, string>).phone_number, 'p:+919686613899');
   });
 
+  it('tags a lead from a motion reels ad, so the call, emails and CRM know', () => {
+    const fromAd = mapMetaFields({ full_name: 'Ravi', email: 'ravi@example.com', phone_number: '9686613899', goal: 'More sales' }, { id: '7', campaign_name: 'BYBO Motion Reels Nov', platform: 'ig' });
+    assert.match(fromAd.enquiry, /^Interested in: AI motion reels\n/);
+    assert.deepEqual(fromAd.raw.services, ['AI motion reels']);
+
+    const fromAnswer = mapMetaFields({ full_name: 'Meera', what_do_you_need: 'Product reels for Instagram' }, { id: '8', campaign_name: 'Launch' });
+    assert.deepEqual(fromAnswer.raw.services, ['AI motion reels']);
+
+    const website = mapMetaFields({ full_name: 'Asha', goal: 'A website with a video on the home page' }, { id: '9', campaign_name: 'Websites' });
+    assert.equal(website.raw.services, undefined);
+    assert.doesNotMatch(website.enquiry, /motion reels/);
+  });
+
   it('still maps renamed fields and keeps the raw bag', () => {
     const mapped = mapMetaFields({
       full_name: 'Asha Rao',

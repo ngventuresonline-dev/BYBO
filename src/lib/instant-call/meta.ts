@@ -59,7 +59,9 @@ export function mapMetaFields(fields: Record<string, string>, meta: Record<strin
     .filter((entry) => !used.has(entry.value) && !entry.norm.includes('email') && !entry.norm.includes('phone'))
     .map((entry) => `${entry.key}: ${entry.value}`);
 
-  const enquiry = [siteNeeds, ...extras].filter(Boolean).join('\n').slice(0, 4000);
+  // A lead from a motion reels ad says so up front, so the call, emails, CRM and autopilot treat it as a video lead.
+  const motion = isMotionInterest(entries.map((entry) => entry.value), [meta.campaign_name, meta.adset_name, meta.ad_name, meta.form_name]);
+  const enquiry = [motion ? `Interested in: ${MOTION_SERVICE}` : '', siteNeeds, ...extras].filter(Boolean).join('\n').slice(0, 4000);
   const platform = String(meta.platform ?? fields.platform ?? '');
   const externalId = String(meta.id ?? meta.leadgen_id ?? fields.id ?? fields.lead_id ?? fields.leadgen_id ?? '').trim() || null;
 
@@ -71,8 +73,21 @@ export function mapMetaFields(fields: Record<string, string>, meta: Record<strin
     business,
     enquiry,
     platform,
-    raw: { fields, meta },
+    raw: { fields, meta, ...(motion ? { services: [MOTION_SERVICE] } : {}) },
   };
+}
+
+/** The service name a motion reels lead is tagged with in emails and the CRM. */
+export const MOTION_SERVICE = 'AI motion reels';
+
+/**
+ * A lead wants motion reels when the ad, ad set, campaign or form is named for it,
+ * or an answer asks for reels, motion or an AI film. A website lead that only
+ * mentions "video" is not caught.
+ */
+export function isMotionInterest(answers: string[], names: unknown[]): boolean {
+  if (names.some((n) => typeof n === 'string' && /reel|motion|\bfilms?\b/i.test(n))) return true;
+  return answers.some((a) => /\b(reels?|motion|ai films?|ad films?|brand films?)\b/i.test(a));
 }
 
 export function metaLeadSource(platform: string): string {

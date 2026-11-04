@@ -95,8 +95,9 @@ async function acknowledgeLead(key: string, lead: Lead): Promise<AckState> {
   const to = [lead.email.trim()];
   const replyTo = CONTACT.email;
   const ref = leadRef(lead);
-  if (await send(key, `meta-lead-ack/${ref}`, { to, replyTo, ...visitorAck(name, []) })) return 'sent';
-  const fallback = await send(key, `meta-lead-ack-fallback/${ref}`, { to, replyTo, ...visitorAckFallback(name, []) });
+  const services = Array.isArray(lead.raw.services) ? (lead.raw.services as unknown[]).map(String) : [];
+  if (await send(key, `meta-lead-ack/${ref}`, { to, replyTo, ...visitorAck(name, services) })) return 'sent';
+  const fallback = await send(key, `meta-lead-ack-fallback/${ref}`, { to, replyTo, ...visitorAckFallback(name, services) });
   return fallback ? 'sent' : 'failed';
 }
 
