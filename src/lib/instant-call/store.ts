@@ -11,10 +11,12 @@ export interface LeadStore {
   findByConversation(conversationId: string): Promise<Lead | null>;
   insert(lead: Lead, now: Date): Promise<{ lead: Lead; created: boolean }>;
   save(lead: Lead): Promise<void>;
-  claimForCall(id: string, now: Date, opts: { requireDue: boolean }): Promise<Lead | null>;
+  claimForCall(id: string, now: Date, opts: { requireDue: boolean; manual?: boolean }): Promise<Lead | null>;
   listActionable(): Promise<Lead[]>;
   /** Every stored lead. Used by the CRM sync; optional for test stores. */
   listAll?(): Promise<Lead[]>;
+  /** The stored lead for a source's own id (e.g. a Meta lead id). Optional for test stores. */
+  findExternal?(source: Lead['source'], externalId: string): Promise<Lead | null>;
 }
 
 export class LeadStoreUnavailable extends Error {
@@ -26,7 +28,11 @@ export class LeadStoreUnavailable extends Error {
 
 const DIALABLE = new Set<Lead['call_status']>(['pending', 'queued_hours', 'no_answer', 'busy', 'failed']);
 
-export function canClaim(lead: Lead, now: Date, requireDue: boolean): boolean {
+/** A person pressed Call now: any lead not already on a call, past the daily and two-attempt limits. */
+const MANUAL = new Set<Lead['call_status']>([...DIALABLE, 'answered', 'done', 'whatsapp_only']);
+
+export function canClaim(lead: Lead, now: Date, requireDue: boolean, manual = false): boolean {
+  if (manual) return MANUAL.has(lead.call_status) && lead.raw.dry_run_hold !== true;
   if (!DIALABLE.has(lead.call_status)) return false;
   if (lead.call_attempts >= 2) return false;
   if (lead.raw.dry_run_hold === true) return false;
@@ -111,10 +117,10 @@ export class MemoryLeadStore implements LeadStore {
     if (stored.conversation_id) this.byConversation.set(stored.conversation_id, stored.id);
   }
 
-  async claimForCall(id: string, now: Date, opts: { requireDue: boolean }): Promise<Lead | null> {
+  async claimForCall(id: string, now: Date, opts: { requireDue: boolean; manual?: boolean }): Promise<Lead | null> {
     const lead = this.leads.get(id);
-    if (!lead || !canClaim(lead, now, opts.requireDue)) return null;
-    const lock = `${id}:${istDate(now)}`;
+    if (!lead || !canClaim(lead, now, opts.requireDue, opts.manual)) return null;
+    const lock = `${id}:${istDate(now)}${opts.manual ? `:manual-${lead.call_attempts + 1}` : ''}`;
     if (this.locks.has(lock)) return null;
     this.locks.add(lock);
     const next: Lead = {
@@ -131,7 +137,7 @@ export class MemoryLeadStore implements LeadStore {
     return [...this.leads.values()].filter(needsFollowUp).map(cloneLead);
   }
 
-  private async findExternal(source: Lead['source'], externalId: string): Promise<Lead | null> {
+  async findExternal(source: Lead['source'], externalId: string): Promise<Lead | null> {
     const id = this.byExternal.get(externalKey(source, externalId));
     return id ? this.get(id) : null;
   }

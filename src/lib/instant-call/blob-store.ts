@@ -87,11 +87,13 @@ export class BlobLeadStore implements LeadStore {
     if (lead.external_id) await this.pointExternal(lead.source, lead.external_id, lead.id);
   }
 
-  async claimForCall(id: string, now: Date, opts: { requireDue: boolean }): Promise<Lead | null> {
+  async claimForCall(id: string, now: Date, opts: { requireDue: boolean; manual?: boolean }): Promise<Lead | null> {
     const lead = await this.get(id);
-    if (!lead || !canClaim(lead, now, opts.requireDue)) return null;
+    if (!lead || !canClaim(lead, now, opts.requireDue, opts.manual)) return null;
+    // Automatic calls lock once per day; a manual call locks per attempt, so a double click still dials once.
+    const lock = opts.manual ? `${istDate(now)}-manual-${lead.call_attempts + 1}` : istDate(now);
     try {
-      await this.io.put(`${LOCK}${id}/${istDate(now)}.json`, JSON.stringify({ at: now.toISOString() }), { allowOverwrite: false });
+      await this.io.put(`${LOCK}${id}/${lock}.json`, JSON.stringify({ at: now.toISOString() }), { allowOverwrite: false });
     } catch {
       return null;
     }
@@ -126,7 +128,7 @@ export class BlobLeadStore implements LeadStore {
     return leads;
   }
 
-  private async findExternal(source: Lead['source'], externalId: string): Promise<Lead | null> {
+  async findExternal(source: Lead['source'], externalId: string): Promise<Lead | null> {
     const pointer = await this.readJson<{ leadId: string }>(externalPath(source, externalId));
     if (!pointer?.leadId) return null;
     return this.get(pointer.leadId);
