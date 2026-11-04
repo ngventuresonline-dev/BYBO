@@ -19,6 +19,16 @@ describe('booking invite', () => {
     assert.match(ics, /TRIGGER:-PT10M/);
   });
 
+  it('gives the team the number to call and a synopsis, and the visitor neither', () => {
+    const team = Buffer.from(invite({ ...b, brief: 'Pitch: saree store' }, new Date(b.slot), ['team@example.com']).content, 'base64').toString('utf8');
+    const visitor = Buffer.from(invite({ ...b, brief: 'Pitch: saree store' }, new Date(b.slot), [b.email], false).content, 'base64').toString('utf8');
+    assert.match(team, /LOCATION:Call \+910000000000/);
+    assert.match(team, /CALL: \+910000000000/);
+    assert.match(team, /Pitch: saree store/);
+    assert.doesNotMatch(visitor, /Pitch/);
+    assert.match(visitor, /BYBO calls you on/);
+  });
+
   it('starts at the slot and uses CRLF lines', () => {
     assert.match(ics, /DTSTART:20261104T053000Z/);
     assert.ok(ics.includes('\r\nEND:VCALENDAR'));

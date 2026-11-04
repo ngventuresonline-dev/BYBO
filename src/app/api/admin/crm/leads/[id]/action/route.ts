@@ -48,6 +48,18 @@ async function mail(to: string, subject: string, headline: string, paragraphs: s
 const log = (lead: string, kind: string, title: string, body?: string, meta: Record<string, unknown> = {}) =>
   rpc<CrmEvent>('bybo_crm_log', { p_lead: lead, p_kind: kind, p_title: title, p_body: body ?? null, p_meta: meta });
 
+/** A few lines of what the research found, for the synopsis on the team's calendar invite. */
+function callBrief(intel: Record<string, unknown> | null | undefined) {
+  const i = (intel ?? {}) as { business?: { what_they_do?: string; location?: string }; pitch?: string; demo_angle?: string; temperature?: string };
+  return [
+    i.business?.what_they_do && `Business: ${i.business.what_they_do}`,
+    i.business?.location && `Location: ${i.business.location}`,
+    i.temperature && `Temperature: ${i.temperature}`,
+    i.pitch && `Pitch: ${i.pitch}`,
+    i.demo_angle && `Demo angle: ${i.demo_angle}`,
+  ].filter(Boolean).join('\n') || undefined;
+}
+
 export async function POST(request: Request, ctx: { params: Promise<{ id: string }> }) {
   if (!adminAuthorized(request)) return NextResponse.json({ ok: false }, { status: 401 });
   if (!crmConfigured()) return NextResponse.json({ ok: false, reason: 'not_configured' }, { status: 503 });
@@ -93,6 +105,7 @@ export async function POST(request: Request, ctx: { params: Promise<{ id: string
     const ok = await sendBooking({
       slot: slot.id, name: lead.name, email: lead.email, phone: lead.phone, company: lead.company ?? '',
       need: lead.need ?? 'Discovery call', summary: `Booked from the lead desk. ${lead.summary ?? ''}`.trim(), page: '/admin/crm', transcript: [],
+      brief: callBrief(lead.intel),
     });
     if (!ok) return NextResponse.json({ ok: false, reason: 'send_failed' }, { status: 502 });
     return NextResponse.json({ ok: true, message: `Call booked for ${slot.label}; invite sent to ${lead.email}` });
