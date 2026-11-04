@@ -61,4 +61,5 @@ export function money(n: number, currency = 'INR') {
 export const inr = (n: number) => money(n);
 export const pad = (n: number) => String(n).padStart(2, '0');
 export const off = (i: Pick<Item, 'price' | 'compare'>) => (i.price && i.compare && i.compare > i.price ? Math.round((1 - i.price / i.compare) * 100) : null);
-export const isCutout = (u?: string | null) => !!u && /\.(png|webp)(\?|$)/i.test(u);
+// Generated photos and our own product shots are full photos, not transparent cut-outs, whatever their format.
+export const isCutout = (u?: string | null) => !!u && !/^\/(demo-media|demos)\//.test(u) && /\.(png|webp)(\?|$)/i.test(u);
