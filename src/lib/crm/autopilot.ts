@@ -1,4 +1,5 @@
 import { randomBytes } from 'node:crypto';
+import { allBlueprints, blueprint, KINDS, LOOK_OPTIONS, type Kind } from './blueprints';
 import { rpc, type CrmLead } from './db';
 import { normaliseUrl, scanSite, type SiteScan } from './sitescan';
 import { generateScenes, scenesConfigured } from './scenes';
@@ -83,6 +84,18 @@ export type DemoContent = {
   /** Their full catalogue (from their store), for the demo's shop, product and cart pages. */
   catalog?: { title: string; handle: string; price: number | null; compare: number | null; image: string | null; images: string[]; type: string | null; description: string }[];
   gallery?: string[];
+  /** v4: the blueprint the demo follows (see blueprints.ts). Unset means a store when there is a catalogue. */
+  kind?: Kind;
+  /** What they offer: services, treatments, courses, rooms or menu items. Price and duration only when their site states them. */
+  services?: { title: string; text: string; image: string | null; brief?: string; points: string[]; price?: string | null; duration?: string | null; category?: string }[];
+  /** Proof of work: projects, properties, results or gallery pieces. */
+  work?: { title: string; type: string; place?: string; text?: string; image: string | null; brief?: string; meta?: string[] }[];
+  /** Shown under work made with concept visuals, e.g. "Images are concept visuals made for this demo." */
+  work_note?: string;
+  /** Section layouts, so two demos of the same kind do not look alike. */
+  layout?: { services?: 'stack' | 'rows'; work?: 'grid' | 'rail' };
+  /** The cities or localities they serve. */
+  areas?: string[];
 };
 
 export type Demo = { id: string; lead_id: string; created_at: string; slug: string; kind: 'auto' | 'custom'; status: 'drafting' | 'awaiting_approval' | 'approved' | 'sent' | 'rejected'; url: string | null; content: DemoContent | Record<string, never>; approved_at: string | null; sent_at: string | null; note: string | null };
@@ -216,19 +229,39 @@ Art direction:
 Reply with JSON only:
 {"brand":"","tagline":"","industry":"","font":"editorial|modern|soft","theme":{"bg":"#","ink":"#","accent":"#","soft":"#"},"hero":{"eyebrow":"","headline":"","sub":"","scene":""},"hero_media":0,"hero_cutout":false,"hero_product":0,"spotlight":{"media":0,"kicker":"","title":"","callouts":["",""]},"scenes":[{"media":null,"kicker":"","title":"","text":"","scene":""}],"gallery":[0],"products":[{"i":0,"line":""}],"categories":[""],"facts":[""],"offer":[{"title":"","text":""}],"flow":[{"step":"","text":""}],"redesign":[{"was":"","now":""}],"cta":{"headline":"","sub":""}}
 hero.headline: 3-7 words. spotlight.callouts: 3-4 short feature lines (max 6 words each). scenes: title 2-6 words, text one sentence. products[].i: indexes into the scan's products (best 4-8, line = one benefit). categories: 3-6. facts: 2-5 trust lines from the scan. offer: 3 reasons to choose them. flow: 4 steps of the customer journey. Scene briefs (hero.scene and each scenes[].scene): one or two sentences art-directing a photograph for that frame, like a luxury campaign. For a store, the brand's real product is supplied as a reference image, so describe the product's setting and action only (e.g. "standing on a blush marble plinth with silk and petals", "held near the brow of a woman with glowing skin", "in a hand beside an open handbag", "lying on rippled silk with water droplets"); vary them: studio hero, in use, in context, macro texture. For a service business, describe their place, people or results (a bright clinic reception, a calm classroom). Use their palette.
-redesign: 3 kind, concrete comparisons of their current site ("was") with the new one ("now"); [] if no site.`;
+redesign: 3 kind, concrete comparisons of their current site ("was") with the new one ("now"); [] if no site.
+Blueprint: pick the kind of website this business needs. Each kind fixes the pages and sections; services and work fill them.
+${allBlueprints().map((b) => `- ${b.kind}: ${b.for}. ${b.draft}`).join(' ')}
+Also reply with: "kind", "look" (0, 1 or 2, the direction that fits THIS brand; two businesses of the same kind should not look alike), "layout": {"services":"stack|rows","work":"grid|rail"}, "services":[{"title":"","text":"","points":[""],"price":null,"duration":null,"category":"","scene":""}], "work":[{"title":"","type":"","place":"","meta":[""],"scene":""}], "areas":[""]. Looks per kind: ${KINDS.map((k) => `${k} = ${LOOK_OPTIONS[k].map((l, i) => `${i} ${l.name} (${l.mood})`).join(' / ')}`).join('; ')}. For store and catalogue kinds services and work may be []. Scene briefs for services and work follow the chosen look's mood.`;
   const user = `Lead:\n${leadFacts(l)}\n\nResearch:\n${JSON.stringify({ ...intel, site: undefined })}${site ? `\n\nWebsite scan:\n${JSON.stringify(compactSite(site))}\n\nSite colours (most used first): ${(site.colors ?? []).join(' ')}\n\nSite media:\n${JSON.stringify(compactMedia(site))}` : ''}`;
   const { text } = await claude(system, user, { maxTokens: 3500 });
-  type Raw = Omit<DemoContent, 'products' | 'spotlight' | 'scenes' | 'gallery' | 'hero'> & {
+  type Raw = Omit<DemoContent, 'products' | 'spotlight' | 'scenes' | 'gallery' | 'hero' | 'services' | 'work'> & {
     hero: DemoContent['hero'] & { scene?: string };
     hero_media?: number | null; hero_product?: number | null; products?: { i: number; line: string }[];
     spotlight?: { media?: number; kicker?: string; title?: string; callouts?: string[] } | null;
     scenes?: { media?: number; kicker?: string; title?: string; text?: string; scene?: string }[]; gallery?: number[];
   };
-  const raw = json<Raw>(text);
+  const raw = json<Raw & { kind?: string; look?: number; layout?: DemoContent['layout']; areas?: string[];
+    services?: { title?: string; text?: string; points?: string[]; price?: string | null; duration?: string | null; category?: string; scene?: string }[];
+    work?: { title?: string; type?: string; place?: string; meta?: string[]; scene?: string }[] }>(text);
   const hex = (v: unknown, d: string) => (typeof v === 'string' && /^#[0-9a-f]{6}$/i.test(v) ? v : d);
-  const c: DemoContent = { ...raw, products: undefined, spotlight: null, scenes: [], gallery: [] };
+  const c: DemoContent = { ...raw, products: undefined, spotlight: null, scenes: [], gallery: [], services: [], work: [] };
   c.theme = { bg: hex(raw.theme?.bg, '#faf7f2'), ink: hex(raw.theme?.ink, '#1d1b1a'), accent: hex(raw.theme?.accent, '#9a5b4f'), soft: hex(raw.theme?.soft, '#f1e4df') };
+  // The blueprint sets the pages; for services the chosen look sets the tones, with the brand's own accent when it reads on them.
+  const bp = blueprint(KINDS.includes(raw.kind as Kind) ? raw.kind : null, raw.industry, (site?.products?.length ?? 0) > 0);
+  c.kind = bp.kind;
+  if (!bp.commerce) {
+    const look = LOOK_OPTIONS[bp.kind][typeof raw.look === 'number' && raw.look >= 0 && raw.look <= 2 ? raw.look : 0]!;
+    const lum = (h: string) => { const n = parseInt(h.slice(1), 16); return ((n >> 16 & 255) * 299 + (n >> 8 & 255) * 587 + (n & 255) * 114) / 1000; };
+    const brand = hex(raw.theme?.accent, look.accent);
+    c.theme = { bg: look.bg, ink: look.ink, soft: look.soft, accent: Math.abs(lum(brand) - lum(look.bg)) > 70 ? brand : look.accent };
+    raw.font = look.font;
+  }
+  c.layout = { services: raw.layout?.services === 'rows' ? 'rows' : 'stack', work: raw.layout?.work === 'rail' ? 'rail' : 'grid' };
+  c.services = (raw.services ?? []).filter((x) => x.title).slice(0, 8).map((x) => ({ title: String(x.title).slice(0, 80), text: String(x.text ?? '').slice(0, 240), points: (x.points ?? []).slice(0, 4).map((p) => String(p).slice(0, 90)), price: x.price ? String(x.price).slice(0, 30) : null, duration: x.duration ? String(x.duration).slice(0, 30) : null, category: x.category ? String(x.category).slice(0, 40) : undefined, image: null, brief: String(x.scene ?? '').slice(0, 400) }));
+  c.work = (raw.work ?? []).filter((x) => x.title).slice(0, 6).map((x) => ({ title: String(x.title).slice(0, 80), type: String(x.type ?? '').slice(0, 40), place: x.place ? String(x.place).slice(0, 60) : undefined, meta: (x.meta ?? []).slice(0, 3).map((m) => String(m).slice(0, 40)), image: null, brief: String(x.scene ?? '').slice(0, 400) }));
+  c.areas = (raw.areas ?? []).slice(0, 8).map((a) => String(a).slice(0, 40));
+  if (c.work.length) c.work_note = 'Images are concept visuals made by BYBO for this demo.';
   c.palette = { from: c.theme.accent, to: c.theme.soft, accent: c.theme.accent };
   c.font = ['editorial', 'modern', 'soft'].includes(raw.font ?? '') ? raw.font : 'editorial';
   c.style = 'luxe';
@@ -269,7 +302,15 @@ export async function artDirect(c: DemoContent, slug: string): Promise<DemoConte
     const store = (c.catalog?.length ?? 0) > 0;
     const product = store ? c.hero_float ?? c.products?.[0]?.image ?? c.catalog?.[0]?.image ?? null : null;
     const palette = c.theme ? `${c.theme.bg}, ${c.theme.soft}, ${c.theme.accent}` : 'their brand colours';
-    const made = await generateScenes(slug, briefs.map((b) => b || `${c.brand}, ${c.industry}`), { productImage: product, palette });
+    // Services and work get their own photos too, made in the same pass.
+    const extra = store ? [] : [...(c.services ?? []).slice(0, 6).map((x) => x.brief || `${x.title}, ${c.industry}`), ...(c.work ?? []).map((x) => x.brief || `${x.title}, ${x.type}`)];
+    const all = await generateScenes(slug, [...briefs.map((b) => b || `${c.brand}, ${c.industry}`), ...extra], { productImage: product, palette });
+    const made = all.slice(0, briefs.length);
+    let k = briefs.length;
+    if (!store) {
+      c.services = (c.services ?? []).map((x, i) => (i < 6 ? { ...x, image: all[k++] ?? null } : x));
+      c.work = (c.work ?? []).map((x) => ({ ...x, image: all[k++] ?? null }));
+    }
     c.hero_scene = made[0] ?? null;
     c.scenes = (c.scenes ?? []).map((x, i) => ({ ...x, image: made[i + 1] ?? null }));
     // Scenes are composed with the subject about 62% across; the hotspot and phone crop follow it.

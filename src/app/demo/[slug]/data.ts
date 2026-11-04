@@ -1,6 +1,7 @@
 import { cache } from 'react';
 import { crmConfigured, rpc } from '@/lib/crm/db';
 import type { Demo, DemoContent } from '@/lib/crm/autopilot';
+import { blueprint } from '@/lib/crm/blueprints';
 
 export type Item = { title: string; handle: string; price: number | null; compare: number | null; image: string | null; images: string[]; category: string; description: string; line: string };
 
@@ -31,6 +32,9 @@ export function catalog(c: DemoContent): Item[] {
     return { title: p.title, handle, price: p.price, compare: p.compare, image: p.image, images: p.images.length ? p.images : p.image ? [p.image] : [], category: categorise(p.title, p.type), description: p.description, line: lines.get(p.title) ?? '' };
   });
 }
+
+/** The wireframe this demo follows: its pages, section order, form and dashboard. */
+export const blueprintOf = (c: DemoContent) => blueprint(c.kind, c.industry, (c.catalog?.length ?? 0) > 0 || (c.products?.length ?? 0) > 0);
 
 /** Featured products first, in the order the art direction chose. */
 export function featured(c: DemoContent, items: Item[]): Item[] {

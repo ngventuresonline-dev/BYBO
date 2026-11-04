@@ -4,11 +4,13 @@ import { Cormorant_Garamond, Fraunces, Manrope, Space_Grotesk } from 'next/font/
 import { notFound, redirect } from 'next/navigation';
 import type { DemoContent } from '@/lib/crm/autopilot';
 import { CONTACT } from '@/lib/site';
-import { catalog, featured, isCutout, loadDemo, words } from './data';
+import { LOOKS } from '@/lib/crm/blueprints';
+import { blueprintOf, catalog, featured, isCutout, loadDemo, words } from './data';
 import { StoreHeader } from './header';
 import { CartDrawer, CartProvider } from './store';
 import './demo.css';
 import './shop.css';
+import './service.css';
 
 const editorial = Cormorant_Garamond({ subsets: ['latin'], weight: ['500', '600'], style: ['normal', 'italic'], variable: '--f-editorial', preload: false });
 const soft = Fraunces({ subsets: ['latin'], weight: ['500', '600'], style: ['normal', 'italic'], variable: '--f-soft', preload: false });
@@ -21,6 +23,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return { title: { absolute: brand, template: `%s · ${brand}` }, robots: { index: false, follow: false } };
 }
 
+/** True for a dark background, so surfaces and the header switch to light text. */
+const isDark = (hex: string) => { const n = parseInt(hex.replace('#', ''), 16); return ((n >> 16 & 255) * 299 + (n >> 8 & 255) * 587 + (n & 255) * 114) / 1000 < 90; };
+
 /** The demo store's frame: announcement bar, header with cart, footer. Every page of the demo shares it. */
 export default async function DemoLayout({ children, params }: { children: React.ReactNode; params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -31,16 +36,20 @@ export default async function DemoLayout({ children, params }: { children: React
   if (!c?.brand) notFound();
 
   const base = `/demo/${slug}`;
-  const theme = c.theme ?? { bg: '#faf7f2', ink: '#1d1b1a', accent: c.palette?.accent ?? '#9a5b4f', soft: '#f1e4df' };
+  const bp = blueprintOf(c);
+  // Without a theme of its own the demo takes its blueprint's look.
+  const theme = c.theme ?? LOOKS[bp.kind];
   const style = { '--bg': theme.bg, '--ink': theme.ink, '--accent': theme.accent, '--soft': theme.soft } as React.CSSProperties;
   const items = catalog(c);
   const cats = [...new Set(items.map((i) => i.category))].slice(0, 4);
-  const links = [items.length ? { href: `${base}/shop`, label: 'Shop all' } : { href: `${base}#why`, label: 'Services' }, ...cats.map((k) => ({ href: `${base}/shop?c=${encodeURIComponent(k)}`, label: k })), { href: `${base}/about`, label: 'About' }, { href: `${base}/contact`, label: 'Contact' }];
+  // Service blueprints get their own pages in the menu instead of a shop.
+  const pages = bp.commerce ? [] : [...(c.services?.length ? [{ href: `${base}/services`, label: bp.servicesLabel }] : []), ...(c.work?.some((w) => w.image) ? [{ href: `${base}/work`, label: bp.workLabel }] : [])];
+  const links = [...(items.length ? [{ href: `${base}/shop`, label: 'Shop all' }] : pages), ...cats.map((k) => ({ href: `${base}/shop?c=${encodeURIComponent(k)}`, label: k })), { href: `${base}/about`, label: 'About' }, { href: `${base}/contact`, label: 'Contact' }];
   const facts = c.facts ?? [];
   const wa = `https://wa.me/${CONTACT.phone.replace(/\D/g, '')}?text=${encodeURIComponent(`Hi BYBO, I saw the demo for ${c.brand}. Let's talk.`)}`;
 
   return (
-    <div className={`demo f-${c.font ?? 'editorial'} s-${c.style ?? 'luxe'} ${editorial.variable} ${soft.variable} ${modern.variable} ${body.variable}`} style={style}>
+    <div className={`demo f-${c.font ?? 'editorial'} s-${c.style ?? 'luxe'} k-${bp.kind}${isDark(theme.bg) ? ' is-dark' : ''} ${editorial.variable} ${soft.variable} ${modern.variable} ${body.variable}`} style={style}>
       <CartProvider slug={slug}>
         <div className="demo-ribbon">{c.sample_note ? <>{c.sample_note} · </> : null}A demo prepared by <b>BYBO</b> for {c.brand}{c.site_url ? <> · <a href={c.site_url} target="_blank" rel="noreferrer">see the current site</a></> : null} · <Link href={`${base}/dashboard`}>open the owner dashboard</Link> · <a href={wa} target="_blank" rel="noreferrer">talk to BYBO</a></div>
         {facts.length ? <div className="st-announce"><div>{[0, 1].map((k) => <span key={k}>{facts.map((f) => <em key={f + k}>{f}</em>)}</span>)}</div></div> : null}
@@ -49,6 +58,7 @@ export default async function DemoLayout({ children, params }: { children: React
           items={items.map((i) => ({ title: i.title, handle: i.handle, image: i.image, price: i.price, category: i.category }))}
           featured={(() => { const f = featured(c, items).find((i) => isCutout(i.image)) ?? items[0]; return f ? { title: f.title, handle: f.handle, image: f.image, price: f.price, category: f.category } : null; })()}
           badge={c.sample_note ? 'Featured' : 'Bestseller'}
+          pages={pages} action={bp.commerce ? 'Enquire' : bp.cta.primary}
           quote={items.length && !items.some((i) => i.price != null) ? words(c).ask.replace(/ about this \w+$/i, '') : null}
         />
 

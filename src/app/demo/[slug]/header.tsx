@@ -13,7 +13,7 @@ const inr = (n: number) => `₹${Math.round(n).toLocaleString('en-IN')}`;
  * The demo store's header: a mega menu with real products per category, live
  * product search, and a full-screen menu on phones.
  */
-export function StoreHeader({ base, brand, logo, cats, items, featured, quote, badge = 'Bestseller' }: { base: string; brand: string; logo: string | null; cats: string[]; items: NavItem[]; featured: NavItem | null; quote?: string | null; badge?: string }) {
+export function StoreHeader({ base, brand, logo, cats, items, featured, quote, badge = 'Bestseller', pages = [], action = 'Enquire' }: { base: string; brand: string; logo: string | null; cats: string[]; items: NavItem[]; featured: NavItem | null; quote?: string | null; badge?: string; pages?: { href: string; label: string }[]; action?: string }) {
   const [mega, setMega] = useState(false);
   const [active, setActive] = useState(cats[0] ?? '');
   const [search, setSearch] = useState(false);
@@ -52,7 +52,7 @@ export function StoreHeader({ base, brand, logo, cats, items, featured, quote, b
         </button>
         <Link href={base} className="demo-logo">{logo ? <img src={logo} alt={brand} /> : <><span className="st-mono" aria-hidden="true">{brand.trim()[0]}</span><span className="st-word">{brand}</span></>}</Link>
         <nav className="st-nav" onMouseLeave={close}>
-          {items.length ? <Link href={`${base}/shop`} className={`st-nav-shop${mega ? ' is-on' : ''}`} onMouseEnter={open} onFocus={open} aria-expanded={mega}>Shop <i aria-hidden="true">⌄</i></Link> : <Link href={`${base}#why`}>Services</Link>}
+          {items.length ? <Link href={`${base}/shop`} className={`st-nav-shop${mega ? ' is-on' : ''}`} onMouseEnter={open} onFocus={open} aria-expanded={mega}>Shop <i aria-hidden="true">⌄</i></Link> : pages.map((l) => <Link key={l.href} href={l.href}>{l.label}</Link>)}
           {cats.slice(0, 3).map((k) => <Link key={k} href={`${base}/shop?c=${encodeURIComponent(k)}`} onMouseEnter={close}>{k}</Link>)}
           <Link href={`${base}/about`} onMouseEnter={close}>Our story</Link>
           <Link href={`${base}/contact`} onMouseEnter={close}>Contact</Link>
@@ -65,7 +65,7 @@ export function StoreHeader({ base, brand, logo, cats, items, featured, quote, b
               </button>
               {quote ? <Link className="demo-btn is-small st-quote" href={`${base}/contact`}>{quote}</Link> : <CartButton />}
             </>
-          ) : <Link className="demo-btn is-small" href={`${base}/contact`}>Enquire</Link>}
+          ) : <Link className="demo-btn is-small" href={`${base}/contact`}>{action}</Link>}
         </div>
 
         {/* Mega menu */}
@@ -124,7 +124,7 @@ export function StoreHeader({ base, brand, logo, cats, items, featured, quote, b
       {/* Full-screen menu on phones */}
       <div className={`st-fullmenu${menu ? ' is-open' : ''}`} aria-hidden={!menu}>
         <nav>
-          {[items.length ? { href: `${base}/shop`, label: 'Shop all' } : { href: `${base}#why`, label: 'Services' }, ...cats.map((k) => ({ href: `${base}/shop?c=${encodeURIComponent(k)}`, label: k })), { href: `${base}/about`, label: 'Our story' }, { href: `${base}/contact`, label: 'Contact' }].map((l, i) => (
+          {[...(items.length ? [{ href: `${base}/shop`, label: 'Shop all' }] : pages), ...cats.map((k) => ({ href: `${base}/shop?c=${encodeURIComponent(k)}`, label: k })), { href: `${base}/about`, label: 'Our story' }, { href: `${base}/contact`, label: 'Contact' }].map((l, i) => (
             <Link key={l.href + l.label} href={l.href} style={{ '--i': i } as React.CSSProperties}><span>{String(i + 1).padStart(2, '0')}</span>{l.label}</Link>
           ))}
         </nav>
