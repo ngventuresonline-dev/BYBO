@@ -20,7 +20,7 @@ export function WorkGrid({ items, filters = true, rail = false }: { items: Work[
       <div className={rail ? 'sv-grid is-rail' : 'sv-grid'}>
         {shown.map((w, i) => (
           <figure key={w.title} className={`sv-tile t${i % 5}`} data-reveal style={{ transitionDelay: `${(i % 3) * 90}ms` }}>
-            {w.image ? <img src={w.image} alt={w.title} loading="lazy" /> : null}
+            {w.image ? <img src={w.image} alt={w.title} loading={i < 2 ? "eager" : "lazy"} /> : null}
             <figcaption>
               <small>{[w.type, w.place].filter(Boolean).join(' · ')}</small>
               <b>{w.title}</b>
