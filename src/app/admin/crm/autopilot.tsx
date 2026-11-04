@@ -1,5 +1,6 @@
 'use client';
 
+import { DEMO_ORIGIN } from '@/lib/site';
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import type { CrmLead } from '@/lib/crm/db';
 import { ago, api, demoAction, demoLink, display, initials, SOURCE_LABEL, type DemoRow } from './shared';
@@ -9,7 +10,7 @@ type Demo = DemoRow;
 /** The link to prefill for a lead: its live demo if it has one, else the usual hand-built demo address. */
 function suggestedUrl(l: CrmLead, demos: DemoRow[]) {
   const d = demos.find((x) => x.lead_id === l.id && x.status !== 'rejected');
-  if (d) return d.kind === 'custom' && d.url ? d.url : `https://bybo.in/demo/${d.slug}`;
+  if (d) return d.kind === 'custom' && d.url ? d.url : `${DEMO_ORIGIN}/demo/${d.slug}`;
   const intel = (l.intel ?? {}) as { business?: { name?: string | null } };
   const name = intel.business?.name || l.company || l.name || 'demo';
   const slug = name.split(/[\n,.(]/)[0]!.toLowerCase().normalize('NFKD').replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-').slice(0, 40) || 'demo';
