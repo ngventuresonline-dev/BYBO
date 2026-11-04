@@ -16,11 +16,11 @@ const inr = (n: number) => `₹${Math.round(n).toLocaleString('en-IN')}`;
 
 /** Orders and enquiries made on a demo, kept in this browser so the owner dashboard can show them. */
 export type DemoOrder = { id: string; at: string; name: string; city: string; pay: string; items: { title: string; qty: number; price: number }[]; total: number };
-export type DemoEnquiry = { at: string; name: string; contact: string; message: string };
+export type DemoEnquiry = { at: string; name: string; contact: string; message: string; fields?: Record<string, string> };
 export function readRecords<T>(base: string, kind: 'orders' | 'enquiries'): T[] {
   try { return JSON.parse(localStorage.getItem(`bybo-demo-${kind}:${base}`) ?? '[]') as T[]; } catch { return []; }
 }
-function addRecord<T>(base: string, kind: 'orders' | 'enquiries', rec: T) {
+export function addRecord<T>(base: string, kind: 'orders' | 'enquiries', rec: T) {
   try { localStorage.setItem(`bybo-demo-${kind}:${base}`, JSON.stringify([rec, ...readRecords<T>(base, kind)].slice(0, 50))); } catch { /* private mode */ }
 }
 

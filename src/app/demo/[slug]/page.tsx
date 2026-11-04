@@ -4,9 +4,10 @@ import { notFound } from 'next/navigation';
 import type { DemoContent } from '@/lib/crm/autopilot';
 import { CONTACT } from '@/lib/site';
 import { DemoMotion } from './DemoMotion';
-import { catalog, featured, inr, isCutout, loadDemo, off, pad, words } from './data';
+import { blueprintOf, catalog, featured, inr, isCutout, loadDemo, off, pad, words } from './data';
 import { AddToCart } from './store';
 import { Compare } from './compare';
+import { MenuBlock, ServicesBlock, WorkBlock } from './services';
 
 export const dynamic = 'force-dynamic';
 
@@ -32,7 +33,10 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
   const scenes = c.scenes ?? [];
   const gallery = c.gallery ?? [];
   const shop = items.length > 0;
-  const spotlight = c.spotlight ?? (best[0]?.image ? { image: best[0].image, kicker: best[0].title, title: c.tagline, callouts: (c.features ?? []).map((f) => f.title).slice(0, 4) } : null);
+  const bp = blueprintOf(c);
+  const commerce = bp.commerce;
+  const proofPage = c.work?.some((x) => x.image) ? 'work' : 'services';
+  const spotlight = !commerce ? null : c.spotlight ?? (best[0]?.image ? { image: best[0].image, kicker: best[0].title, title: c.tagline, callouts: (c.features ?? []).map((f) => f.title).slice(0, 4) } : null);
   const spotItem = items.find((i) => i.images.includes(spotlight?.image ?? '')) ?? best[0];
   const inScene = !!c.scenes_show_product;
   const floatImage = c.hero_float ?? items.find((p) => isCutout(p.image))?.image ?? null;
@@ -55,6 +59,8 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
     ...(cats.length > 1 ? [{ id: 'cats', label: 'Categories' }] : []),
     ...(shop ? [{ id: 'shop', label: 'Bestsellers' }] : []),
     ...(spotlight ? [{ id: 'spotlight', label: 'Product' }] : []),
+    ...(!commerce && c.services?.length ? [{ id: 'services', label: bp.servicesLabel }] : []),
+    ...(!commerce && c.work?.some((x) => x.image) ? [{ id: 'work', label: bp.workLabel }] : []),
     { id: 'why', label: `Why ${c.brand}` },
   ];
 
@@ -115,9 +121,9 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
             ))}
           </div>
           <div className="demo-hero-cta">
-            {/* A studio or service with nothing to buy asks for the project instead. */}
-            {items.length ? <Link className="demo-btn" data-magnet href={`${base}/shop`}>Shop the range</Link> : <Link className="demo-btn" data-magnet href={`${base}/contact`}>Start your project</Link>}
-            {heroItem?.price != null ? <AddToCart item={{ handle: heroItem.handle, title: heroItem.title, price: heroItem.price, image: heroItem.image }} className="demo-btn is-ghost" label={`Add to bag · ${inr(heroItem.price)}`} /> : <Link className="demo-btn is-ghost" href={`${base}/contact`}>{w.call}</Link>}
+            {/* A studio or service with nothing to buy asks for the booking or brief instead. */}
+            {commerce ? <Link className="demo-btn" data-magnet href={`${base}/shop`}>{bp.cta.primary}</Link> : <Link className="demo-btn" data-magnet href={`${base}/contact`}>{bp.cta.primary}</Link>}
+            {!commerce ? <Link className="demo-btn is-ghost" href={`${base}/${proofPage}`}>{bp.cta.secondary}</Link> : heroItem?.price != null ? <AddToCart item={{ handle: heroItem.handle, title: heroItem.title, price: heroItem.price, image: heroItem.image }} className="demo-btn is-ghost" label={`Add to bag · ${inr(heroItem.price)}`} /> : <Link className="demo-btn is-ghost" href={`${base}/contact`}>{w.call}</Link>}
           </div>
           <div className="demo-dots" aria-hidden="true">{frames.map((f, i) => <i key={i} data-frame={i} className={i === 0 ? 'is-active' : ''} />)}</div>
           <div className="demo-scroll-hint" aria-hidden="true"><span />Scroll</div>
@@ -241,6 +247,10 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
         </section>
       ) : null}
 
+      {/* Services, menu and work, in the order the blueprint sets. */}
+      {commerce ? null : bp.home.filter((x) => x === 'services' || x === 'menu' || x === 'work').map((x) =>
+        x === 'work' ? <WorkBlock key={x} c={c} bp={bp} base={base} /> : x === 'menu' ? <MenuBlock key={x} c={c} bp={bp} base={base} /> : <ServicesBlock key={x} c={c} bp={bp} base={base} />)}
+
       <section className="demo-section demo-why" id="why" data-chapter="why">
         <div>
           <div className="demo-head" data-reveal><p className="demo-kicker">Why {c.brand}</p><h2><Words text={c.tagline} /></h2></div>
@@ -262,7 +272,7 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
         ) : null}
       </section>
 
-      {gallery.length >= 3 ? (
+      {commerce && gallery.length >= 3 ? (
         <section className="demo-gallery">
           {gallery.map((g, i) => <figure key={g} className={`g${i % 3}`} data-speed={[0.12, -0.08, 0.18][i % 3]}><img src={g} alt="" loading="lazy" /></figure>)}
         </section>
@@ -270,7 +280,7 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
 
       {c.flow?.length ? (
         <section className="demo-section demo-journey" data-reveal>
-          <div className="demo-head"><p className="demo-kicker">How ordering works</p><h2>Simple, start to finish.</h2></div>
+          <div className="demo-head"><p className="demo-kicker">{bp.processTitle}</p><h2>Simple, start to finish.</h2></div>
           <ol>{c.flow.map((f, i) => <li key={f.step} style={{ transitionDelay: `${i * 120}ms` }}><span>{pad(i + 1)}</span><h3>{f.step}</h3><p>{f.text}</p></li>)}</ol>
         </section>
       ) : null}
@@ -282,8 +292,8 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
           <h2>{c.cta.headline}</h2>
           <p>{c.cta.sub}</p>
           <div className="demo-actions">
-            <Link className="demo-btn" data-magnet href={`${base}/shop`}>Shop now</Link>
-            <Link className="demo-btn is-ghost" href={`${base}/contact`}>Ask us anything</Link>
+            {commerce ? <Link className="demo-btn" data-magnet href={`${base}/shop`}>Shop now</Link> : <Link className="demo-btn" data-magnet href={`${base}/contact`}>{bp.cta.primary}</Link>}
+            {commerce ? <Link className="demo-btn is-ghost" href={`${base}/contact`}>{bp.cta.secondary}</Link> : <Link className="demo-btn is-ghost" href={`${base}/${proofPage}`}>{bp.cta.secondary}</Link>}
           </div>
         </div>
       </section>
