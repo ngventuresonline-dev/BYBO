@@ -17,5 +17,5 @@ export default async function DashboardPage({ params }: { params: Promise<{ slug
   const bp = blueprintOf(c);
   if (!bp.commerce) return <ServiceDashboard brand={c.brand} bp={forClient(bp)} services={(c.services ?? []).map((s) => s.title)} areas={c.areas ?? []} />;
   const products = catalog(c).map((i) => ({ title: i.title, handle: i.handle, image: i.image, price: i.price }));
-  return <Dashboard brand={c.brand} products={products} />;
+  return <Dashboard brand={c.brand} products={products} personalised={!!c.personalise} />;
 }

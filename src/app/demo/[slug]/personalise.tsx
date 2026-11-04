@@ -1,7 +1,7 @@
 'use client';
 
 /* eslint-disable @next/next/no-img-element -- the brand's own product renders */
-import { useId, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { useCart } from './store';
 
 export type Swatch = { body: string; sleeve: string; letter: string; edge: string };
@@ -54,17 +54,61 @@ function Fields({ rules, name, setName, initials, setInitials }: { rules: Rules;
   );
 }
 
-/** Home page chapter: pick a colourway, type the family name, see the proof, add to bag. */
+/**
+ * Home page chapter: pick a colourway (or take the one chosen in the
+ * wardrobe), type the family name, see the proof, and order for yourself,
+ * the whole family, or as a gift. A share link reopens the same proof.
+ */
 export function Personaliser({ options, rules, kicker, title }: { options: Option[]; rules: Rules; kicker: string; title: string }) {
   const { add, money } = useCart();
   const [pick, setPick] = useState(options[0]?.handle ?? '');
   const [name, setName] = useState('');
   const [initials, setInitials] = useState('');
   const [view, setView] = useState<'back' | 'front'>('back');
-  const [done, setDone] = useState(false);
+  const [mode, setMode] = useState<'me' | 'family' | 'gift'>('me');
+  const [family, setFamily] = useState<{ name: string; initials: string }[]>([{ name: '', initials: '' }]);
+  const [note, setNote] = useState('');
+  const [msg, setMsg] = useState('');
+
+  // A jacket chosen in the wardrobe, or a shared link (?name=&ini=&jacket=), opens here.
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    const t = setTimeout(() => {
+      if (q.get('jacket') && options.some((x) => x.handle === q.get('jacket'))) setPick(q.get('jacket')!);
+      if (q.get('name')) setName(clean(q.get('name')!, rules.max));
+      if (q.get('ini')) setInitials(initialsOf(q.get('ini')!));
+    }, 0);
+    const onPick = (e: Event) => {
+      const h = (e as CustomEvent<string>).detail;
+      if (options.some((x) => x.handle === h)) setPick(h);
+      document.getElementById('personalise')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+    window.addEventListener('demo:pick', onPick);
+    return () => { clearTimeout(t); window.removeEventListener('demo:pick', onPick); };
+  }, [options, rules.max]);
+
   const o = options.find((x) => x.handle === pick) ?? options[0];
   if (!o) return null;
-  const ready = name.length >= 2;
+  const ini = initials || initialsOf(name);
+  const line = (n: string, i: string) => ({ handle: `${o.handle}--${n.toLowerCase().replace(/[^a-z]/g, '')}-${i.toLowerCase()}`, title: `${o.title} · ${n}${i ? ` / ${i}` : ''}`, price: o.price, image: o.back ?? o.image });
+  const people = [{ name, initials: ini }, ...family.map((f) => ({ name: f.name, initials: f.initials || initialsOf(f.name) }))].filter((p) => p.name.length >= 2);
+  const ready = mode === 'gift' || (mode === 'family' ? people.length >= 2 : name.length >= 2);
+  const flash = (m: string) => { setMsg(m); setTimeout(() => setMsg(''), 2200); };
+
+  const order = () => {
+    if (mode === 'gift') add({ handle: `${o.handle}--gift-${Date.now().toString(36)}`, title: `${o.title} · Gift: they add their name${note ? ` · “${note.slice(0, 60)}”` : ''}`, price: o.price, image: o.back ?? o.image });
+    else if (mode === 'family') people.forEach((p) => add(line(p.name, p.initials)));
+    else add(line(name, ini));
+    flash(mode === 'family' ? `${people.length} jackets added` : 'Added to bag');
+  };
+  const share = async () => {
+    const url = `${window.location.origin}${window.location.pathname}?jacket=${o.handle}${name ? `&name=${encodeURIComponent(name)}` : ''}${ini ? `&ini=${ini}` : ''}#personalise`;
+    try {
+      if (navigator.share) await navigator.share({ title: `${name || 'Our'} ${o.title} jacket`, url });
+      else { await navigator.clipboard.writeText(url); flash('Link copied'); }
+    } catch { /* closed the share sheet */ }
+  };
+
   return (
     <section className="pz" id="personalise" data-chapter="personalise">
       <div className="pz-head" data-reveal><p className="demo-kicker">{kicker}</p><h2>{title}</h2></div>
@@ -75,20 +119,49 @@ export function Personaliser({ options, rules, kicker, title }: { options: Optio
           <span className="pz-tag">{o.title}</span>
         </div>
         <div className="pz-panel">
-          <LetteringProof name={name} initials={initials || initialsOf(name)} swatch={o.swatch} />
-          <Fields rules={rules} name={name} setName={(s) => { setName(s); setDone(false); }} initials={initials} setInitials={setInitials} />
+          <div className="pz-modes" role="tablist" aria-label="Who is it for">
+            {([['me', 'For me'], ['family', 'Family set'], ['gift', 'A gift']] as const).map(([k, l]) => <button key={k} type="button" role="tab" aria-selected={mode === k} className={mode === k ? 'is-on' : ''} onClick={() => setMode(k)}>{l}</button>)}
+          </div>
+          {mode === 'gift' ? (
+            <div className="pz-gift">
+              <LetteringProof name="THEIR NAME" initials="" swatch={o.swatch} />
+              <p>Pay now; they receive a link to add their own family name and initials, and approve the proof themselves.</p>
+              <label className="pz-gift-note">Your message (optional)<textarea value={note} onChange={(e) => setNote(e.target.value.slice(0, 140))} rows={2} placeholder="For the first winter in Toronto…" /></label>
+            </div>
+          ) : (
+            <>
+              <LetteringProof name={name} initials={ini} swatch={o.swatch} />
+              <Fields rules={rules} name={name} setName={setName} initials={initials} setInitials={setInitials} />
+              {mode === 'family' ? (
+                <div className="pz-family">
+                  {family.map((f, i) => (
+                    <div key={i} className="pz-family-row">
+                      <input value={f.name} onChange={(e) => setFamily(family.map((x, k) => (k === i ? { ...x, name: clean(e.target.value, rules.max) } : x)))} placeholder={`Family member ${i + 2}`} aria-label={`Name ${i + 2}`} />
+                      <input value={f.initials} onChange={(e) => setFamily(family.map((x, k) => (k === i ? { ...x, initials: initialsOf(e.target.value) } : x)))} placeholder={initialsOf(f.name) || 'AB'} aria-label={`Initials ${i + 2}`} maxLength={2} />
+                      <button type="button" onClick={() => setFamily(family.filter((_, k) => k !== i))} aria-label="Remove">×</button>
+                    </div>
+                  ))}
+                  {family.length < 7 ? <button type="button" className="pz-add" onClick={() => setFamily([...family, { name: name, initials: '' }])}>+ Add someone</button> : null}
+                  <small>Same colourway for everyone, each with their own initials. Sizes are chosen at checkout.</small>
+                </div>
+              ) : null}
+            </>
+          )}
           <div className="pz-swatches" role="radiogroup" aria-label="Colourway">
             {options.map((x) => (
               <button key={x.handle} type="button" role="radio" aria-checked={x.handle === o.handle} title={x.title} className={x.handle === o.handle ? 'is-on' : ''} onClick={() => setPick(x.handle)} style={{ '--b': x.swatch.body, '--s': x.swatch.sleeve } as React.CSSProperties}><span /></button>
             ))}
           </div>
           <div className="pz-buy">
-            <div><b>{money(o.price)}</b><small>{o.category} · {o.title}</small></div>
-            <button type="button" className="demo-btn" disabled={!ready} onClick={() => { add({ handle: `${o.handle}--${name.toLowerCase().replace(/[^a-z]/g, '')}-${(initials || initialsOf(name)).toLowerCase()}`, title: `${o.title} · ${name}${initials || initialsOf(name) ? ` / ${initials || initialsOf(name)}` : ''}`, price: o.price, image: o.back ?? o.image }); setDone(true); }}>
-              {done ? 'Added ✓' : ready ? `Add ${name} to bag` : 'Type your family name'}
+            <div><b>{money(o.price * (mode === 'family' ? Math.max(1, people.length) : 1))}</b><small>{mode === 'family' ? `${people.length || 1} × ${o.title}` : `${o.category} · ${o.title}`}</small></div>
+            <button type="button" className="demo-btn" disabled={!ready} onClick={order}>
+              {msg || (!ready ? (mode === 'family' ? 'Add at least two names' : 'Type your family name') : mode === 'gift' ? 'Add gift to bag' : mode === 'family' ? `Add ${people.length} jackets` : `Add ${name} to bag`)}
             </button>
           </div>
-          {rules.note ? <p className="pz-note">{rules.note}</p> : null}
+          <div className="pz-foot">
+            {rules.note ? <p className="pz-note">{rules.note}</p> : <span />}
+            {mode !== 'gift' ? <button type="button" className="pz-share" onClick={share}>Share this proof ↗</button> : null}
+          </div>
         </div>
       </div>
     </section>

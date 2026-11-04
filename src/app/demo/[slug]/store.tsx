@@ -35,11 +35,16 @@ export function CartProvider({ slug, currency = 'INR', children }: { slug: strin
     return () => clearTimeout(t);
   }, [key]);
   const save = useCallback((next: Line[]) => { setLines(next); try { localStorage.setItem(key, JSON.stringify(next)); } catch { /* private mode */ } }, [key]);
+  // Functional update, so several adds in one go (a family set) all land.
   const add = useCallback((l: Omit<Line, 'qty'>, qty = 1) => {
-    const found = lines.find((x) => x.handle === l.handle);
-    save(found ? lines.map((x) => (x.handle === l.handle ? { ...x, qty: Math.min(10, x.qty + qty) } : x)) : [...lines, { ...l, qty }]);
+    setLines((prev) => {
+      const found = prev.find((x) => x.handle === l.handle);
+      const next = found ? prev.map((x) => (x.handle === l.handle ? { ...x, qty: Math.min(10, x.qty + qty) } : x)) : [...prev, { ...l, qty }];
+      try { localStorage.setItem(key, JSON.stringify(next)); } catch { /* private mode */ }
+      return next;
+    });
     setOpen(true);
-  }, [lines, save]);
+  }, [key]);
   const setQty = useCallback((handle: string, qty: number) => save(qty <= 0 ? lines.filter((x) => x.handle !== handle) : lines.map((x) => (x.handle === handle ? { ...x, qty: Math.min(10, qty) } : x))), [lines, save]);
   const value = useMemo<Cart>(() => ({
     base: `/demo/${slug}`, lines, open, setOpen, add, setQty, clear: () => save([]), currency, money: (n: number) => money(n, currency),

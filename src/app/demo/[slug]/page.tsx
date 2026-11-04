@@ -9,6 +9,7 @@ import { AddToCart } from './store';
 import { Compare } from './compare';
 import { MenuBlock, ServicesBlock, WorkBlock } from './services';
 import { Personaliser } from './personalise';
+import { Wardrobe } from './wardrobe';
 
 export const dynamic = 'force-dynamic';
 
@@ -69,9 +70,21 @@ export default async function DemoHome({ params }: { params: Promise<{ slug: str
   return (
     <>
       <DemoMotion />
-      <ol className="demo-rail" aria-hidden="true">
+      {c.wardrobe ? null : <ol className="demo-rail" aria-hidden="true">
         {chapters.map((ch, i) => <li key={ch.id} data-rail={ch.id}><span>{pad(i + 1)}</span><em>{ch.label}</em></li>)}
-      </ol>
+      </ol>}
+
+      {/* The wardrobe: every piece on one rail, the chosen one steps forward. */}
+      {c.wardrobe ? (
+        <Wardrobe
+          kicker={c.wardrobe.kicker} title={c.wardrobe.title}
+          jackets={items.filter((i) => i.price != null).map((i) => {
+            const [role = '', ...rest] = i.description.split('\n');
+            const specs = rest.join(' ').split(/\.\s+/).map((x) => x.replace(/\.$/, '').trim()).filter((x) => /^(Body|Sleeves|Lettering|Fit|Collection): /.test(x));
+            return { handle: i.handle, code: i.handle.split('-')[0]!.toUpperCase(), title: i.title, price: i.price!, front: i.images[0] ?? i.image, back: i.images[1] ?? null, hanger: i.images[2] ?? null, category: i.category, role, specs };
+          })}
+        />
+      ) : null}
 
       {/* Intro: scroll into the fabric before the store opens. */}
       {c.intro_image ? (
