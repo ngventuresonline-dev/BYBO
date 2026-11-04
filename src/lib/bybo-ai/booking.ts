@@ -5,7 +5,8 @@ import { SLOT_MINUTES, slotLabel } from './slots';
 
 /**
  * A call BYBO AI has booked: the team gets the lead with the conversation,
- * the visitor gets a confirmation, and both get a calendar invite (.ics).
+ * the visitor gets a confirmation, and both get a calendar invitation that
+ * lands on their calendar with reminders.
  */
 
 export type Booking = {
@@ -18,6 +19,8 @@ export type Booking = {
   summary: string;
   page: string;
   transcript: { role: 'user' | 'assistant'; text: string }[];
+  /** What we know about them, for the team's copy of the invite (research, pitch, demo). */
+  brief?: string;
 };
 
 const FROM = process.env.ENQUIRY_FROM ?? `BYBO <${CONTACT.email}>`;
@@ -26,19 +29,46 @@ const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&l
 const icsText = (s: string) => s.replace(/\\/g, '\\\\').replace(/\n/g, '\\n').replace(/[,;]/g, (c) => `\\${c}`);
 const stamp = (d: Date) => d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
 
-function invite(b: Booking, start: Date) {
+/**
+ * A real calendar invitation (METHOD:REQUEST) for the given attendees, so Gmail
+ * and Outlook put the call straight on their calendar, with reminders 30 and
+ * 10 minutes before. The team and the visitor each get their own copy: the
+ * team's carries the number to call and a synopsis, the visitor's only what
+ * the call covers.
+ */
+export function invite(b: Booking, start: Date, attendees: string[], team = true) {
   const end = new Date(start.getTime() + SLOT_MINUTES * 60_000);
   const uid = `${stamp(start)}-${b.email.toLowerCase()}@bybo.in`;
+  const alarm = (min: number) => ['BEGIN:VALARM', 'ACTION:DISPLAY', `DESCRIPTION:${icsText(`BYBO call with ${b.name}`)}`, `TRIGGER:-PT${min}M`, 'END:VALARM'];
   const ics = [
-    'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//BYBO//BYBO AI//EN', 'METHOD:PUBLISH',
+    'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//BYBO//BYBO AI//EN', 'CALSCALE:GREGORIAN', 'METHOD:REQUEST',
     'BEGIN:VEVENT',
-    `UID:${uid}`, `DTSTAMP:${stamp(new Date())}`, `DTSTART:${stamp(start)}`, `DTEND:${stamp(end)}`,
-    `SUMMARY:${icsText(`BYBO discovery call with ${b.name}`)}`,
-    `DESCRIPTION:${icsText(`${b.need}\nPhone: ${b.phone}\nBooked by BYBO AI on bybo.in`)}`,
+    `UID:${uid}`, `DTSTAMP:${stamp(new Date())}`, `DTSTART:${stamp(start)}`, `DTEND:${stamp(end)}`, 'SEQUENCE:0', 'STATUS:CONFIRMED',
+    `SUMMARY:${icsText(`BYBO discovery call with ${b.name}${b.company ? ` (${b.company})` : ''}`)}`,
+    `LOCATION:${icsText(team ? `Call ${b.phone}` : `BYBO calls you on ${b.phone}`)}`,
+    `DESCRIPTION:${icsText(team ? synopsis(b) : `BYBO will call you on ${b.phone}.\nWhat we'll cover: ${b.need}`)}`,
     `ORGANIZER;CN=BYBO:mailto:${CONTACT.email}`,
+    ...attendees.map((a) => `ATTENDEE;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE:mailto:${a}`),
+    ...alarm(30), ...alarm(10),
     'END:VEVENT', 'END:VCALENDAR',
   ].join('\r\n');
-  return { filename: 'bybo-call.ics', content: Buffer.from(ics).toString('base64') };
+  return { filename: 'bybo-call.ics', content: Buffer.from(ics).toString('base64'), content_type: 'text/calendar; charset=utf-8; method=REQUEST' };
+}
+
+/** The team's synopsis: who to call, what they want, what we know, what they said. */
+export function synopsis(b: Booking) {
+  const said = b.transcript.filter((m) => m.role === 'user').map((m) => m.text.trim()).filter(Boolean).slice(-4);
+  return [
+    `CALL: ${b.phone}`,
+    `${b.name}${b.company ? `, ${b.company}` : ''} · ${b.email}`,
+    '',
+    `Wants: ${b.need}`,
+    ...(b.summary ? [`Summary: ${b.summary}`] : []),
+    ...(b.brief ? ['', 'What we know:', b.brief] : []),
+    ...(said.length ? ['', 'They said:', ...said.map((t) => `- ${t.slice(0, 200)}`)] : []),
+    '',
+    'CRM: https://bybo.in/admin/crm',
+  ].join('\n');
 }
 
 function teamMail(b: Booking, when: string) {
@@ -89,10 +119,12 @@ export async function sendBooking(b: Booking) {
   if (!key) return false;
   const start = new Date(b.slot);
   const when = slotLabel(start);
-  const attachments = [invite(b, start)];
-  const team = await send(key, { to: teamRecipients(), reply_to: b.email, attachments, ...teamMail(b, when) });
+  const team = await send(key, { to: teamRecipients(), reply_to: b.email, attachments: [invite(b, start, teamRecipients())], ...teamMail(b, when) });
+  // Personal calendars (CALENDAR_INVITE_TO, comma-separated) get the invitation on its own, without the team email.
+  const own = (process.env.CALENDAR_INVITE_TO ?? '').split(/[,;]/).map((x) => x.trim()).filter((x) => x.includes('@'));
+  if (team && own.length) await send(key, { to: own, reply_to: b.email, attachments: [invite(b, start, own)], subject: `Call: ${b.name}, ${when}`, text: `BYBO discovery call with ${b.name} (${b.phone}). The invitation is attached and is on your calendar.` });
   if (!team) return false;
-  await send(key, { to: [b.email], reply_to: CONTACT.email, attachments, ...visitorMail(b, when) });
+  await send(key, { to: [b.email], reply_to: CONTACT.email, attachments: [invite(b, start, [b.email], false)], ...visitorMail(b, when) });
   await captureLead({
     source: b.summary.includes('BYBO Voice') ? 'voice' : 'booking', name: b.name, email: b.email, phone: b.phone, company: b.company,
     need: b.need, summary: b.summary, stage: 'call_booked', temperature: 'hot', page: b.page,
