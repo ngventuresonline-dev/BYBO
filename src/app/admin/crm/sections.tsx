@@ -238,27 +238,67 @@ export function List({ leads, now, onOpen }: { leads: CrmLead[]; now: number; on
       <button onClick={() => setSort((s) => ({ key, dir: s.key === key ? (s.dir === 1 ? -1 : 1) : key === 'name' ? 1 : -1 }))}>{label}{sort.key === key ? (sort.dir === 1 ? ' ↑' : ' ↓') : ''}</button>
     </th>
   );
-  if (!rows.length) return <div className="crm-panel"><p className="crm-muted">No leads match.</p></div>;
+  const [view, setView] = useState<'table' | 'live'>(() => (typeof window !== 'undefined' && localStorage.getItem('crm-leads-view') === 'live' ? 'live' : 'table'));
+  const pick = (v: 'table' | 'live') => { setView(v); try { localStorage.setItem('crm-leads-view', v); } catch { /* private mode */ } };
+  const tabs = (
+    <div className="crm-chips" role="tablist">
+      <button role="tab" aria-selected={view === 'table'} className={`crm-chipbtn ${view === 'table' ? 'is-on' : ''}`} onClick={() => pick('table')}>All leads</button>
+      <button role="tab" aria-selected={view === 'live'} className={`crm-chipbtn ${view === 'live' ? 'is-on' : ''}`} onClick={() => pick('live')}>As they come</button>
+    </div>
+  );
+  if (!rows.length) return <div className="crm-stack">{tabs}<div className="crm-panel"><p className="crm-muted">No leads match.</p></div></div>;
+  if (view === 'live') return <div className="crm-stack">{tabs}<Incoming leads={leads} now={now} onOpen={onOpen} /></div>;
   return (
+    <div className="crm-stack">{tabs}
     <div className="crm-panel crm-table-wrap">
       <table className="crm-table">
         <thead><tr>{th('name', 'Lead')}<th>Contact</th><th>Source</th>{th('stage', 'Stage')}{th('value', 'Value')}<th>Follow-up</th>{th('created_at', 'Created')}{th('last_activity_at', 'Last activity')}</tr></thead>
         <tbody>
           {rows.map((l) => (
             <tr key={l.id} onClick={() => onOpen(l.id)} tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter') onOpen(l.id); }}>
-              <td><span className="crm-cell-lead"><span className={`crm-avatar t-${l.temperature ?? 'none'}`}>{initials(l)}</span><span><b>{display(l)}</b><small>{l.need ?? l.company ?? ''}</small></span></span></td>
+              <td><span className="crm-cell-lead"><span className={`crm-avatar t-${l.temperature ?? 'none'}`}>{initials(l)}</span><span><b>{display(l)}</b><small>{l.need ?? l.company ?? ''}</small>{l.quality ? <QualityChip lead={l} /> : null}</span></span></td>
               <td><small>{l.email}<br />{l.phone}</small></td>
               <td><span className={`crm-chip src-${l.source}`}>{SOURCE_LABEL[l.source]}</span></td>
               <td><span className={`crm-stage stage-${l.stage}`}>{STAGE_LABEL[l.stage]}</span></td>
               <td>{l.value ? inr(l.value) : '—'}</td>
               <td>{l.next_follow_up ? <span className={Date.parse(l.next_follow_up) < now ? 'crm-late' : ''}>{until(l.next_follow_up, now)}</span> : '—'}</td>
-              <td>{ago(l.created_at, now)}</td>
+              <td title={stamp(l.created_at)}>{ago(l.created_at, now)}</td>
               <td>{ago(l.last_activity_at, now)}</td>
             </tr>
           ))}
         </tbody>
       </table>
     </div>
+    </div>
+  );
+}
+
+const stamp = (iso: string) => new Date(iso).toLocaleString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit' });
+
+/** Every lead in the order it arrived, newest first, with the exact date and time. */
+function Incoming({ leads, now, onOpen }: { leads: CrmLead[]; now: number; onOpen: (id: string) => void }) {
+  const byDay = new Map<string, CrmLead[]>();
+  for (const l of [...leads].sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at))) {
+    const d = new Date(l.created_at).toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    byDay.set(d, [...(byDay.get(d) ?? []), l]);
+  }
+  return (
+    <>
+      {[...byDay.entries()].map(([d, items]) => (
+        <Panel key={d} title={d} action={<span className="crm-muted">{items.length} lead{items.length === 1 ? '' : 's'}</span>}>
+          <div className="crm-incoming">
+            {items.map((l) => (
+              <button key={l.id} className={`crm-in-row ${l.quality === 'fake' ? 'is-fake' : ''}`} onClick={() => onOpen(l.id)}>
+                <time dateTime={l.created_at} title={stamp(l.created_at)}><b>{new Date(l.created_at).toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit' })}</b><small>{ago(l.created_at, now)}</small></time>
+                <span className="crm-in-who"><b>{display(l)}</b><small>{[l.company && l.name ? l.company : null, l.need].filter(Boolean).join(' · ') || '—'}</small></span>
+                <span className="crm-in-contact"><small>{l.email ?? ''}<br />{l.phone ?? ''}</small></span>
+                <span className="crm-in-tags"><span className={`crm-chip src-${l.source}`}>{SOURCE_LABEL[l.source]}</span>{l.quality ? <QualityChip lead={l} /> : null}<span className={`crm-stage stage-${l.stage}`}>{STAGE_LABEL[l.stage]}</span></span>
+              </button>
+            ))}
+          </div>
+        </Panel>
+      ))}
+    </>
   );
 }
 
