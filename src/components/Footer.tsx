@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowUpRight, Mail } from 'lucide-react';
+import { ArrowUpRight, Mail, MapPin } from 'lucide-react';
 import { CONTACT } from '@/lib/site';
 import { Wordmark } from './Wordmark';
 import { MeasurementSettings } from './MarketingPixels';
@@ -39,6 +39,12 @@ export function Footer() {
                 both, so restoring them is two list items. */}
             <ul className="ft-contact">
               <li><a href={CONTACT.emailHref}><Mail size={15} aria-hidden />{CONTACT.email}</a></li>
+              <li>
+                <a href={CONTACT.address.mapHref} target="_blank" rel="noreferrer" className="ft-address">
+                  <MapPin size={15} aria-hidden />
+                  <address>{CONTACT.parent}<br />{CONTACT.address.lines.map((l, i) => <span key={l}>{l}{i < CONTACT.address.lines.length - 1 ? <br /> : null}</span>)}</address>
+                </a>
+              </li>
             </ul>
           </div>
 

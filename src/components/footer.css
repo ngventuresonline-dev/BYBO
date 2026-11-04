@@ -25,6 +25,9 @@
 .ft-contact a{display:inline-flex;align-items:center;gap:10px;font-size:14px;color:#ded7ea;transition:color .16s}
 .ft-contact a:hover{color:var(--violet-light)}
 .ft-contact svg{flex-shrink:0;color:#6f6884}
+.ft-contact .ft-address{align-items:flex-start;line-height:1.55}
+.ft-contact .ft-address svg{margin-top:3px}
+.ft-contact address{font-style:normal;color:#a9a1b8;font-size:13.5px}
 
 .ft-col h2{font-size:10.5px;letter-spacing:.19em;text-transform:uppercase;color:var(--violet-light);
   font-family:var(--font-body);font-weight:600;margin-bottom:18px}
