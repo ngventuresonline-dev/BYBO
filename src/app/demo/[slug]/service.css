@@ -126,3 +126,8 @@
   .sv-grid.is-rail { grid-template-columns: none; grid-auto-columns: 38%; }
   .sv-grid.is-rail .sv-tile, .sv-grid.is-rail .sv-tile.t0, .sv-grid.is-rail .sv-tile.t1, .sv-grid.is-rail .sv-tile.t2 { grid-column: auto; grid-row: auto; aspect-ratio: 3 / 4; }
 }
+
+/* Owner dashboards on phones: wide tables scroll inside their card instead of widening the page */
+.db-main, .db-grid > *, .db-kpis > * { min-width: 0; }
+.db-card { overflow-x: auto; }
+.db-table { min-width: 520px; }
