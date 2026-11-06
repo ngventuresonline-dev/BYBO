@@ -8,10 +8,12 @@ import { findSlot } from '@/lib/bybo-ai/slots';
 import { productById } from '@/lib/payments/products';
 import { inr } from '@/lib/payments/link';
 import { CONTACT } from '@/lib/site';
+import { bridgeCall, vobizConfigured, vobizNumber } from '@/lib/crm/vobiz';
+import { normalizePhone } from '@/lib/instant-call/phone';
 
 /**
  * One-click actions on a lead from the desk: send a branded email, send a
- * payment link, or book a discovery call. Each one is logged on the lead.
+ * payment link, call through BYBO's Vobiz number, or book a discovery call. Each one is logged on the lead.
  * Admin only; every send is a deliberate click by the founder.
  */
 
@@ -103,6 +105,19 @@ export async function POST(request: Request, ctx: { params: Promise<{ id: string
     const on = b.on !== false;
     const r = await killLead(id, on);
     return NextResponse.json({ ok: true, ...r, message: on ? `Kill switch on: ${r.demos} demo${r.demos === 1 ? '' : 's'} and ${r.proposals} proposal${r.proposals === 1 ? '' : 's'} disabled, lead archived` : 'Kill switch off: links restored' });
+  }
+
+  if (b?.type === 'call') {
+    if (!vobizConfigured()) return NextResponse.json({ ok: false, reason: 'not_configured', message: 'Vobiz isn’t connected yet' }, { status: 503 });
+    if (!normalizePhone(lead.phone)) return NextResponse.json({ ok: false, reason: 'no_phone', message: 'This lead has no dialable number' }, { status: 400 });
+    try {
+      const r = await bridgeCall(id);
+      await log(id, 'call', `Called from the desk via BYBO’s number ${vobizNumber()}`, undefined, { provider: 'vobiz', request: r.request_uuid ?? null });
+    } catch (x) {
+      console.error('vobiz call failed', (x as Error).message);
+      return NextResponse.json({ ok: false, reason: 'call_failed', message: 'Vobiz couldn’t place the call' }, { status: 502 });
+    }
+    return NextResponse.json({ ok: true, message: 'Ringing your phone; answer to connect to the lead' });
   }
 
   if (b?.type === 'book') {
