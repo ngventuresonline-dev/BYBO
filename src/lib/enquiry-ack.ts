@@ -22,9 +22,12 @@ export function firstName(name: string): string {
 
 /**
  * Team recipients for the enquiry itself.
- * Always includes support@ and byboonline@; ENQUIRY_TO may add more
- * (comma-separated). The visitor acknowledgement does not use this list.
+ * Always includes the Gmail inboxes in ENQUIRY_INBOXES; ENQUIRY_TO may add more
+ * (comma-separated). support@bybo.in is From-only and is never a recipient.
+ * The visitor acknowledgement does not use this list.
  */
+const NO_RECEIVE_MAILBOX = new Set(['support@bybo.in']);
+
 export function teamRecipients(env = process.env.ENQUIRY_TO): string[] {
   const extra = (env ?? '')
     .split(/[,;]/)
@@ -34,7 +37,7 @@ export function teamRecipients(env = process.env.ENQUIRY_TO): string[] {
   const to: string[] = [];
   for (const address of [...ENQUIRY_INBOXES, ...extra]) {
     const key = address.toLowerCase();
-    if (seen.has(key)) continue;
+    if (seen.has(key) || NO_RECEIVE_MAILBOX.has(key)) continue;
     seen.add(key);
     to.push(address);
   }
