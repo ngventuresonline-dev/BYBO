@@ -5,9 +5,10 @@ import type { CrmEvent, CrmLead, Stage } from '@/lib/crm/db';
 import { IntelPanel, LeadDemos } from './autopilot';
 import { Icon } from './icons';
 import { idleDays } from './intel';
+import { bconReady, postCallTemplates, type PostCallSet } from './postcall';
 import { ago, api, DAY, display, EVENT_ICON, initials, inr, localInput, SOURCE_LABEL, STAGE_LABEL, STAGES, waLink, when, type Brief, type DemoRow, type Product, type Slot } from './shared';
 
-type Tool = 'email' | 'pay' | 'book' | 'whatsapp' | null;
+type Tool = 'email' | 'pay' | 'book' | 'whatsapp' | 'postcall' | null;
 
 const EMAIL_TEMPLATES = (first: string, need: string) => [
   { id: 'follow', label: 'Follow-up', subject: 'Following up from BYBO', body: `Hi ${first},\n\nThanks for reaching out to BYBO${need ? ` about ${need}` : ''}. I'd love to understand what you need and show you how we'd build it.\n\nWould a 30-minute call this week work? Reply with a time that suits you.` },
@@ -101,6 +102,19 @@ export function Drawer({ lead, now, products, slots, demos, onChanged, onClose, 
     setCalling(false);
   }
 
+  const [bridging, setBridging] = useState(false);
+  async function bridge() {
+    setBridging(true);
+    try {
+      const r = await api<{ message: string }>(`/api/admin/crm/leads/${lead.id}/action`, { method: 'POST', body: JSON.stringify({ type: 'call' }) });
+      onToast(r.message);
+      refresh();
+    } catch (x) {
+      onToast((x as Error & { data?: { message?: string } }).data?.message || 'That didn’t work. Try again.');
+    }
+    setBridging(false);
+  }
+
   const followIn = (days: number) => {
     const d = new Date(now + days * 86_400_000);
     d.setHours(11, 0, 0, 0);
@@ -132,8 +146,9 @@ export function Drawer({ lead, now, products, slots, demos, onChanged, onClose, 
         <div className="crm-actions" role="toolbar" aria-label="Actions">
           <button className={`crm-act ${tool === 'email' ? 'is-on' : ''}`} onClick={() => setTool(tool === 'email' ? null : 'email')} disabled={!lead.email}><span>✉</span>Email</button>
           <button className={`crm-act ${tool === 'whatsapp' ? 'is-on' : ''}`} onClick={() => setTool(tool === 'whatsapp' ? null : 'whatsapp')} disabled={!lead.phone}><span>◍</span>WhatsApp</button>
-          <a className={`crm-act ${lead.phone ? '' : 'is-off'}`} href={lead.phone ? `tel:${lead.phone}` : undefined} aria-disabled={!lead.phone}><span>☏</span>Call</a>
+          <button className="crm-act" onClick={bridge} disabled={!lead.phone || bridging} title="Rings your phone, then connects you to the lead from BYBO’s Vobiz number"><span>☏</span>{bridging ? 'Ringing you…' : 'Call'}</button>
           <button className="crm-act" onClick={callNow} disabled={!lead.phone || calling} title="The AI agent calls this lead now"><span>⚡</span>{calling ? 'Dialling…' : 'AI call now'}</button>
+          <button className={`crm-act ${tool === 'postcall' ? 'is-on' : ''}`} onClick={() => setTool(tool === 'postcall' ? null : 'postcall')} disabled={!lead.phone}><span>✓</span>Post-call</button>
           <button className={`crm-act ${tool === 'book' ? 'is-on' : ''}`} onClick={() => setTool(tool === 'book' ? null : 'book')}><span>◷</span>Book call</button>
           <button className={`crm-act ${tool === 'pay' ? 'is-on' : ''}`} onClick={() => setTool(tool === 'pay' ? null : 'pay')}><span>₹</span>Pay link</button>
         </div>
@@ -146,6 +161,7 @@ export function Drawer({ lead, now, products, slots, demos, onChanged, onClose, 
             <p className="crm-muted">Opens WhatsApp with the message ready; you press send.</p>
           </div>
         ) : null}
+        {tool === 'postcall' && lead.phone ? <PostCallTool phone={lead.phone} first={first} demoUrl={demos.find((d) => d.lead_id === lead.id && d.url && (d.status === 'sent' || d.status === 'approved'))?.url} onToast={onToast} /> : null}
         {tool === 'book' ? <BookTool lead={lead} slots={slots} onDone={(m) => { onToast(m); setTool(null); refresh(); }} /> : null}
         {tool === 'pay' ? <PayTool lead={lead} products={products} onDone={(m) => { onToast(m); setTool(null); refresh(); }} /> : null}
 
@@ -380,6 +396,27 @@ function BookTool({ lead, slots, onDone }: { lead: CrmLead; slots: Slot[]; onDon
       <select value={slot} onChange={(e) => setSlot(e.target.value)}>{slots.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}</select>
       {err ? <p className="crm-err">{err}</p> : null}
       <div className="crm-form-foot"><button className="crm-btn" onClick={book} disabled={busy || !ready || !slot}>{busy ? 'Booking…' : 'Book and send invite'}</button></div>
+    </div>
+  );
+}
+
+function PostCallTool({ phone, first, demoUrl, onToast }: { phone: string; first: string; demoUrl?: string | null; onToast: (t: string) => void }) {
+  const [set, setSet] = useState<PostCallSet>(bconReady() ? 'bcon' : 'bybo');
+  return (
+    <div className="crm-tool">
+      <p className="crm-label">Post-call WhatsApp</p>
+      <div className="crm-chips">
+        <button type="button" className={`crm-chipbtn ${set === 'bcon' ? 'is-on' : ''}`} onClick={() => setSet('bcon')}>BYBO + BCON Club</button>
+        <button type="button" className={`crm-chipbtn ${set === 'bybo' ? 'is-on' : ''}`} onClick={() => setSet('bybo')}>BYBO only</button>
+      </div>
+      {set === 'bcon' && !bconReady() ? <p className="crm-muted">BCON Club links aren’t added yet, so these carry BYBO’s links only.</p> : null}
+      {postCallTemplates(first, set, demoUrl).map((t) => (
+        <div key={t.id} className="crm-pc">
+          <div className="crm-pc-head"><b>{t.label}</b><span className="crm-brief-acts"><CopyBtn text={t.text} label={t.label} onToast={onToast} /><a className="crm-chipbtn" href={waLink(phone, t.text)} target="_blank" rel="noreferrer">Open in WhatsApp</a></span></div>
+          <p className="crm-wa">{t.text}</p>
+        </div>
+      ))}
+      <p className="crm-muted">Opens WhatsApp with the message ready; you press send.</p>
     </div>
   );
 }

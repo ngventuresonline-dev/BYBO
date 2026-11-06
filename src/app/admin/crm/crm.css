@@ -320,6 +320,10 @@ body:has(.crm) .skip-link { display: none !important; }
 .crm-tool { display: grid; gap: 10px; padding: 14px; border-radius: 16px; border: 1px solid #8b5cff44; background: linear-gradient(160deg, #8b5cff14, #ffffff05); animation: crm-pop .18s ease-out; }
 .crm-wa { display: block; padding: 10px 12px; border-radius: 12px; background: #25d36614; border: 1px solid #25d36640; color: #c8f7da; text-decoration: none; font-size: 13px; line-height: 1.4; }
 .crm-wa:hover { border-color: #25d366aa; }
+.crm-pc { display: grid; gap: 6px; margin-bottom: 10px; }
+.crm-pc-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13px; }
+.crm-pc .crm-wa { white-space: pre-line; margin: 0; }
+.crm-chipbtn.is-on { border-color: #25d366aa; color: #c8f7da; }
 .crm-follow { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
 .crm-follow input { flex: 1 1 200px; }
 
