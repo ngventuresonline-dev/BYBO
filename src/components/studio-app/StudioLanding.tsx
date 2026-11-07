@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode, type RefObject } from 'react';
-import { ArrowRight, LogIn, Pause, MessageSquareText, FileText, Plus, Layers, Palette, Rocket, Clapperboard, Store, Inbox, Globe, Play } from 'lucide-react';
+import { ArrowRight, LogIn, MessageSquareText, FileText, Plus, Layers, Palette, Rocket, Clapperboard, Store, Inbox, Globe, Play } from 'lucide-react';
 import './studio-landing.css';
 
 /**
@@ -141,56 +141,6 @@ function Hero({ kind, heroRef }: { kind: Kind; heroRef: RefObject<HTMLElement | 
   );
 }
 
-/* ---------------- the studio on video: 15 s, three chapters; tap one to jump ---------------- */
-
-const CHAPTERS = {
-  website: [['Describe', 'A sentence, a link or an idea.'], ['Edit by chatting', 'Change anything by asking, or tap the page.'], ['Publish', 'Live with its own address. Enquiries land in your inbox.']],
-  motion: [['Pick or describe', 'Describe the reel or start from a style.'], ['Story ads', 'A story, a problem, your product.'], ['Effects and sharing', 'Your product in motion, cut for each app.']],
-};
-const CUTS = [0, 5, 10];
-
-function Walkthrough({ kind }: { kind: Kind }) {
-  const vid = useRef<HTMLVideoElement>(null);
-  const [t, setT] = useState(0);
-  const [playing, setPlaying] = useState(false);
-  const held = useRef(false); // paused by the visitor: scrolling back does not restart it
-  const i = CUTS.reduce((a, c, n) => (t >= c ? n : a), 0);
-  useEffect(() => {
-    const v = vid.current; if (!v) return;
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const io = new IntersectionObserver(([e]) => {
-      if (e.isIntersecting && !reduce && !held.current) { if (!v.getAttribute('src')) v.src = `${A}/vsl-${kind}.mp4`; v.play().catch(() => {}); }
-      else if (!e.isIntersecting) v.pause();
-    }, { threshold: .4 });
-    io.observe(v); return () => io.disconnect();
-  }, [kind]);
-  const load = (v: HTMLVideoElement) => { if (!v.getAttribute('src')) v.src = `${A}/vsl-${kind}.mp4`; };
-  const go = (n: number) => { const v = vid.current; if (!v) return; load(v); v.currentTime = CUTS[n] + .05; setT(CUTS[n]); held.current = false; v.play().catch(() => {}); };
-  const toggle = () => { const v = vid.current; if (!v) return; load(v); if (v.paused) { held.current = false; v.play().catch(() => {}); } else { held.current = true; v.pause(); } };
-  return (
-    <Section kicker="Inside the studio" title={kind === 'website' ? <>Fifteen seconds, <em>start to live site.</em></> : <>Fifteen seconds, <em>idea to posted reel.</em></>}>
-      <div className="stl-vsl">
-        <div className="stl-vsl-frame">
-          <video ref={vid} muted loop playsInline preload="none" poster={`${A}/vsl-${kind}.webp`} width={1280} height={800}
-            onTimeUpdate={e => setT(e.currentTarget.currentTime)} onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)}
-            aria-label={`A 15 second walkthrough of BYBO ${kind === 'website' ? 'Website' : 'Motion'} Studio`} />
-          <button className="stl-vsl-toggle" onClick={toggle} aria-label={playing ? 'Pause' : 'Play'}>{playing ? <Pause size={18} /> : <Play size={18} />}</button>
-        </div>
-        <ol className="stl-vsl-steps">
-          {CHAPTERS[kind].map(([name, line], n) => (
-            <li key={name}>
-              <button className={n === i ? 'is-on' : ''} onClick={() => go(n)} aria-current={n === i}>
-                <small>0{n + 1}</small><b>{name}</b><span>{line}</span>
-                <i style={{ transform: `scaleX(${n === i ? Math.min(1, (t - CUTS[n]) / 5) : n < i ? 1 : 0})` }} />
-              </button>
-            </li>
-          ))}
-        </ol>
-      </div>
-    </Section>
-  );
-}
-
 /* ================= WEBSITE ================= */
 
 const BRIEFS: [string, string, string][] = [
@@ -235,23 +185,54 @@ const TOOLS = [
   { icon: <Rocket />, name: 'Launch', body: 'Publish in one click, check it on desktop and phone, and connect your own domain.' },
 ];
 
+// Where each tool sits on the editor screenshot's left rail, and the part of the screen it works on
+// (percent of the image). The rail runs Chat, Content, Add, Layers, Design, Launch, Motion, Business, Leads.
+const RAIL = ['Chat', 'Content', 'Add', 'Layers', 'Design', 'Launch', 'Motion', 'Business', 'Leads'];
+const AREA: Record<string, [number, number, number, number]> = {
+  panel: [4.3, 6.4, 29.6, 93.6], canvas: [35.3, 8.2, 63.6, 91.8], top: [68.5, .6, 30.8, 5.6],
+};
+const TARGET: Record<string, keyof typeof AREA> = { Chat: 'panel', Content: 'canvas', Add: 'panel', Layers: 'panel', Design: 'canvas', Motion: 'canvas', Business: 'panel', Leads: 'panel', Launch: 'top' };
+const STEP_MS = 4500;
+
 function WebEditor() {
   const [t, setT] = useState(0);
+  const [held, setHeld] = useState(false);
+  const [box, on] = useOnScreen<HTMLDivElement>('0px');
+  const rail = useRef<HTMLDivElement>(null);
+  const resume = useRef(0);
+  // Steps through the tools while on screen, like a trainer; a tap or hover holds it on one for a while.
+  useEffect(() => {
+    if (!on || held || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const id = window.setTimeout(() => setT(n => (n + 1) % TOOLS.length), STEP_MS);
+    return () => window.clearTimeout(id);
+  }, [t, on, held]);
+  // On phones the chip row keeps the current tool in view (the row scrolls, never the page).
+  useEffect(() => {
+    const r = rail.current, b = r?.children[t] as HTMLElement | undefined;
+    if (r && b && r.scrollWidth > r.clientWidth) r.scrollTo({ left: b.offsetLeft - 16, behavior: 'smooth' });
+  }, [t]);
+  const pick = (n: number) => { setT(n); setHeld(true); window.clearTimeout(resume.current); resume.current = window.setTimeout(() => setHeld(false), 12000); };
+  const tool = TOOLS[t];
+  const k = RAIL.indexOf(tool.name);
+  const [x, y, w, h] = AREA[TARGET[tool.name]];
   return (
-    <Section kicker="The editor" title={<>Nine tools. <em>No code.</em></>} lede="Your site opens in an editor with a chat on one side and the live page on the other. These are the tools down its left edge.">
-      <div className="stl-editor">
-        <div className="stl-tools" role="tablist" aria-label="Editor tools">
+    <Section kicker="The editor" title={<>Nine tools. <em>No code.</em></>} lede="Your site opens in an editor: a chat on one side, the live page on the other, and these tools down its left edge. Watch what each one does.">
+      <div className="stl-editor" ref={box} onMouseEnter={() => setHeld(true)} onMouseLeave={() => { window.clearTimeout(resume.current); setHeld(false); }}>
+        <div className="stl-tools" role="tablist" aria-label="Editor tools" ref={rail}>
           {TOOLS.map((x, n) => (
-            <button key={x.name} role="tab" aria-selected={n === t} className={n === t ? 'is-on' : ''} onClick={() => setT(n)}>
+            <button key={x.name} role="tab" aria-selected={n === t} className={n === t ? 'is-on' : ''} onClick={() => pick(n)}>
               {x.icon}<span>{x.name}</span>
+              {n === t && <i key={`${t}-${held}`} className={`stl-tool-bar${held || !on ? ' is-held' : ''}`} style={{ animationDuration: `${STEP_MS}ms` }} />}
             </button>
           ))}
         </div>
-        <div className="stl-tool-body" role="tabpanel">
-          <p key={t} className="stl-tool-text"><b>{TOOLS[t].name}.</b> {TOOLS[t].body}</p>
+        <div className="stl-trainer" role="tabpanel" aria-live="polite">
           <div className="stl-shot">
             <img src={`${A}/editor.webp`} alt="The BYBO Studio editor with a chat beside a sample boutique hotel site" width={1600} height={1000} loading="lazy" decoding="async" />
+            <span className="stl-area" style={{ left: `${x}%`, top: `${y}%`, width: `${w}%`, height: `${h}%` }} aria-hidden />
+            {k >= 0 && <span className="stl-spot" style={{ top: `${10.6 + k * 6.5}%` }} aria-hidden />}
           </div>
+          <p key={t} className="stl-tool-text"><b>{tool.icon}{tool.name}</b>{tool.body}</p>
         </div>
       </div>
     </Section>
@@ -278,21 +259,39 @@ const LOOKS: [string, string, string, Mood[]][] = [
   ['boutique', 'Boutique', 'Handloom', ['Indian', 'Editorial', 'Warm']],
 ];
 
+function LookCard({ l, hidden }: { l: (typeof LOOKS)[number]; hidden?: boolean }) {
+  const [img, name, kind] = l;
+  return (
+    <figure className="stl-look" aria-hidden={hidden || undefined}>
+      <div className="stl-look-frame"><img src={`${A}/looks/${img}.webp`} alt={hidden ? '' : `${kind} site in the ${name} look`} width={1200} height={750} loading="lazy" decoding="async" /></div>
+      <figcaption><b>{name}</b><span>{kind}</span></figcaption>
+    </figure>
+  );
+}
+
 function WebLooks() {
   const [m, setM] = useState<Mood>('All');
+  const [box, on] = useOnScreen<HTMLDivElement>();
   const shown = LOOKS.filter(l => m === 'All' || l[3].includes(m));
+  // Two rows when there are enough looks, each long enough to loop without a gap.
+  const rows = shown.length >= 8 ? [shown.filter((_, i) => i % 2 === 0), shown.filter((_, i) => i % 2 === 1)] : [shown];
+  const fill = (r: typeof LOOKS) => { const out = [...r]; while (out.length < 6) out.push(...r); return out; };
   return (
     <Section kicker="Explore looks" title={<>Pick a mood. <em>We build in it.</em></>} lede="Browse looks by business and by feel, then start from the one that fits. Every site here was built in the studio for a made-up business.">
       <div className="stl-chips" role="group" aria-label="Filter looks by mood">
         {MOODS.map(x => <button key={x} className={x === m ? 'is-on' : ''} aria-pressed={x === m} onClick={() => setM(x)}>{x}</button>)}
       </div>
-      <div className="stl-looks">
-        {shown.map(([img, name, kind]) => (
-          <figure key={img} className="stl-look">
-            <div className="stl-look-frame"><img src={`${A}/looks/${img}.webp`} alt={`${kind} site in the ${name} look`} width={1200} height={750} loading="lazy" decoding="async" /></div>
-            <figcaption><b>{name}</b><span>{kind}</span></figcaption>
-          </figure>
-        ))}
+      <div ref={box} className={`stl-drift${on ? '' : ' is-paused'}`} key={m}>
+        {rows.map((r, n) => {
+          const loop = fill(r);
+          return (
+            <div key={n} className="stl-drift-row">
+              <div className={`stl-drift-track${n ? ' is-rev' : ''}`} style={{ animationDuration: `${loop.length * 7}s` }}>
+                {[...loop, ...loop].map((l, i) => <LookCard key={i} l={l} hidden={i >= r.length} />)}
+              </div>
+            </div>
+          );
+        })}
       </div>
     </Section>
   );
@@ -303,10 +302,10 @@ const PHONES: [string, string][] = [['cover-star', 'Beauty creator'], ['gym-raw'
 function WebPhones() {
   return (
     <Section kicker="Phone first" title={<>Built for <em>the thumb.</em></>} lede="Most visitors arrive on a phone. Every site gets a bar within thumb reach with call, WhatsApp and its main booking or buying button.">
-      <div className="stl-snap" tabIndex={0} aria-label="Sample sites on a phone">
-        {PHONES.map(([img, kind]) => (
-          <figure key={img} className="stl-phone">
-            <div className="stl-phone-frame"><img src={`${A}/looks/phone-${img}.webp`} alt={`A sample ${kind.toLowerCase()} site on a phone`} width={520} height={1126} loading="lazy" decoding="async" /></div>
+      <div className="stl-fan" aria-label="Sample sites on a phone">
+        {PHONES.map(([img, kind], n) => (
+          <figure key={img} className="stl-fan-phone" style={{ '--i': n - 2 } as CSSProperties} tabIndex={0}>
+            <img src={`${A}/looks/phone-${img}.webp`} alt={`A sample ${kind.toLowerCase()} site on a phone`} width={520} height={1126} loading="lazy" decoding="async" />
             <figcaption>{kind}</figcaption>
           </figure>
         ))}
@@ -427,36 +426,78 @@ const FX: [string, string, string][] = [
 ];
 
 function MotionFx() {
-  const [p, setP] = useState(-1);
-  const [ref, on] = useOnScreen<HTMLDivElement>();
+  const row = useRef<HTMLDivElement>(null);
+  const [box, on] = useOnScreen<HTMLDivElement>();
+  const [live, setLive] = useState<string[]>([]);
+  // The two cards nearest the middle of the screen play; the rest show their poster.
+  useEffect(() => {
+    const r = row.current; if (!r || !on) { setLive([]); return; }
+    const cards = [...r.querySelectorAll<HTMLElement>('[data-k]')];
+    const pick = () => {
+      const mid = window.innerWidth / 2;
+      const near = cards.map(c => { const b = c.getBoundingClientRect(); return { k: c.dataset.k!, d: Math.abs(b.left + b.width / 2 - mid), w: b.width }; })
+        .filter(x => x.d < x.w * 1.2).sort((a, b) => a.d - b.d).slice(0, 2).map(x => x.k);
+      setLive(prev => (prev.join() === near.join() ? prev : near));
+    };
+    pick();
+    const t = window.setInterval(pick, 700);
+    return () => window.clearInterval(t);
+  }, [on]);
   return (
-    <Section kicker="Effects" title={<>Your product, <em>in motion.</em></>} lede="Upload one product photo and pick an effect. Hover or tap any card to play it.">
-      <div ref={ref} className="stl-snap is-fx" tabIndex={0} aria-label="Effects" onMouseLeave={() => setP(-1)}>
-        {FX.map(([id, name, kind], n) => (
-          <button key={id} className={`stl-fx${n === p ? ' is-on' : ''}`} onMouseEnter={e => { if (window.matchMedia('(hover:hover)').matches) setP(n); void e; }} onClick={() => setP(n === p ? -1 : n)} aria-pressed={n === p}>
-            <Clip id={id} play={on && n === p} label={name} />
-            <span className="stl-fx-cap"><b>{name}</b><small>{kind}</small></span>
-            <span className="stl-fx-play" aria-hidden><Play size={16} /></span>
-          </button>
-        ))}
+    <Section kicker="Effects" title={<>Your product, <em>in motion.</em></>} lede="Upload one product photo and pick an effect. These are effects from the studio, playing as they pass.">
+      <div ref={box} className={`stl-drift is-fx${on ? '' : ' is-paused'}`}>
+        <div className="stl-drift-row" ref={row}>
+          <div className="stl-drift-track" style={{ animationDuration: `${FX.length * 9}s` }}>
+            {[...FX, ...FX].map(([id, name, kind], n) => {
+              const k = `${n}`;
+              return (
+                <figure key={k} data-k={k} className={`stl-fx${live.includes(k) ? ' is-on' : ''}`} aria-hidden={n >= FX.length || undefined}>
+                  <Clip id={id} play={on && live.includes(k)} label={n < FX.length ? name : undefined} />
+                  <figcaption className="stl-fx-cap"><b>{name}</b><small>{kind}</small></figcaption>
+                </figure>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </Section>
   );
 }
 
-const PLAN: Record<number, string> = { 1: 'fx-spice-burst', 4: 'ad-smile-june', 8: 'fx-clay-letters', 11: 'ad-hired-help', 15: 'fx-droplet-lens', 18: 'ad-ice-paws', 22: 'fx-screen-print', 25: 'ad-bear-proof' };
+// The sample month: which days get a reel, and what each one is.
+const PLAN: Record<number, [string, string, string]> = {
+  1: ['fx-spice-burst', 'Spice Burst', 'Effect'], 4: ['ad-smile-june', 'Smile June', 'Story ad'], 8: ['fx-clay-letters', 'Clay Letters', 'Effect'],
+  11: ['ad-hired-help', 'Hired help', 'Story ad'], 15: ['fx-droplet-lens', 'Droplet Lens', 'Effect'], 18: ['ad-ice-paws', 'Ice paws', 'Story ad'],
+  22: ['fx-screen-print', 'Screen Print', 'Effect'], 25: ['ad-bear-proof', 'Bear proof', 'Story ad'],
+};
+const DAY = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 function MotionPlan() {
+  const days = Object.keys(PLAN).map(Number);
   return (
     <Section kicker="Month plans" title={<>A month of posts, <em>planned at once.</em></>} lede="Tell the studio what you sell and how often you post. It plans the month and drafts every reel for you to approve.">
-      <div className="stl-cal" aria-label="A sample month plan">
-        {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(d => <span key={d} className="stl-cal-d">{d}</span>)}
-        {Array.from({ length: 28 }, (_, n) => (
-          <div key={n} className={`stl-cal-day${PLAN[n] ? ' has-reel' : ''}`} style={{ '--n': n } as CSSProperties}>
-            <small>{n + 1}</small>
-            {PLAN[n] && <img src={`${A}/motion/${PLAN[n]}.webp`} alt="" width={360} height={640} loading="lazy" decoding="async" />}
+      <div className="stl-plan">
+        <div className="stl-plan-card" aria-label="A sample month plan: eight reels across four weeks">
+          <div className="stl-plan-head"><b>November</b><span>8 reels · Tue and Fri</span></div>
+          <div className="stl-cal">
+            {DAY.map(d => <span key={d} className="stl-cal-d">{d[0]}</span>)}
+            {Array.from({ length: 28 }, (_, n) => (
+              <div key={n} className={`stl-cal-day${PLAN[n] ? ' has-reel' : ''}`} style={{ '--n': days.indexOf(n) } as CSSProperties}>
+                {PLAN[n] ? <img src={`${A}/motion/${PLAN[n][0]}.webp`} alt="" width={360} height={640} loading="lazy" decoding="async" /> : null}
+                <small>{n + 1}</small>
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
+        <ol className="stl-plan-list" aria-label="Drafts for the first two weeks">
+          {days.slice(0, 4).map((n, i) => (
+            <li key={n} style={{ '--n': i } as CSSProperties}>
+              <img src={`${A}/motion/${PLAN[n][0]}.webp`} alt="" width={360} height={640} loading="lazy" decoding="async" />
+              <span><b>{PLAN[n][1]}</b><small>{DAY[n % 7]} {n + 1} Nov · {PLAN[n][2]}</small></span>
+              <em className={i < 2 ? 'is-ok' : ''}>{i < 2 ? 'Approved' : 'Draft'}</em>
+            </li>
+          ))}
+        </ol>
       </div>
     </Section>
   );
@@ -521,7 +562,6 @@ export function StudioLanding({ kind }: { kind: Kind }) {
   return (
     <div className="stl">
       <Hero kind={kind} heroRef={heroRef} />
-      <Walkthrough kind={kind} />
       {kind === 'website'
         ? <><WebPrompt /><WebEditor /><WebLooks /><WebPhones /><WebAfter /></>
         : <><MotionPrompt /><MotionAds /><MotionFx /><MotionPlan /><MotionShare /></>}
