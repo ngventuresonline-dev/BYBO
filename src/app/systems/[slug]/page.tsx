@@ -1,10 +1,8 @@
 import { notFound, redirect } from 'next/navigation';
 import { ogFor, ogPageByPath } from '@/lib/og-pages';
-import { WebsiteStudio } from '@/components/website-studio/WebsiteStudio';
 import { AppStudio } from '@/components/app-studio/AppStudio';
 import { AppSchema } from '@/components/app-studio/AppSchema';
-import { MotionPage } from '@/components/motion/MotionPage';
-import { WebsiteSchema } from '@/components/studio/WebsiteSchema';
+import { StudioLanding } from '@/components/studio-app/StudioLanding';
 import { SystemLanding } from '@/components/system-landing/SystemLanding';
 import { services } from '@/lib/redesign';
 import { pageMetadata } from '@/lib/seo';
@@ -35,9 +33,9 @@ export default async function Service({ params }: Props) {
   if (legacy[slug]) redirect(`/systems/${legacy[slug]}`);
   if (!services.some(s => s.slug === slug)) notFound();
 
-  // The three studios keep their own cinematic layouts; the seven systems share one.
-  if (slug === 'website-design-development') return <><WebsiteSchema /><WebsiteStudio /></>;
+  // Website and Motion Studio show the self-serve studio app; App Studio keeps its own layout; the seven systems share one.
+  if (slug === 'website-design-development') return <StudioLanding kind="website" />;
   if (slug === 'app-design-development') return <><AppSchema /><AppStudio /></>;
-  if (slug === 'motion-studio') return <MotionPage />;
+  if (slug === 'motion-studio') return <StudioLanding kind="motion" />;
   return <SystemLanding slug={slug} />;
 }
