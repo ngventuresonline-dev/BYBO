@@ -18,13 +18,15 @@ const A = '/studio-app';
 export const STUDIO_URL = 'https://bybo-studio.vercel.app';
 export const SIGNUP = `${STUDIO_URL}/signup`;
 export const LOGIN = `${STUDIO_URL}/login`;
+/** Motion sign-ups land in Motion Studio, and the studio's emails name the right one. */
+const signupFor = (kind: Kind) => (kind === 'motion' ? `${SIGNUP}?next=%2Fmotion` : SIGNUP);
 
 /* ---------------- shared bits ---------------- */
 
 function AuthButtons({ kind, className = '' }: { kind: Kind; className?: string }) {
   return (
     <div className={`stl-auth ${className}`}>
-      <a className="stl-btn" href={SIGNUP}>{kind === 'website' ? 'Register and build' : 'Register and make reels'} <ArrowRight size={18} /></a>
+      <a className="stl-btn" href={signupFor(kind)}>{kind === 'website' ? 'Register and build' : 'Register and make reels'} <ArrowRight size={18} /></a>
       <a className="stl-btn is-ghost" href={LOGIN}><LogIn size={17} /> Log in</a>
     </div>
   );
@@ -449,7 +451,7 @@ function Close({ kind }: { kind: Kind }) {
   );
 }
 
-function AuthBar({ heroRef }: { heroRef: RefObject<HTMLElement | null> }) {
+function AuthBar({ kind, heroRef }: { kind: Kind; heroRef: RefObject<HTMLElement | null> }) {
   const [on, setOn] = useState(false);
   useEffect(() => {
     const el = heroRef.current; if (!el) return;
@@ -459,7 +461,7 @@ function AuthBar({ heroRef }: { heroRef: RefObject<HTMLElement | null> }) {
   return (
     <div className={`stl-bar${on ? ' is-on' : ''}`} aria-hidden={!on}>
       <a className="stl-btn is-ghost" href={LOGIN} tabIndex={on ? 0 : -1}>Log in</a>
-      <a className="stl-btn" href={SIGNUP} tabIndex={on ? 0 : -1}>Register <ArrowRight size={16} /></a>
+      <a className="stl-btn" href={signupFor(kind)} tabIndex={on ? 0 : -1}>Register <ArrowRight size={16} /></a>
     </div>
   );
 }
@@ -473,7 +475,7 @@ export function StudioLanding({ kind }: { kind: Kind }) {
         ? <><WebPrompt /><WebEditor /><WebLooks /><WebPhones /><WebAfter /></>
         : <><MotionPrompt /><MotionAds /><MotionFx /><MotionPlan /><MotionShare /></>}
       <Close kind={kind} />
-      <AuthBar heroRef={heroRef} />
+      <AuthBar kind={kind} heroRef={heroRef} />
     </div>
   );
 }
