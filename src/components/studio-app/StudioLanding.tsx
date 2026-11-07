@@ -460,7 +460,7 @@ function AuthBar({ kind, heroRef }: { kind: Kind; heroRef: RefObject<HTMLElement
   }, [heroRef]);
   return (
     <div className={`stl-bar${on ? ' is-on' : ''}`} aria-hidden={!on}>
-      <a className="stl-btn is-ghost" href={LOGIN} tabIndex={on ? 0 : -1}>Log in</a>
+      <a className="stl-bar-login" href={LOGIN} tabIndex={on ? 0 : -1}>Log in</a>
       <a className="stl-btn" href={signupFor(kind)} tabIndex={on ? 0 : -1}>Register <ArrowRight size={16} /></a>
     </div>
   );
