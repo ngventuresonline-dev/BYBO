@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode, type RefObject } from 'react';
-import { ArrowRight, LogIn, MessageSquareText, FileText, Plus, Layers, Palette, Rocket, Clapperboard, Store, Inbox, Globe, Play } from 'lucide-react';
+import { ArrowRight, LogIn, Pause, MessageSquareText, FileText, Plus, Layers, Palette, Rocket, Clapperboard, Store, Inbox, Globe, Play } from 'lucide-react';
 import './studio-landing.css';
 
 /**
@@ -138,6 +138,56 @@ function Hero({ kind, heroRef }: { kind: Kind; heroRef: RefObject<HTMLElement | 
         <AuthButtons kind={kind} className="stl-hero-auth" />
       </div>
     </section>
+  );
+}
+
+/* ---------------- the studio on video: 15 s, three chapters; tap one to jump ---------------- */
+
+const CHAPTERS = {
+  website: [['Describe', 'A sentence, a link or an idea.'], ['Edit by chatting', 'Change anything by asking, or tap the page.'], ['Publish', 'Live with its own address. Enquiries land in your inbox.']],
+  motion: [['Pick or describe', 'Describe the reel or start from a style.'], ['Story ads', 'A story, a problem, your product.'], ['Effects and sharing', 'Your product in motion, cut for each app.']],
+};
+const CUTS = [0, 5, 10];
+
+function Walkthrough({ kind }: { kind: Kind }) {
+  const vid = useRef<HTMLVideoElement>(null);
+  const [t, setT] = useState(0);
+  const [playing, setPlaying] = useState(false);
+  const held = useRef(false); // paused by the visitor: scrolling back does not restart it
+  const i = CUTS.reduce((a, c, n) => (t >= c ? n : a), 0);
+  useEffect(() => {
+    const v = vid.current; if (!v) return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting && !reduce && !held.current) { if (!v.getAttribute('src')) v.src = `${A}/vsl-${kind}.mp4`; v.play().catch(() => {}); }
+      else if (!e.isIntersecting) v.pause();
+    }, { threshold: .4 });
+    io.observe(v); return () => io.disconnect();
+  }, [kind]);
+  const load = (v: HTMLVideoElement) => { if (!v.getAttribute('src')) v.src = `${A}/vsl-${kind}.mp4`; };
+  const go = (n: number) => { const v = vid.current; if (!v) return; load(v); v.currentTime = CUTS[n] + .05; setT(CUTS[n]); held.current = false; v.play().catch(() => {}); };
+  const toggle = () => { const v = vid.current; if (!v) return; load(v); if (v.paused) { held.current = false; v.play().catch(() => {}); } else { held.current = true; v.pause(); } };
+  return (
+    <Section kicker="Inside the studio" title={kind === 'website' ? <>Fifteen seconds, <em>start to live site.</em></> : <>Fifteen seconds, <em>idea to posted reel.</em></>}>
+      <div className="stl-vsl">
+        <div className="stl-vsl-frame">
+          <video ref={vid} muted loop playsInline preload="none" poster={`${A}/vsl-${kind}.webp`} width={1280} height={800}
+            onTimeUpdate={e => setT(e.currentTarget.currentTime)} onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)}
+            aria-label={`A 15 second walkthrough of BYBO ${kind === 'website' ? 'Website' : 'Motion'} Studio`} />
+          <button className="stl-vsl-toggle" onClick={toggle} aria-label={playing ? 'Pause' : 'Play'}>{playing ? <Pause size={18} /> : <Play size={18} />}</button>
+        </div>
+        <ol className="stl-vsl-steps">
+          {CHAPTERS[kind].map(([name, line], n) => (
+            <li key={name}>
+              <button className={n === i ? 'is-on' : ''} onClick={() => go(n)} aria-current={n === i}>
+                <small>0{n + 1}</small><b>{name}</b><span>{line}</span>
+                <i style={{ transform: `scaleX(${n === i ? Math.min(1, (t - CUTS[n]) / 5) : n < i ? 1 : 0})` }} />
+              </button>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </Section>
   );
 }
 
@@ -471,6 +521,7 @@ export function StudioLanding({ kind }: { kind: Kind }) {
   return (
     <div className="stl">
       <Hero kind={kind} heroRef={heroRef} />
+      <Walkthrough kind={kind} />
       {kind === 'website'
         ? <><WebPrompt /><WebEditor /><WebLooks /><WebPhones /><WebAfter /></>
         : <><MotionPrompt /><MotionAds /><MotionFx /><MotionPlan /><MotionShare /></>}
