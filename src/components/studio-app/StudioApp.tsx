@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useRef, useState, type CSSProperties, type PointerEvent as RPointerEvent, type ReactNode } from 'react';
-import { motion, useReducedMotion, useScroll, useSpring, useTransform } from 'framer-motion';
-import { ArrowRight, LogIn, MessageSquareText, Inbox, Rocket, Globe, Palette, CalendarDays, Clapperboard, Mic, Share2, Wand2, LayoutTemplate } from 'lucide-react';
+import { motion, useReducedMotion } from 'framer-motion';
+import { ArrowRight, LogIn, MessageSquareText, Inbox, Rocket, Globe, Palette, CalendarDays, Clapperboard, Mic, Share2, Wand2, LayoutTemplate, Play, Pause } from 'lucide-react';
 import './studio-app.css';
 
 /**
@@ -28,57 +28,77 @@ export function AuthButtons({ kind, className = '' }: { kind: Kind; className?: 
   );
 }
 
-/* ---------------- the 3D stage: the app tilts flat as you scroll, then walks through its screens ---------------- */
+/* ---------------- the studio on video: three steps, the list follows the video and tapping a step jumps to it ---------------- */
 
-type Step = { img: string; label: string; title: string; body: string };
+type Step = { label: string; title: string; body: string };
 
 const WEB_STEPS: Step[] = [
-  { img: 'home', label: '01 · Describe', title: 'A sentence, a link or an idea.', body: 'Type what the business does, or paste its current website. The studio picks the right blueprint and builds every page.' },
-  { img: 'editor', label: '02 · Edit by chatting', title: '“A boutique hotel with 12 rooms in Udaipur.”', body: 'The site arrives with real pages and photos. Change anything by asking, or click and type on the page.' },
-  { img: 'looks/darkluxe', label: '03 · Publish', title: 'Live, with its own address.', body: 'One click publishes the site. Every enquiry it brings lands in your leads inbox.' },
+  { label: '01 · Describe', title: 'A sentence, a link or an idea.', body: 'Type what the business does, or paste its current website. The studio picks the right blueprint and builds every page.' },
+  { label: '02 · Edit by chatting', title: '“A boutique hotel with 12 rooms in Udaipur.”', body: 'The site arrives with real pages and photos. Change anything by asking, or tap anything on the page and edit it.' },
+  { label: '03 · Publish', title: 'Live, with its own address.', body: 'One click publishes the site. Every enquiry it brings lands in your leads inbox.' },
 ];
 const MOTION_STEPS: Step[] = [
-  { img: 'motion', label: '01 · Pick or describe', title: 'Reels that stop the scroll.', body: 'Describe the reel, paste your website, or pick from story ads and effects. The studio writes, voices and animates it.' },
-  { img: 'motion/ad-bear-proof', label: '02 · Story ads', title: 'A story, a problem, your product.', body: 'Short films that sell, in micro drama, cartoon, claymation, crochet and more.' },
-  { img: 'motion/fx-clay-letters', label: '03 · Share', title: 'Straight to WhatsApp and Instagram.', body: 'Plan a month of reels at once. Finished reels share as the file itself, cut for each app.' },
+  { label: '01 · Pick or describe', title: 'Reels that stop the scroll.', body: 'Describe the reel, paste your website, or pick from story ads and effects. The studio writes, voices and animates it.' },
+  { label: '02 · Story ads', title: 'A story, a problem, your product.', body: 'Short films that sell, in micro drama, cartoon, claymation, crochet and more.' },
+  { label: '03 · Effects and sharing', title: 'Straight to WhatsApp and Instagram.', body: 'Your product in motion. Plan a month of reels at once; finished reels share as the file itself, cut for each app.' },
 ];
+// Where each step starts in its video (seconds); both videos are 15 s.
+const CUTS = [0, 5, 10];
+const LEN = 15;
 
 function Stage({ kind }: { kind: Kind }) {
-  const ref = useRef<HTMLElement>(null);
-  const reduce = useReducedMotion();
   const steps = kind === 'website' ? WEB_STEPS : MOTION_STEPS;
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end end'] });
-  const p = useSpring(scrollYProgress, { stiffness: 120, damping: 26, mass: .4 });
-  const rotateX = useTransform(p, [0, .2], [26, 0]);
-  const scale = useTransform(p, [0, .2], [.82, 1]);
-  const glow = useTransform(p, [0, .2], [.2, 1]);
-  const [i, setI] = useState(0);
-  useEffect(() => scrollYProgress.on('change', v => setI(Math.min(steps.length - 1, Math.max(0, Math.floor((v - .12) / (.8 / steps.length)))))), [scrollYProgress, steps.length]);
+  const reduce = useReducedMotion();
+  const vid = useRef<HTMLVideoElement>(null);
+  const [t, setT] = useState(0);
+  const [playing, setPlaying] = useState(false);
+  const held = useRef(false); // paused by the visitor: scrolling back does not restart it
+  const i = CUTS.reduce((a, c, n) => (t >= c ? n : a), 0);
+
+  // Plays while on screen (never for reduced motion), pauses off screen.
+  useEffect(() => {
+    const v = vid.current; if (!v) return;
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting && !reduce && !held.current) v.play().catch(() => {}); else if (!e.isIntersecting) v.pause();
+    }, { threshold: .4 });
+    io.observe(v);
+    return () => io.disconnect();
+  }, [reduce]);
+  const go = (n: number) => { const v = vid.current; if (!v) return; v.currentTime = CUTS[n] + .05; setT(CUTS[n]); held.current = false; v.play().catch(() => {}); };
+  const toggle = () => { const v = vid.current; if (!v) return; if (v.paused) { held.current = false; v.play().catch(() => {}); } else { held.current = true; v.pause(); } };
+  const end = (n: number) => (CUTS[n + 1] ?? LEN);
 
   return (
-    <section ref={ref} className="sa-stage" style={{ '--n': steps.length } as CSSProperties} aria-label="Inside the studio">
-      <div className="sa-stage-sticky">
-        <div className="sa-stage-head container">
+    <section className="sa-vsl" aria-label="Inside the studio">
+      <div className="container">
+        <div className="sa-vsl-head">
           <p className="sa-kicker"><span className="sa-dot" /> Inside BYBO Studio</p>
           <h2>{kind === 'website' ? <>Or build it <em>yourself.</em></> : <>Or make reels <em>yourself.</em></>}</h2>
         </div>
-        <div className="sa-stage-grid container">
-          <ol className="sa-steps">
-            {steps.map((s, n) => (
-              <li key={s.label} className={n === i ? 'is-on' : ''}>
-                <small>{s.label}</small><strong>{s.title}</strong><p>{s.body}</p>
-              </li>
-            ))}
-          </ol>
-          <motion.div className={`sa-device${kind === 'motion' && i > 0 ? ' is-reel' : ''}`} style={reduce ? undefined : { rotateX, scale }}>
-            <motion.div className="sa-device-glow" style={reduce ? undefined : { opacity: glow }} aria-hidden />
+        <div className="sa-vsl-grid">
+          <div>
+            <ol className="sa-vsl-steps">
+              {steps.map((s, n) => (
+                <li key={s.label} className={`${n === i ? 'is-on' : ''}${n < i ? ' is-done' : ''}`}>
+                  <button type="button" onClick={() => go(n)} aria-current={n === i ? 'step' : undefined}
+                    style={{ '--p': n === i ? Math.min(1, (t - CUTS[n]) / (end(n) - CUTS[n])) : 0 } as CSSProperties}>
+                    <small>{s.label}</small><strong>{s.title}</strong><p>{s.body}</p>
+                  </button>
+                </li>
+              ))}
+            </ol>
+          </div>
+          <div className="sa-device">
+            <div className="sa-device-glow" aria-hidden />
             <div className="sa-device-bar" aria-hidden><i /><i /><i /><span>bybo-studio.vercel.app</span></div>
             <div className="sa-device-screen">
-              {steps.map((s, n) => (
-                <img key={s.img} src={`${A}/${s.img}.webp`} alt={n === i ? `BYBO Studio: ${s.title}` : ''} className={`${n === i ? 'is-on' : ''}${s.img.startsWith('motion/') ? ' is-reel' : ''}`} loading={n ? 'lazy' : 'eager'} decoding="async" />
-              ))}
+              <video ref={vid} src={`${A}/vsl-${kind}.mp4`} poster={`${A}/vsl-${kind}.webp`} muted loop playsInline preload="metadata"
+                aria-label={kind === 'website' ? 'BYBO Studio: describing a business, editing the site by chatting, and the published sites' : 'BYBO Motion Studio: the Explore page, story ads and product effects'}
+                onTimeUpdate={(e) => setT(e.currentTarget.currentTime)} onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} onClick={toggle} />
+              <button type="button" className="sa-vsl-play" onClick={toggle} aria-label={playing ? 'Pause the video' : 'Play the video'}>{playing ? <Pause size={16} /> : <Play size={16} />}</button>
             </div>
-          </motion.div>
+          </div>
+          <div className="sa-vsl-now" aria-live="polite"><strong>{steps[i].title}</strong><p>{steps[i].body}</p></div>
         </div>
       </div>
     </section>
