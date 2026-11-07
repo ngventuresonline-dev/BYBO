@@ -101,7 +101,9 @@ const HERO = {
     kicker: 'BYBO Website Studio',
     lines: ['Describe the business.', 'Get the website.'],
     lede: 'Type a sentence or paste a link. The studio builds every page with real sections and photos. Edit it by chatting, publish it in one click, and every enquiry lands in your inbox.',
-    cols: [['darkluxe', 'roastery', 'gym-raw', 'botanica'], ['cover-star', 'event-build', 'cinema', 'y2k-drop'], ['wear-watch', 'chef-pantry', 'saanjh-parfum', 'maker-craft']],
+    // Every look and every sample business on this page appears once: the wall, the briefs, the editor,
+    // the gallery and the phones each have their own.
+    cols: [['kinetic', 'quiet-luxe', 'velvet', 'terminal', 'wear-bag'], ['fintech', 'street-drop', 'cocktail-hour', 'brutal']],
   },
   motion: {
     kicker: 'BYBO Motion Studio',
@@ -120,8 +122,8 @@ function Hero({ kind, heroRef }: { kind: Kind; heroRef: RefObject<HTMLElement | 
       <div ref={wall} className={`stl-wall${on ? '' : ' is-paused'}`} aria-hidden>
         {h.cols.map((col, c) => (
           <div key={c} className="stl-wall-col">
-            <div className={`stl-wall-track${c === 1 ? ' is-rev' : ''}`} style={{ '--d': `${[52, 64, 46][c]}s` } as CSSProperties}>
-              {[...col, ...col].map((m, n) => (
+            <div className={`stl-wall-track${c === 1 ? ' is-rev' : ''}`} style={{ '--d': `${[38, 46, 34][c]}s` } as CSSProperties}>
+              {col.map((m, n) => (
                 <div key={n} className="stl-wall-tile">
                   <img src={web ? `${A}/looks/${m}.webp` : `${A}/motion/${m}.webp`} alt="" width={web ? 1200 : 360} height={web ? 750 : 640} decoding="async" loading={n < 2 ? 'eager' : 'lazy'} />
                 </div>
@@ -185,13 +187,6 @@ const TOOLS = [
   { icon: <Rocket />, name: 'Launch', body: 'Publish in one click, check it on desktop and phone, and connect your own domain.' },
 ];
 
-// Where each tool sits on the editor screenshot's left rail, and the part of the screen it works on
-// (percent of the image). The rail runs Chat, Content, Add, Layers, Design, Launch, Motion, Business, Leads.
-const RAIL = ['Chat', 'Content', 'Add', 'Layers', 'Design', 'Launch', 'Motion', 'Business', 'Leads'];
-const AREA: Record<string, [number, number, number, number]> = {
-  panel: [4.3, 6.4, 29.6, 93.6], canvas: [35.3, 8.2, 63.6, 91.8], top: [68.5, .6, 30.8, 5.6],
-};
-const TARGET: Record<string, keyof typeof AREA> = { Chat: 'panel', Content: 'canvas', Add: 'panel', Layers: 'panel', Design: 'canvas', Motion: 'canvas', Business: 'panel', Leads: 'panel', Launch: 'top' };
 const STEP_MS = 4500;
 
 function WebEditor() {
@@ -213,8 +208,6 @@ function WebEditor() {
   }, [t]);
   const pick = (n: number) => { setT(n); setHeld(true); window.clearTimeout(resume.current); resume.current = window.setTimeout(() => setHeld(false), 12000); };
   const tool = TOOLS[t];
-  const k = RAIL.indexOf(tool.name);
-  const [x, y, w, h] = AREA[TARGET[tool.name]];
   return (
     <Section kicker="The editor" title={<>Nine tools. <em>No code.</em></>} lede="Your site opens in an editor: a chat on one side, the live page on the other, and these tools down its left edge. Watch what each one does.">
       <div className="stl-editor" ref={box} onMouseEnter={() => setHeld(true)} onMouseLeave={() => { window.clearTimeout(resume.current); setHeld(false); }}>
@@ -228,9 +221,8 @@ function WebEditor() {
         </div>
         <div className="stl-trainer" role="tabpanel" aria-live="polite">
           <div className="stl-shot">
-            <img src={`${A}/editor.webp`} alt="The BYBO Studio editor with a chat beside a sample boutique hotel site" width={1600} height={1000} loading="lazy" decoding="async" />
-            <span className="stl-area" style={{ left: `${x}%`, top: `${y}%`, width: `${w}%`, height: `${h}%` }} aria-hidden />
-            {k >= 0 && <span className="stl-spot" style={{ top: `${10.6 + k * 6.5}%` }} aria-hidden />}
+            {/* the real editor with that tool's panel open, one screenshot per tool */}
+            {TOOLS.map((x, n) => <img key={x.name} src={`${A}/editor/${x.name.toLowerCase()}.webp`} alt={n === t ? `The BYBO Studio editor with the ${x.name} panel open` : ''} width={1600} height={1000} loading="lazy" decoding="async" className={n === t ? 'is-on' : ''} />)}
           </div>
           <p key={t} className="stl-tool-text"><b>{tool.icon}{tool.name}</b>{tool.body}</p>
         </div>
@@ -242,28 +234,22 @@ function WebEditor() {
 const MOODS = ['All', 'Luxe', 'Bold', 'Warm', 'Editorial', 'Playful', 'Minimal', 'Dark', 'Indian'] as const;
 type Mood = (typeof MOODS)[number];
 const LOOKS: [string, string, string, Mood[]][] = [
-  ['darkluxe', 'Dark luxe', 'Boutique hotel', ['Luxe', 'Dark']],
-  ['cover-star', 'Cover star', 'Beauty creator', ['Bold', 'Playful']],
-  ['roastery', 'Roastery', 'Coffee roaster', ['Warm', 'Editorial', 'Indian']],
-  ['wear-watch', 'Watch, turned', 'Watch store', ['Luxe', 'Minimal', 'Dark']],
-  ['chef-pantry', 'Chef’s pantry', 'Home chef', ['Warm', 'Indian']],
-  ['event-build', 'Venue build', 'Weddings', ['Luxe', 'Indian']],
-  ['gym-raw', 'Gym raw', 'Fitness coach', ['Bold', 'Dark']],
+  ['event-build', 'Venue build', 'Weddings', ['Luxe', 'Indian', 'Warm']],
   ['saanjh-parfum', 'Scent, assembled', 'Perfume', ['Luxe', 'Minimal']],
-  ['maker-craft', 'Maker craft', 'Potter', ['Warm', 'Minimal']],
-  ['cinema', 'Cinematic scroll', 'Travel', ['Editorial', 'Bold']],
+  ['maker-craft', 'Maker craft', 'Potter', ['Warm', 'Minimal', 'Indian']],
+  ['cinema', 'Cinematic scroll', 'Travel', ['Editorial', 'Bold', 'Dark']],
   ['wear-kicks', 'Sneaker turn', 'Footwear', ['Bold', 'Playful']],
-  ['botanica', 'Botanica', 'Skincare', ['Minimal', 'Editorial']],
+  ['botanica', 'Botanica', 'Skincare', ['Minimal', 'Editorial', 'Dark']],
   ['y2k-drop', 'Y2K drop', 'Creator merch', ['Playful', 'Bold']],
   ['wear-gold', 'Gold, close up', 'Jewellery', ['Luxe', 'Indian']],
-  ['boutique', 'Boutique', 'Handloom', ['Indian', 'Editorial', 'Warm']],
+  ['blueprint', 'Blueprint', 'Interior designer', ['Minimal', 'Editorial']],
 ];
 
-function LookCard({ l, hidden }: { l: (typeof LOOKS)[number]; hidden?: boolean }) {
+function LookCard({ l }: { l: (typeof LOOKS)[number] }) {
   const [img, name, kind] = l;
   return (
-    <figure className="stl-look" aria-hidden={hidden || undefined}>
-      <div className="stl-look-frame"><img src={`${A}/looks/${img}.webp`} alt={hidden ? '' : `${kind} site in the ${name} look`} width={1200} height={750} loading="lazy" decoding="async" /></div>
+    <figure className="stl-look">
+      <div className="stl-look-frame"><img src={`${A}/looks/${img}.webp`} alt={`${kind} site in the ${name} look`} width={1200} height={750} loading="lazy" decoding="async" /></div>
       <figcaption><b>{name}</b><span>{kind}</span></figcaption>
     </figure>
   );
@@ -271,33 +257,21 @@ function LookCard({ l, hidden }: { l: (typeof LOOKS)[number]; hidden?: boolean }
 
 function WebLooks() {
   const [m, setM] = useState<Mood>('All');
-  const [box, on] = useOnScreen<HTMLDivElement>();
   const shown = LOOKS.filter(l => m === 'All' || l[3].includes(m));
-  // Two rows when there are enough looks, each long enough to loop without a gap.
-  const rows = shown.length >= 8 ? [shown.filter((_, i) => i % 2 === 0), shown.filter((_, i) => i % 2 === 1)] : [shown];
-  const fill = (r: typeof LOOKS) => { const out = [...r]; while (out.length < 6) out.push(...r); return out; };
+  // Each look shows once: a grid on a desktop, a swipe row on a phone. No looping copies.
   return (
     <Section kicker="Explore looks" title={<>Pick a mood. <em>We build in it.</em></>} lede="Browse looks by business and by feel, then start from the one that fits. Every site here was built in the studio for a made-up business.">
       <div className="stl-chips" role="group" aria-label="Filter looks by mood">
         {MOODS.map(x => <button key={x} className={x === m ? 'is-on' : ''} aria-pressed={x === m} onClick={() => setM(x)}>{x}</button>)}
       </div>
-      <div ref={box} className={`stl-drift${on ? '' : ' is-paused'}`} key={m}>
-        {rows.map((r, n) => {
-          const loop = fill(r);
-          return (
-            <div key={n} className="stl-drift-row">
-              <div className={`stl-drift-track${n ? ' is-rev' : ''}`} style={{ animationDuration: `${loop.length * 7}s` }}>
-                {[...loop, ...loop].map((l, i) => <LookCard key={i} l={l} hidden={i >= r.length} />)}
-              </div>
-            </div>
-          );
-        })}
+      <div className="stl-lookgrid" key={m}>
+        {shown.map((l, n) => <div key={l[0]} style={{ '--n': n } as CSSProperties}><LookCard l={l} /></div>)}
       </div>
     </Section>
   );
 }
 
-const PHONES: [string, string][] = [['cover-star', 'Beauty creator'], ['gym-raw', 'Fitness coach'], ['darkluxe', 'Boutique hotel'], ['y2k-drop', 'Creator merch'], ['chef-pantry', 'Home chef']];
+const PHONES: [string, string][] = [['still-water', 'Hair salon'], ['handmade', 'Saree store'], ['street-food', 'Burger joint'], ['mithai', 'Biryani house'], ['pastel-pop', 'School']];
 
 function WebPhones() {
   return (
