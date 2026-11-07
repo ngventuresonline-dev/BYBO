@@ -8,6 +8,9 @@
 /* ---- shell: header and footer ---- */
 body{background:var(--na-ink)}
 body .site-header{background:#08070cd9;border-bottom:1px solid var(--na-line);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+/* A blurred header becomes the containing block for its fixed children, which
+   squeezed the phone menu sheet into the 72px bar. Drop the blur while it's open. */
+body .site-header[data-open]{-webkit-backdrop-filter:none;backdrop-filter:none}
 body .site-header a.button,body .site-header .button{border-radius:999px}
 body footer{background:var(--na-ink);border-top:1px solid var(--na-line)}
 
