@@ -107,7 +107,7 @@ const HERO = {
     kicker: 'BYBO Motion Studio',
     lines: ['Describe the reel.', 'Post it today.'],
     lede: 'Pick a story ad or an effect, or describe the reel in a line. The studio writes it, voices it and animates every scene, then cuts it for WhatsApp and Instagram.',
-    cols: [['ad-bear-proof', 'fx-spice-burst', 'ad-ice-paws', 'fx-screen-print'], ['fx-clay-letters', 'ad-public-failure', 'fx-comic-bottle-pop', 'ad-smile-june'], ['ad-hired-help', 'fx-crimson-feast', 'ad-lasagna-heist', 'fx-pump-cap-shine']],
+    cols: [['ad-fluff-lift', 'fx-watch-spotlight', 'ad-lost-and-found', 'fx-y2k-flash'], ['fx-liquid-gold', 'ad-frizzilla', 'fx-japanese-poster', 'ad-inside-confession'], ['ad-last-laugh', 'fx-glossy-poster', 'ad-stakeout-romance', 'ad-failed-remedies']],
   },
 };
 
@@ -350,10 +350,10 @@ function WebAfter() {
 /* ================= MOTION ================= */
 
 const REEL_BRIEFS: [string, string][] = [
-  ['A cartoon bear who will not stop eating our honey', 'ad-bear-proof'],
-  ['Our chilli powder, exploding in slow motion', 'fx-spice-burst'],
-  ['A crochet ad for warm winter socks', 'ad-ice-paws'],
-  ['Our brand name, spelled out in clay letters', 'fx-clay-letters'],
+  ['Our chilli flakes, drifting through the frame in slow motion', 'fx-chilli-drift'],
+  ['Our sneaker, turning through every colour we make', 'fx-colourways'],
+  ['One golden drop of our face serum', 'fx-golden-drop'],
+  ['Our brand name, echoing down the screen', 'fx-echo-type'],
 ];
 
 function MotionPrompt() {
@@ -391,8 +391,22 @@ const ADS: [string, string, string][] = [
 function MotionAds() {
   const [p, setP] = useState(0);
   const [ref, on] = useOnScreen<HTMLDivElement>();
+  const [held, setHeld] = useState(false);
+  const resume = useRef(0);
+  const list = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!on || held || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const id = window.setTimeout(() => setP(n => (n + 1) % ADS.length), 5200);
+    return () => window.clearTimeout(id);
+  }, [p, on, held]);
+  // On phones the list scrolls sideways to keep the playing style in view (never the page).
+  useEffect(() => {
+    const r = list.current, b = r?.children[p] as HTMLElement | undefined;
+    if (r && b && r.scrollWidth > r.clientWidth) r.scrollTo({ left: b.offsetLeft - 16, behavior: 'smooth' });
+  }, [p]);
+  const pick = (n: number) => { setP(n); setHeld(true); window.clearTimeout(resume.current); resume.current = window.setTimeout(() => setHeld(false), 15000); };
   return (
-    <Section kicker="Story ads" title={<>A story, a problem, <em>and your product saves the day.</em></>} lede="Short films that sell, in eight styles. Pick one and the studio rewrites the story around what you sell. Tap a style to play it.">
+    <Section kicker="Story ads" title={<>A story, a problem, <em>and your product saves the day.</em></>} lede="Short films that sell, in eight styles. Pick one and the studio rewrites the story around what you sell.">
       <div ref={ref} className="stl-ads">
         <div className="stl-ads-play">
           <div className="stl-phone"><div className="stl-phone-frame">
@@ -400,9 +414,9 @@ function MotionAds() {
           </div></div>
           <p className="stl-ads-now"><b>{ADS[p][1]}</b> · {ADS[p][2]}</p>
         </div>
-        <div className="stl-ads-list" role="tablist" aria-label="Story ad styles">
+        <div className="stl-ads-list" role="tablist" aria-label="Story ad styles" ref={list}>
           {ADS.map(([id, name, style], n) => (
-            <button key={id} role="tab" aria-selected={n === p} className={n === p ? 'is-on' : ''} onClick={() => setP(n)}>
+            <button key={id} role="tab" aria-selected={n === p} className={n === p ? 'is-on' : ''} onClick={() => pick(n)}>
               <img src={`${A}/motion/${id}.webp`} alt="" width={360} height={640} loading="lazy" decoding="async" />
               <span><b>{style}</b><small>{name}</small></span>
               <Play size={15} />
@@ -415,6 +429,8 @@ function MotionAds() {
 }
 
 const FX: [string, string, string][] = [
+  ['fx-spice-burst', 'Spice Burst', 'Hyper motion'],
+  ['fx-clay-letters', 'Clay Letters', 'Mixed media'],
   ['fx-crimson-feast', 'Crimson Feast', 'Hyper motion'],
   ['fx-comic-bottle-pop', 'Comic Bottle Pop', 'Mixed media'],
   ['fx-droplet-lens', 'Droplet Lens', 'Hyper motion'],
@@ -466,9 +482,9 @@ function MotionFx() {
 
 // The sample month: which days get a reel, and what each one is.
 const PLAN: Record<number, [string, string, string]> = {
-  1: ['fx-spice-burst', 'Spice Burst', 'Effect'], 4: ['ad-smile-june', 'Smile June', 'Story ad'], 8: ['fx-clay-letters', 'Clay Letters', 'Effect'],
-  11: ['ad-hired-help', 'Hired help', 'Story ad'], 15: ['fx-droplet-lens', 'Droplet Lens', 'Effect'], 18: ['ad-ice-paws', 'Ice paws', 'Story ad'],
-  22: ['fx-screen-print', 'Screen Print', 'Effect'], 25: ['ad-bear-proof', 'Bear proof', 'Story ad'],
+  1: ['fx-hypno-swirl', 'Hypno Swirl', 'Effect'], 4: ['fx-denim-flat-lay', 'Denim Flat Lay', 'Effect'], 8: ['fx-countdown', 'Countdown', 'Offer'],
+  11: ['fx-paper-waves', 'Paper Waves', 'Effect'], 15: ['fx-pink-collage', 'Pink Collage', 'Effect'], 18: ['fx-halftone-can', 'Halftone Can', 'Effect'],
+  22: ['fx-cardboard-city', 'Cardboard City', 'Effect'], 25: ['fx-tomato-twirl', 'Tomato Twirl', 'Effect'],
 };
 const DAY = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
