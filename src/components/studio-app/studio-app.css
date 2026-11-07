@@ -9,7 +9,8 @@
 .sa-kicker{display:flex;align-items:center;gap:10px;font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--lilac);margin-bottom:16px}
 .sa-dot{width:8px;height:8px;border-radius:50%;background:var(--violet);box-shadow:0 0 0 4px #793cff40,0 0 18px var(--violet);animation:sa-pulse 2s ease-in-out infinite}
 @keyframes sa-pulse{50%{box-shadow:0 0 0 8px #793cff10,0 0 28px var(--violet)}}
-.sa-lede{margin-top:18px;max-width:58ch;font-size:16px;line-height:1.65;color:#f4f2eeb3}
+.sa.sa .sa-head h2{padding-bottom:.14em}
+.sa-lede{margin-top:16px;max-width:58ch;font-size:16px;line-height:1.65;color:#f4f2eeb3}
 .sa-head{margin-bottom:40px}
 
 /* buttons: also used in the pages' heroes and closes, so they carry their own type */

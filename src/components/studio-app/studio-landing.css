@@ -1,0 +1,67 @@
+/* The Website Studio and Motion Studio landings. Mobile first.
+   Shares tokens and buttons with studio-app.css; overflow-x: clip keeps sticky working. */
+
+.stl{--ink:#111116;--violet:#793cff;--lilac:#c4a8ff;background:var(--ink);color:#f4f2ee;overflow-x:clip}
+.stl .sa-kicker{display:flex;align-items:center;gap:10px;font:700 12px Arial,Helvetica,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:var(--lilac);margin:0 0 18px}
+.stl .sa-dot{width:8px;height:8px;border-radius:50%;background:var(--violet);box-shadow:0 0 0 4px #793cff40,0 0 18px var(--violet);animation:sa-pulse 2s ease-in-out infinite}
+
+/* ================= hero ================= */
+.stl-hero{position:relative;min-height:100svh;display:flex;flex-direction:column;justify-content:flex-start;padding-block:max(300px,40svh) 40px;overflow:hidden;isolation:isolate}
+.stl-hero::before{content:'';position:absolute;inset:0;z-index:-3;background:radial-gradient(ellipse 70% 50% at 75% 20%,#793cff52,transparent 70%),radial-gradient(ellipse 50% 40% at 0% 100%,#c4a8ff1f,transparent 70%)}
+.stl-hero-fade{position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(0deg,var(--ink) 30%,#111116d9 55%,#11111640 85%,#11111699 100%)}
+.stl-hero-copy{position:relative}
+.stl-hero h1{margin:0;font:700 clamp(2.4rem,11vw,7.2rem)/.96 Arial,Helvetica,sans-serif;letter-spacing:-.055em;color:#fff}
+.stl-line{display:block;overflow:hidden;padding-bottom:.08em}
+.stl-line>span{display:inline-block}
+.stl-line .is-em{font-family:Georgia,serif;font-style:italic;font-weight:400;letter-spacing:-.03em;color:var(--lilac)}
+.stl-lede{margin:16px 0 22px;max-width:52ch;font-size:15px;line-height:1.55;color:#f4f2eebf}
+.stl-scroll{display:none}
+.stl a.sa-btn{color:#111116}
+.stl a.sa-btn.sa-ghost{color:#fff}
+.stl-close-in{display:block;width:100%}
+
+/* the drifting wall of real studio output */
+.stl-wall{position:absolute;inset:0;z-index:-2;perspective:1400px;pointer-events:none}
+.stl-wall-tilt{position:absolute;top:-20%;left:-30%;right:-30%;bottom:-10%;display:grid;grid-template-columns:repeat(3,1fr);gap:14px;transform:rotateX(18deg) rotateZ(-8deg);transform-origin:50% 0}
+.stl-col{overflow:hidden;transform:translateY(var(--o))}
+.stl-col-track{display:flex;flex-direction:column;gap:14px;animation:stl-up var(--d) linear infinite}
+.stl-col-track.is-rev{animation-direction:reverse}
+.stl-wall.is-still .stl-col-track{animation:none}
+@keyframes stl-up{to{transform:translateY(-50%)}}
+.stl-tile{position:relative;flex:none;aspect-ratio:16/10;border-radius:12px;overflow:hidden;background:#1c1a24;box-shadow:0 0 0 1px #ffffff1f,0 30px 60px -30px #000}
+.stl-tile.is-reel{aspect-ratio:9/16;border-radius:16px}
+.stl-tile img,.stl-tile video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 0}
+.stl-wall.is-motion .stl-wall-tilt{left:-10%;right:-10%}
+
+/* ================= close ================= */
+.stl-close{position:relative;padding-block:120px 140px;text-align:center;overflow:hidden;isolation:isolate}
+.stl-close-glow{position:absolute;left:50%;top:50%;width:min(900px,140vw);aspect-ratio:1;transform:translate(-50%,-50%);z-index:-1;background:radial-gradient(closest-side,#793cff59,transparent);filter:blur(20px)}
+.stl .stl-close h2{margin:0 auto;max-width:14ch;font:700 clamp(2.4rem,10vw,6rem)/1 Arial,Helvetica,sans-serif;letter-spacing:-.055em;color:#fff;text-wrap:balance}
+.stl-close h2 em{font-family:Georgia,serif;font-style:italic;font-weight:400;letter-spacing:-.03em;color:var(--lilac)}
+.stl-close-auth{justify-content:center;margin-top:36px}
+.stl-close-note{margin:26px 0 0;font-size:14px;color:#f4f2ee99}
+.stl-close-note a{color:#fff;text-underline-offset:3px}
+
+@media (max-width:420px){
+  .stl .sa-auth{gap:10px}
+  .stl .sa-btn{min-height:50px;padding:0 20px;font-size:15px}
+}
+@media (min-width:700px){.stl-lede{font-size:17px}}
+@media (min-width:1000px){
+  .stl-hero{justify-content:center;padding-block:140px 100px}
+  .stl-hero h1{font-size:clamp(3.6rem,6vw,6.2rem)}
+  .stl-hero-copy{max-width:1280px}
+  .stl-hero h1{max-width:780px}
+  .stl-lede,.stl-hero .sa-auth,.stl-hero .sa-kicker{max-width:560px}
+  .stl-hero-fade{background:linear-gradient(90deg,var(--ink) 34%,#111116cc 48%,#11111626 70%,#11111666 100%),linear-gradient(0deg,var(--ink),transparent 22%)}
+  .stl-wall-tilt{left:44%;right:-14%;top:-30%;gap:20px;transform:rotateX(24deg) rotateY(-14deg) rotateZ(-10deg)}
+  .stl-col-track{gap:20px}
+  .stl-wall.is-motion .stl-wall-tilt{left:50%;right:2%}
+  .stl-scroll{display:block;position:absolute;left:50%;bottom:28px;width:26px;height:42px;margin-left:-13px;border-radius:999px;box-shadow:inset 0 0 0 1.5px #ffffff59}
+  .stl-scroll span{position:absolute;left:50%;top:9px;width:3px;height:8px;margin-left:-1.5px;border-radius:2px;background:#fff;animation:stl-dot 1.8s ease-in-out infinite}
+  @keyframes stl-dot{60%{transform:translateY(12px);opacity:0}}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .stl-col-track,.stl-scroll span{animation:none}
+}

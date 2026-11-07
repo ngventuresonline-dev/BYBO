@@ -7,7 +7,7 @@ import './studio-app.css';
 
 /**
  * "Inside the studio": what the self-serve BYBO Studio app really looks like,
- * shown on the Website Studio and Motion Studio landings. Every screen and
+ * the body of the Website Studio and Motion Studio landings. Every screen and
  * reel here is captured from the studio itself, with made-up sample businesses.
  */
 
@@ -60,7 +60,7 @@ function Stage({ kind }: { kind: Kind }) {
       <div className="sa-stage-sticky">
         <div className="sa-stage-head container">
           <p className="sa-kicker"><span className="sa-dot" /> Inside BYBO Studio</p>
-          <h2>{kind === 'website' ? <>Or build it <em>yourself.</em></> : <>Or make reels <em>yourself.</em></>}</h2>
+          <h2>{kind === 'website' ? <>Three steps to <em>a live site.</em></> : <>Three steps to <em>a posted reel.</em></>}</h2>
         </div>
         <div className="sa-stage-grid container">
           <ol className="sa-steps">
