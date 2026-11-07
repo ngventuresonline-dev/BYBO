@@ -7,6 +7,7 @@ import { motion, useScroll, useTransform, useSpring, useVelocity, useMotionValue
 import { ArrowRight, ArrowDown, Plus, Smartphone, Gauge, PenLine, Search, MousePointerClick, Settings2, Check } from 'lucide-react';
 import { QuickBrief } from './QuickBrief';
 import { Showcase } from './Showcase';
+import { AuthButtons, LOGIN, SIGNUP, StudioApp } from '@/components/studio-app/StudioApp';
 import './website-studio.css';
 
 // WebGL loads after first paint; the CSS gradient underneath is the poster.
@@ -89,6 +90,10 @@ function Hero() {
           <Magnetic href="#start">Start your website <ArrowRight size={19} /></Magnetic>
           <a className="ws-link" href="#build">Watch one get built <ArrowDown size={17} /></a>
         </motion.div>
+        <motion.p className="ws-hero-diy" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1, ease: EASE, delay: 1.2 }}>
+          <span>Or build it yourself in BYBO Studio:</span>
+          <a href={SIGNUP}>Register</a><i aria-hidden>·</i><a href={LOGIN}>Log in</a>
+        </motion.p>
       </motion.div>
       <motion.div className="ws-scroll-cue" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.6 }} aria-hidden><span /></motion.div>
     </section>
@@ -359,6 +364,7 @@ export function WebsiteStudio() {
       <Cursor />
       <Hero />
       <VelocityMarquee text="Strategy ✦ Copy ✦ Design ✦ Build ✦ Launch ✦ " />
+      <StudioApp kind="website" />
       <BuildSequence />
       <Showcase />
       <Statement />
@@ -379,13 +385,18 @@ export function WebsiteStudio() {
             <p className="ws-kicker">Start here</p>
             <h2 className="ws-close-title">Let’s build <em>yours.</em></h2>
             <ul className="ws-promise">{['The first conversation is free', 'A written quote before any work', 'You approve it before launch'].map(t => <li key={t}><Check size={17} />{t}</li>)}</ul>
+            <div className="ws-close-diy">
+              <p>Rather build it yourself?</p>
+              <AuthButtons kind="website" />
+            </div>
           </div>
           <QuickBrief id="ws-brief" />
         </div>
       </section>
 
       <div className={`ws-bar${bar ? ' is-on' : ''}`} aria-hidden={!bar}>
-        <a className="ws-btn" href="#start" tabIndex={bar ? 0 : -1}>Start your website <ArrowRight size={17} /></a>
+        <a className="sa-btn" href={SIGNUP} tabIndex={bar ? 0 : -1}>Register <ArrowRight size={16} /></a>
+        <a className="sa-btn sa-ghost" href={LOGIN} tabIndex={bar ? 0 : -1}>Log in</a>
       </div>
     </div>
   );

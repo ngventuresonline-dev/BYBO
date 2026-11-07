@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import { ArrowUpRight, Play, X, Check, ChevronLeft, ChevronRight, Volume2, VolumeX } from 'lucide-react';
+import { AuthBar, AuthButtons, LOGIN, SIGNUP, StudioApp } from '@/components/studio-app/StudioApp';
 import './motion.css';
 
 type Kind = 'Brand films' | 'Product ads' | 'Social series' | 'Explainers & 3D' | 'Launch & promos';
@@ -196,8 +197,14 @@ export function MotionPage() {
             <a className="mo-quiet" href="#work">See all {WORK.length} films</a>
           </div>
           <ul className="mo-genres mo-rise" style={{ animationDelay: '.5s' }}>{GROUPS.slice(1).map(g => <li key={g}>{g}</li>)}</ul>
+          <p className="mo-diy mo-rise" style={{ animationDelay: '.6s' }}>
+            <span>Or make reels yourself in BYBO Studio:</span>
+            <a href={SIGNUP}>Register</a><i aria-hidden>·</i><a href={LOGIN}>Log in</a>
+          </p>
         </div>
       </section>
+
+      <StudioApp kind="motion" />
 
       {/* ---------- featured film ---------- */}
       <section className="mo-feature-sec" aria-labelledby="mo-feature-title">
@@ -347,8 +354,14 @@ export function MotionPage() {
           <p className="mo-over">YOUR NEXT FILM, BY BYBO</p>
           <h2>Bring the idea. <em>We will bring it to life.</em></h2>
           <Link className="mo-btn" href={`/apply?system=motion-studio&message=${encodeURIComponent('I would like to talk about a film.\nWhat it is for: \nWhere it will run: ')}`}>Start a film <ArrowUpRight size={20} /></Link>
+          <div className="mo-finale-diy">
+            <p>Or make reels yourself in BYBO Studio</p>
+            <AuthButtons kind="motion" />
+          </div>
         </div>
       </section>
+
+      <AuthBar kind="motion" />
 
       {/* ---------- player ---------- */}
       <dialog ref={dialog} className={`mo-player${open?.wide ? ' mo-player-wide' : ''}`} onClose={() => setOpen(null)} onClick={e => { if (e.target === e.currentTarget) setOpen(null); }} aria-label={open ? `${open.title}, ${open.kind}` : 'Film player'}>
