@@ -350,10 +350,10 @@ function WebAfter() {
 /* ================= MOTION ================= */
 
 const REEL_BRIEFS: [string, string][] = [
-  ['Our chilli flakes, drifting through the frame in slow motion', 'fx-chilli-drift'],
-  ['Our sneaker, turning through every colour we make', 'fx-colourways'],
-  ['One golden drop of our face serum', 'fx-golden-drop'],
-  ['Our brand name, echoing down the screen', 'fx-echo-type'],
+  ['Our chilli crisp jar, with red chillies raining down around it', 'fx-chilli-drift'],
+  ['Our leather wallet, flipping through burgundy, teal and grey', 'fx-colourways'],
+  ['Our body oil bottle, with one slow golden drop', 'fx-golden-drop'],
+  ['One bold word, repeated down the screen', 'fx-echo-type'],
 ];
 
 function MotionPrompt() {
