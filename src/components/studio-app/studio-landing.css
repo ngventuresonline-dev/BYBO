@@ -47,10 +47,11 @@ body:has(.stl) .ft-top{display:none}
 /* hero wall: flat columns drifting on the GPU, paused when the hero is off screen */
 .stl-wall{position:absolute;inset:-6% -18% auto;height:62%;z-index:-2;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;transform:rotate(-8deg);pointer-events:none}
 .stl-wall-col{overflow:hidden}
-.stl-wall-track{display:flex;flex-direction:column;gap:12px;animation:stl-up var(--d) linear infinite;will-change:transform}
-.stl-wall-track.is-rev{animation-direction:reverse}
+.stl-wall-track{display:flex;flex-direction:column;gap:12px;animation:stl-up var(--d) ease-in-out infinite alternate;will-change:transform}
+.stl-wall-track.is-rev{animation-direction:alternate-reverse}
 .stl-wall.is-paused .stl-wall-track{animation-play-state:paused}
-@keyframes stl-up{to{transform:translate3d(0,-50%,0)}}
+@keyframes stl-up{to{transform:translate3d(0,var(--shift,-25%),0)}}
+.stl-hero.is-website .stl-wall{grid-template-columns:repeat(2,1fr);--shift:-12%}
 .stl-wall-tile{flex:none;aspect-ratio:16/10;border-radius:12px;overflow:hidden;background:var(--card);box-shadow:0 0 0 1px var(--line)}
 .stl-hero.is-motion .stl-wall-tile{aspect-ratio:9/16;border-radius:16px}
 .stl-hero.is-motion .stl-wall{inset:-6% -6% auto}
@@ -223,10 +224,9 @@ body:has(.stl) .ft-top{display:none}
 @keyframes stl-bar{from{transform:scaleX(0)}}
 .stl-trainer{display:grid;gap:18px;min-width:0}
 .stl-shot{position:relative;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px var(--line),0 40px 90px -40px #000}
-.stl-shot img{width:100%;height:auto}
-.stl-area{position:absolute;border-radius:10px;box-shadow:0 0 0 2px var(--violet),0 0 0 9999px #0f0e1480;transition:left .6s cubic-bezier(.16,1,.3,1),top .6s cubic-bezier(.16,1,.3,1),width .6s cubic-bezier(.16,1,.3,1),height .6s cubic-bezier(.16,1,.3,1);pointer-events:none}
-.stl-spot{position:absolute;left:.4%;width:3.6%;aspect-ratio:1;border-radius:10px;box-shadow:0 0 0 2px #fff,0 0 22px 4px #793cffcc;transform:translateY(-50%);transition:top .5s cubic-bezier(.16,1,.3,1);pointer-events:none;animation:stl-ping 1.6s ease-in-out infinite}
-@keyframes stl-ping{50%{box-shadow:0 0 0 2px #fff,0 0 30px 8px #793cffee}}
+.stl-shot{aspect-ratio:16/10;background:var(--card)}
+.stl-shot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:0 0;opacity:0;transition:opacity .5s ease}
+.stl-shot img.is-on{opacity:1}
 .stl-tool-text{display:grid;gap:6px;max-width:62ch;font-size:16px;line-height:1.6;color:var(--mute);animation:stl-fade .45s both}
 .stl-tool-text b{display:flex;align-items:center;gap:10px;font-size:20px;color:#fff;letter-spacing:-.02em}
 .stl-tool-text b svg{width:20px;height:20px;color:var(--lilac)}
@@ -245,6 +245,14 @@ body:has(.stl) .ft-top{display:none}
 .stl-look figcaption{display:flex;justify-content:space-between;gap:12px;margin-top:12px;font-size:14px}
 .stl-look figcaption b{color:#fff}
 .stl-look figcaption span{color:var(--lilac)}
+
+/* looks gallery: every look once, a grid on desktop and a swipe row on a phone */
+.stl-lookgrid{display:grid;grid-auto-flow:column;grid-auto-columns:min(74vw,300px);gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:16px;scrollbar-width:none;margin-inline:-16px;padding:4px 16px 8px}
+.stl-lookgrid::-webkit-scrollbar{display:none}
+.stl-lookgrid>div{scroll-snap-align:start;animation:stl-fade .5s calc(var(--n) * 50ms) both}
+.stl-lookgrid .stl-look{width:auto}
+@media (min-width:700px){.stl-lookgrid{grid-auto-flow:row;grid-template-columns:repeat(2,minmax(0,1fr));overflow:visible;margin:0;padding:0;gap:28px 22px}}
+@media (min-width:1000px){.stl-lookgrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 
 /* ================= phones: a fan of five ================= */
 .stl-fan{position:relative;height:min(118vw,560px);margin-top:12px}
