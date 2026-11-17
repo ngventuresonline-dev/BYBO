@@ -104,6 +104,10 @@ export function CityMap({
       pixelRatio: Math.min(typeof window !== "undefined" ? window.devicePixelRatio : 1, 2),
       fadeDuration: 0,
     });
+    // no accidental rotate / tilt on phones: two-finger gestures only zoom
+    m.dragRotate.disable();
+    m.touchZoomRotate.disableRotation();
+    m.touchPitch.disable();
     map.current = m;
     return () => {
       m.remove();

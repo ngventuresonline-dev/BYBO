@@ -80,27 +80,38 @@ export default function RiderApp() {
       setClasses(c ?? []);
       setNearby(caps ?? []);
       setPickup((p ?? []).find((x) => x.id === "koramangala") ?? null);
-      // resume any live trip
-      if (r) {
-        const { data: live } = await db.from("trips").select("*").eq("rider_id", r.id)
-          .in("status", ["searching", "accepted", "arrived", "ongoing"]).order("requested_at", { ascending: false }).limit(1);
-        if (live?.[0]) { setTrip(live[0]); setStep("trip"); }
+      // always open at "Where are you headed?"; only pick a ride back up if it was booked in
+      // this browser tab (e.g. switching /demo tabs mid-ride). Everyone shares the demo rider.
+      let mine: string | null = null;
+      try { mine = sessionStorage.getItem("flotempo:trip"); } catch {}
+      if (mine) {
+        const { data: t } = await db.from("trips").select("*").eq("id", mine).maybeSingle();
+        if (t && ["searching", "accepted", "arrived", "ongoing"].includes(t.status)) { setTrip(t); setStep("trip"); }
+        else try { sessionStorage.removeItem("flotempo:trip"); } catch {}
       }
     })();
   }, []);
 
   // live captains on the home map
   useEffect(() => {
+    // dozens of captains ping every second or two; collect them and re-render once a second
+    const pending = new Map<string, Captain>();
+    const flush = setInterval(() => {
+      if (!pending.size) return;
+      const batch = [...pending.values()];
+      pending.clear();
+      setNearby((xs) => {
+        const byId = new Map(xs.map((x) => [x.id, x] as const));
+        for (const cap of batch) cap.duty === "offline" ? byId.delete(cap.id) : byId.set(cap.id, cap);
+        return [...byId.values()];
+      });
+      setCaptain((cur) => (cur && batch.find((b) => b.id === cur.id)) || cur);
+    }, 1000);
     const ch = db.channel("rider-captains")
       .on("postgres_changes", { event: "UPDATE", schema: "flotempo", table: "captains" }, ({ new: c }) => {
-        const cap = c as Captain;
-        setNearby((xs) => {
-          const rest = xs.filter((x) => x.id !== cap.id);
-          return cap.duty === "offline" ? rest : [...rest, cap];
-        });
-        setCaptain((cur) => (cur && cur.id === cap.id ? cap : cur));
+        pending.set((c as Captain).id, c as Captain);
       }).subscribe();
-    return () => { db.removeChannel(ch); };
+    return () => { clearInterval(flush); db.removeChannel(ch); };
   }, []);
 
   // follow the active trip
@@ -159,6 +170,7 @@ export default function RiderApp() {
     });
     if (error) { setErr(error.message); return; }
     setPromoUsed(promoOff(cls, Number((data as Trip).fare_estimate)));
+    try { sessionStorage.setItem("flotempo:trip", (data as Trip).id); } catch {}
     setTrip(data as Trip);
     setStep("trip");
   }
@@ -180,7 +192,7 @@ export default function RiderApp() {
     toast("SOS sent · safety desk and your emergency contact alerted");
   }
 
-  function reset() { setTrip(null); setDrop(null); setStep("home"); setQuotes({}); setPromoUsed(0); }
+  function reset() { try { sessionStorage.removeItem("flotempo:trip"); } catch {} setTrip(null); setDrop(null); setStep("home"); setQuotes({}); setPromoUsed(0); }
 
   // ---- map state ----
   const pins = useMemo<Pin[]>(() => {
