@@ -16,7 +16,7 @@ export function Wordmark({ size = 28, sub }: { size?: number; sub?: string }) {
       <Logo size={size} />
       <div className="leading-none">
         <div className="font-extrabold tracking-tight" style={{ fontSize: size * 0.64 }}>
-          flo<span className="text-flo">tempo</span>
+          flo<span className="text-flo-ink">tempo</span>
         </div>
         {sub && <div className="text-[10px] uppercase tracking-[0.18em] text-muted mt-1">{sub}</div>}
       </div>

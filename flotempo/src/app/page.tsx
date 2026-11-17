@@ -13,10 +13,14 @@ export default function Home() {
     <main className="mx-auto max-w-6xl px-5 py-10 md:py-16">
       <div className="flex items-center justify-between"><Wordmark size={34} /><span className="text-[12px] text-muted">Prototype · v0.1</span></div>
       <h1 className="mt-14 max-w-3xl text-4xl font-extrabold leading-[1.05] tracking-tight md:text-6xl">
-        Bengaluru, at <span className="text-flo">your tempo.</span>
+        Bengaluru, at <span className="text-flo-ink">your tempo.</span>
       </h1>
       <p className="mt-5 max-w-2xl text-lg text-muted">
         Three apps, one live backend. Book on the rider app, accept on the captain app, watch it land on the ops dashboard — in real time, on a real database.
+      </p>
+      <p className="mt-4 inline-flex max-w-full items-center gap-2 rounded-2xl bg-flo/15 px-3.5 py-1.5 text-sm font-semibold text-flo-ink">
+        <span className="h-2 w-2 shrink-0 rounded-full bg-flo" />
+        Live simulation built in — book a ride and watch a captain pick you up.
       </p>
       <div className="mt-8 flex flex-wrap gap-3">
         <Link href="/demo" className="inline-flex items-center gap-2 rounded-2xl bg-flo px-6 py-3.5 font-extrabold text-[#06231A]">Open live demo <ArrowRight size={18} /></Link>
@@ -25,10 +29,10 @@ export default function Home() {
       <div className="mt-14 grid gap-4 md:grid-cols-3">
         {apps.map(({ href, icon: Icon, title, body, tag }) => (
           <Link key={href} href={href} className="group rounded-3xl bg-ink-soft p-6 ring-1 ring-line transition hover:ring-flo">
-            <div className="mb-5 flex items-center justify-between"><div className="grid h-11 w-11 place-items-center rounded-2xl bg-flo/15 text-flo"><Icon size={20} /></div><span className="text-[11px] uppercase tracking-widest text-muted">{tag}</span></div>
+            <div className="mb-5 flex items-center justify-between"><div className="grid h-11 w-11 place-items-center rounded-2xl bg-flo/15 text-flo-ink"><Icon size={20} /></div><span className="text-[11px] uppercase tracking-widest text-muted">{tag}</span></div>
             <div className="text-xl font-extrabold">{title}</div>
             <p className="mt-2 text-sm leading-relaxed text-muted">{body}</p>
-            <div className="mt-5 flex items-center gap-1 text-sm font-bold text-flo">Open <ArrowRight size={15} className="transition group-hover:translate-x-1" /></div>
+            <div className="mt-5 flex items-center gap-1 text-sm font-bold text-flo-ink">Open <ArrowRight size={15} className="transition group-hover:translate-x-1" /></div>
           </Link>
         ))}
       </div>

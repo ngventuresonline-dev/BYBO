@@ -3,7 +3,7 @@ import { Wordmark } from "@/components/Logo";
 
 export const metadata = { title: "Flo Tempo — architecture" };
 
-const C = { ink: "#0A1017", soft: "#131B25", line: "#2A3746", flo: "#00D08A", tempo: "#FFC53D", sky: "#4DA3FF", surge: "#FF5A3C", text: "#EAF2F7", muted: "#8597A8" };
+const C = { ink: "#F3F5F8", soft: "#FFFFFF", line: "#CBD5E1", flo: "#029E6A", tempo: "#B07A00", sky: "#1D6FD1", surge: "#D63A1C", text: "#0E1A24", muted: "#5B6B7C" };
 
 function Box({ x, y, w, h, title, sub, color = C.line }: { x: number; y: number; w: number; h: number; title: string; sub?: string; color?: string }) {
   return (
@@ -47,11 +47,12 @@ const stack = [
 export default function Architecture() {
   return (
     <main className="mx-auto max-w-6xl px-5 py-10">
-      <div className="flex items-center justify-between"><Link href="/"><Wordmark size={30} /></Link><Link href="/demo" className="text-sm font-bold text-flo">Live demo →</Link></div>
+      <div className="flex items-center justify-between"><Link href="/"><Wordmark size={30} /></Link><Link href="/demo" className="text-sm font-bold text-flo-ink">Live demo →</Link></div>
       <h1 className="mt-10 text-4xl font-extrabold tracking-tight">How Flo Tempo works</h1>
       <p className="mt-3 max-w-2xl text-muted">Three client apps on one realtime backend. The prototype you can click runs this exact flow on a live database.</p>
 
-      <section className="mt-10 overflow-x-auto rounded-3xl bg-ink-soft/40 p-4 ring-1 ring-line">
+      <p className="mt-8 text-[12px] text-muted md:hidden">Swipe the diagram sideways to see all of it →</p>
+      <section className="mt-2 overflow-x-auto overscroll-x-contain rounded-3xl bg-ink-soft/40 p-4 ring-1 ring-line md:mt-10">
         <svg viewBox="0 0 1000 560" className="min-w-[860px]" fontFamily="Inter, sans-serif">
           <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill={C.muted} /></marker></defs>
           <text x={20} y={30} fill={C.muted} fontSize={11} letterSpacing={2}>CLIENTS</text>
@@ -87,7 +88,7 @@ export default function Architecture() {
           <ol className="mt-5 space-y-3">
             {states.map(([s, d], i) => (
               <li key={s} className="flex gap-4">
-                <div className="flex flex-col items-center"><div className="grid h-8 w-8 place-items-center rounded-full bg-flo/15 text-sm font-extrabold text-flo">{i + 1}</div>{i < states.length - 1 && <div className="w-px flex-1 bg-line" />}</div>
+                <div className="flex flex-col items-center"><div className="grid h-8 w-8 place-items-center rounded-full bg-flo/15 text-sm font-extrabold text-flo-ink">{i + 1}</div>{i < states.length - 1 && <div className="w-px flex-1 bg-line" />}</div>
                 <div className="pb-2"><div className="font-mono text-sm font-bold">{s}</div><div className="text-sm text-muted">{d}</div></div>
               </li>
             ))}
@@ -98,8 +99,8 @@ export default function Architecture() {
           <h2 className="text-2xl font-extrabold">Money flow per trip</h2>
           <div className="mt-5 space-y-3 text-sm">
             <div className="rounded-2xl bg-ink-soft p-4 ring-1 ring-line"><b>Fare</b> = max(min fare, (base + km beyond included × ₹/km + min × ₹/min) × surge) + platform fee + GST (cab)</div>
-            <div className="rounded-2xl bg-ink-soft p-4 ring-1 ring-line"><b className="text-flo">Prepaid (UPI/card/wallet):</b> Flo Tempo collects → captain wallet credited fare − commission → weekly or instant payout.</div>
-            <div className="rounded-2xl bg-ink-soft p-4 ring-1 ring-line"><b className="text-tempo">Cash:</b> captain keeps cash → wallet debited commission → below −₹300, cash rides are locked until dues are paid.</div>
+            <div className="rounded-2xl bg-ink-soft p-4 ring-1 ring-line"><b className="text-flo-ink">Prepaid (UPI/card/wallet):</b> Flo Tempo collects → captain wallet credited fare − commission → weekly or instant payout.</div>
+            <div className="rounded-2xl bg-ink-soft p-4 ring-1 ring-line"><b className="text-tempo-ink">Cash:</b> captain keeps cash → wallet debited commission → below −₹300, cash rides are locked until dues are paid.</div>
             <div className="rounded-2xl bg-ink-soft p-4 ring-1 ring-line"><b>Example (live):</b> Koramangala → Indiranagar, bike, 6.0 km, 1.4× surge → ₹113 · commission ₹22.60 · captain ₹90.40.</div>
           </div>
         </div>
