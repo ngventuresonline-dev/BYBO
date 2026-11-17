@@ -1,0 +1,27 @@
+{
+  "name": "flotempo",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 4100",
+    "build": "next build",
+    "start": "next start -p 4100",
+    "lint": "eslint src"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.95.0",
+    "lucide-react": "^0.475.0",
+    "maplibre-gl": "^5.9.0",
+    "next": "^16.4.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.0.9",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "tailwindcss": "^4.0.9",
+    "typescript": "^5"
+  }
+}
