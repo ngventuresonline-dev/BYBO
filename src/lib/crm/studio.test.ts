@@ -29,6 +29,13 @@ test('picking a studio adds their number', () => {
   assert.match(c!.event.title, /Website Studio/);
 });
 
+test('a replay keeps its real time and is marked as one', () => {
+  const c = toCapture({ kind: 'call', email: 'a@b.in', topic: 'Custom website build', when: '2026-11-18T06:30:00.000Z', at: '2026-11-10T05:00:00.000Z', backfill: true });
+  assert.equal(c?.created_at, '2026-11-10T05:00:00.000Z');
+  assert.equal(c?.backfill, true);
+  assert.equal(toCapture({ kind: 'signup', email: 'a@b.in' })?.backfill, undefined);
+});
+
 test('bad reports are refused', () => {
   assert.equal(toCapture({ kind: 'signup', email: 'nope' }), null);
   assert.equal(toCapture({ kind: 'call', email: 'a@b.in', when: 'soon' }), null);

@@ -5,6 +5,16 @@ const s = (v: unknown, max: number) => String(v ?? '').trim().slice(0, max);
 const ist = (iso: string) => new Date(iso).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' }) + ' IST';
 
 export function toCapture(b: Record<string, unknown>): Capture | null {
+  const c = build(b);
+  if (!c) return null;
+  // A replay from the studio's daily sync carries when it really happened, and never repeats an activity.
+  const at = s(b.at, 40);
+  if (at && Date.parse(at)) c.created_at = new Date(at).toISOString();
+  if (b.backfill === true) c.backfill = true;
+  return c;
+}
+
+function build(b: Record<string, unknown>): Capture | null {
   const email = s(b.email, 200).toLowerCase();
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return null;
   const name = s(b.name, 120) || undefined;
@@ -12,7 +22,6 @@ export function toCapture(b: Record<string, unknown>): Capture | null {
     const studio = s(b.studio, 40) || 'BYBO Studio';
     return {
       source: 'studio', email, name, need: `${studio} sign-up`, services: [studio], temperature: 'warm', page: 'studio.bybo.in',
-      created_at: s(b.at, 40) || undefined,
       event: { kind: 'studio_signup', title: `Signed up on ${studio}`, body: `Email confirmed: ${s(b.how, 80) || 'yes'}` },
     };
   }
