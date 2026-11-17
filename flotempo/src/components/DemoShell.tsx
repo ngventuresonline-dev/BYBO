@@ -22,8 +22,8 @@ const apps = [
 
 /**
  * Wide screens: rider and captain phones beside the ops dashboard.
- * Phones and tablets: one app at a time, full height, switched with tabs. All three stay
- * mounted so the captain heartbeat and the city simulation keep running behind the tabs.
+ * Phones and tablets: one app at a time, full height, switched with tabs. Only the open
+ * tab runs; the rider app has its own ride simulation, so a booking still completes.
  */
 export function DemoShell() {
   const [tab, setTab] = useState<(typeof apps)[number]["id"]>("rider");
@@ -59,14 +59,15 @@ export function DemoShell() {
           ))}
         </nav>
         <div className="relative min-h-0 flex-1 overflow-hidden border-t border-line">
-          {apps.map((a) => (
-            <iframe key={a.id} src={a.src} title={`${a.label} app`}
-              className={`absolute inset-0 h-full w-full ${tab === a.id ? "visible" : "invisible"}`} />
+          {/* one live app at a time: three WebGL maps at once made phones stutter.
+              Rides live in the database, so switching tabs picks the ride back up. */}
+          {apps.filter((a) => a.id === tab).map((a) => (
+            <iframe key={a.id} src={a.src} title={`${a.label} app`} className="absolute inset-0 h-full w-full" />
           ))}
           {help && (
             <div className="absolute inset-x-3 top-3 z-10 rounded-2xl bg-ink-soft p-4 shadow-xl ring-1 ring-line">
               <Steps />
-              <p className="mt-3 text-[12px] text-muted">Switch tabs to play the captain or watch ops. Everything stays live.</p>
+              <p className="mt-3 text-[12px] text-muted">Switch tabs to play the captain or watch ops. Rides carry on in the background.</p>
             </div>
           )}
         </div>

@@ -7,6 +7,7 @@ import type { Captain, Place, Trip, VehicleClass } from "@/lib/types";
 import { CityMap, Pin } from "@/components/CityMap";
 import { Btn, Chip, Row, Stars, VehicleGlyph } from "@/components/ui";
 import { Wordmark } from "@/components/Logo";
+import { BottomSheet } from "@/components/BottomSheet";
 import { ArrowLeft, MapPin, Search, Shield, Share2, Phone as PhoneIcon, Wallet, Star, X } from "lucide-react";
 
 type Quote = { total: number; surge: number; distance_km: number; duration_min: number };
@@ -211,13 +212,13 @@ export default function RiderApp() {
       {/* top bar */}
       <div className="absolute inset-x-0 top-0 z-10 mx-auto flex max-w-[480px] items-center justify-between px-5 pt-[max(1.25rem,env(safe-area-inset-top))]">
         {step === "home" ? (
-          <div className="rounded-2xl bg-ink/85 px-3 py-2 backdrop-blur"><Wordmark size={26} /></div>
+          <div className="rounded-2xl bg-ink/95 px-3 py-2"><Wordmark size={26} /></div>
         ) : step !== "trip" ? (
-          <button onClick={() => setStep(step === "choose" ? "where" : "home")} className="grid h-10 w-10 place-items-center rounded-full bg-ink/85 backdrop-blur"><ArrowLeft size={18} /></button>
+          <button onClick={() => setStep(step === "choose" ? "where" : "home")} className="grid h-10 w-10 place-items-center rounded-full bg-ink/95"><ArrowLeft size={18} /></button>
         ) : <span />}
         <div className="flex items-center gap-2">
           <button onClick={() => { setSim(!sim); toast(sim ? "Simulation off — play the captain in the captain app" : "Simulation on — a nearby captain will take your ride"); }}
-            className={`flex items-center gap-1.5 rounded-full px-3 py-2 text-[11px] font-bold shadow-sm ring-1 backdrop-blur ${sim ? "bg-flo/15 text-flo-ink ring-flo/40" : "bg-ink/85 text-muted ring-line"}`}>
+            className={`flex items-center gap-1.5 rounded-full px-3 py-2 text-[11px] font-bold shadow-sm ring-1 ${sim ? "bg-flo/15 text-flo-ink ring-flo/40" : "bg-ink/95 text-muted ring-line"}`}>
             <span className={`h-1.5 w-1.5 rounded-full ${sim ? "bg-flo" : "bg-muted"}`} />{sim ? "Live sim" : "Sim off"}
           </button>
           {step === "home" && <div className="grid h-10 w-10 place-items-center rounded-full bg-flo/20 text-sm font-bold text-flo-ink">{riderName.slice(0, 1)}</div>}
@@ -231,10 +232,10 @@ export default function RiderApp() {
       )}
 
       {/* sheets — phone-width column, centred on larger screens */}
-      <div className="absolute inset-x-0 bottom-0 z-10 mx-auto max-w-[480px]">
+      <BottomSheet resetKey={step + (trip?.status ?? "")}>
         {step === "home" && (
           <div className="sheet px-5 pb-7 pt-4">
-            <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-fg/10" />
+            <div className="h-4" />
             <div className="text-[13px] text-muted">Namaskara, {riderName.split(" ")[0]} 👋</div>
             <div className="mb-4 text-[22px] font-extrabold tracking-tight">Where are you headed?</div>
             <button onClick={() => setStep("where")} className="mb-4 flex w-full items-center gap-3 rounded-2xl bg-ink px-4 py-4 text-left text-muted ring-1 ring-line">
@@ -332,7 +333,7 @@ export default function RiderApp() {
               try { if (navigator.share) await navigator.share({ title: "My Flo Tempo ride", text }); else { await navigator.clipboard.writeText(text); toast("Trip details copied"); } } catch {}
             }} />
         )}
-      </div>
+      </BottomSheet>
     </div>
   );
 }

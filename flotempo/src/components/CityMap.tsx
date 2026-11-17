@@ -100,6 +100,9 @@ export function CityMap({
       zoom,
       interactive,
       attributionControl: { compact: true },
+      // phones report 3x; 2x looks identical and halves the GPU work
+      pixelRatio: Math.min(typeof window !== "undefined" ? window.devicePixelRatio : 1, 2),
+      fadeDuration: 0,
     });
     map.current = m;
     return () => {
@@ -119,7 +122,7 @@ export function CityMap({
       seen.add(p.id);
       const existing = marks.current[p.id];
       if (existing) {
-        existing.setLngLat([p.lng, p.lat]);
+        glide(existing, p.lng, p.lat);
         if (p.kind === "captain") {
           const node = existing.getElement();
           if (node.dataset.cap !== capKey(p)) {
@@ -144,6 +147,9 @@ export function CityMap({
       }
     }
   }, [pins]);
+
+  const routeKey = route ? `${route.from.join(",")}>${route.to.join(",")}` : "";
+  const centerKey = center ? center.join(",") : "";
 
   // route line + fit
   useEffect(() => {
@@ -180,22 +186,27 @@ export function CityMap({
         });
       }
       if (route) {
+        const h = m.getContainer().clientHeight;
         m.fitBounds(
           [
             [Math.min(route.from[0], route.to[0]), Math.min(route.from[1], route.to[1])],
             [Math.max(route.from[0], route.to[0]), Math.max(route.from[1], route.to[1])],
           ],
-          { padding: { top: 70, bottom: 330, left: 60, right: 60 }, duration: 700 }
+          { padding: { top: 70, bottom: Math.min(330, Math.round(h * 0.45)), left: 50, right: 50 }, duration: 700 }
         );
       }
     };
     if (m.isStyleLoaded()) draw();
     else m.once("load", draw);
-  }, [route]);
+    // keyed on the coordinates, not the object: callers rebuild `route` every render,
+    // and re-fitting on each captain ping made the map zoom by itself over and over
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [routeKey]);
 
   useEffect(() => {
     if (map.current && center) map.current.easeTo({ center, duration: 700 });
-  }, [center]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [centerKey]);
 
   // maplibre's unlayered `.maplibregl-map { position: relative }` beats Tailwind's
   // layered `absolute`, so the map gets its own inner box sized by inline style.
@@ -217,4 +228,28 @@ function curve(a: [number, number], b: [number, number]) {
     pts.push([x, y]);
   }
   return pts;
+}
+
+/** move a marker to a new position over ~1.1s instead of jumping (GPS pings arrive every 1–3s) */
+const gliding = new WeakMap<Marker, number>();
+function glide(mk: Marker, lng: number, lat: number) {
+  const from = mk.getLngLat();
+  const dLng = lng - from.lng, dLat = lat - from.lat;
+  if (Math.abs(dLng) + Math.abs(dLat) < 1e-7) return;
+  const prev = gliding.get(mk);
+  if (prev) cancelAnimationFrame(prev);
+  // big jumps (first fix, teleports) and reduced-motion users snap straight there
+  if (Math.abs(dLng) + Math.abs(dLat) > 0.03 || matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    mk.setLngLat([lng, lat]);
+    return;
+  }
+  const t0 = performance.now(), dur = 1100;
+  const step = (now: number) => {
+    const k = Math.min(1, (now - t0) / dur);
+    const e = k * (2 - k); // ease-out
+    mk.setLngLat([from.lng + dLng * e, from.lat + dLat * e]);
+    if (k < 1) gliding.set(mk, requestAnimationFrame(step));
+    else gliding.delete(mk);
+  };
+  gliding.set(mk, requestAnimationFrame(step));
 }

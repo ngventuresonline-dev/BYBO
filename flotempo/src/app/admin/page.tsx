@@ -105,7 +105,7 @@ export default function Admin() {
 
   return (
     <div className="min-h-dvh bg-ink text-fg">
-      <header className="sticky top-0 z-20 flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-line bg-ink/90 px-4 pb-2 pt-[max(0.75rem,env(safe-area-inset-top))] backdrop-blur md:flex-nowrap md:px-6 md:pb-3">
+      <header className="sticky top-0 z-20 flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-line bg-ink/95 px-4 pb-2 pt-[max(0.75rem,env(safe-area-inset-top))] md:flex-nowrap md:px-6 md:pb-3">
         <Wordmark size={26} sub="Operations · Bengaluru" />
         <button onClick={() => setSim(!sim)} aria-label={sim ? "Stop simulating city traffic" : "Simulate city traffic"}
           className={`ml-auto flex shrink-0 items-center gap-2 rounded-full px-3 py-2 text-[12px] font-bold md:order-last ${sim ? "bg-tempo text-fg" : "bg-fg/[0.07] text-muted"}`}>
@@ -133,7 +133,7 @@ export default function Admin() {
         <div className="grid gap-4 p-4 md:p-6 xl:grid-cols-[1fr_420px]">
           <div className="relative h-[56vh] min-h-[360px] overflow-hidden rounded-3xl ring-1 ring-line md:h-[620px]">
             <CityMap className="absolute inset-0" pins={pins} zoom={11.6} />
-            <div className="absolute bottom-3 left-3 right-3 flex flex-wrap gap-x-3 gap-y-1.5 rounded-xl md:right-auto bg-ink/85 p-2 text-[11px] backdrop-blur">
+            <div className="absolute bottom-3 left-3 right-3 flex flex-wrap gap-x-3 gap-y-1.5 rounded-xl md:right-auto bg-ink/95 p-2 text-[11px]">
               {classes.map((c) => <span key={c.id} className="flex items-center gap-1"><i className="h-2 w-2 rounded-full" style={{ background: brand.classes[c.id]?.color }} />{c.label}</span>)}
               <span className="flex items-center gap-1"><i className="h-2 w-2 rounded-full bg-fg" />On trip</span>
               <span className="flex items-center gap-1"><i className="h-2 w-2 rounded-full bg-tempo" />Waiting rider</span>

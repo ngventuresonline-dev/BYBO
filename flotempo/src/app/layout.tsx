@@ -27,6 +27,9 @@ export const viewport: Viewport = {
   initialScale: 1,
   viewportFit: "cover",
   themeColor: "#F3F5F8",
+  // app feel: no accidental pinch / double-tap page zoom (the map still pinch-zooms)
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

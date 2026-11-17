@@ -6,6 +6,7 @@ import type { Captain, RideOffer, Trip } from "@/lib/types";
 import { CityMap, Pin } from "@/components/CityMap";
 import { Btn, Chip, Row, Stars, VehicleGlyph } from "@/components/ui";
 import { Wordmark } from "@/components/Logo";
+import { BottomSheet } from "@/components/BottomSheet";
 import { markHuman } from "@/lib/sim";
 import { Navigation, ShieldCheck, Wallet, AlertTriangle, ChevronDown } from "lucide-react";
 
@@ -45,7 +46,8 @@ export default function CaptainApp() {
     });
   }, []);
 
-  useEffect(() => { const t = setInterval(() => setNow(Date.now()), 500); return () => clearInterval(t); }, []);
+  // the offer countdown is the only thing that needs a ticking clock; no offer, no re-renders
+  useEffect(() => { if (!offer) return; setNow(Date.now()); const t = setInterval(() => setNow(Date.now()), 500); return () => clearInterval(t); }, [offer?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // my record, offers and live trip
   useEffect(() => {
@@ -157,7 +159,7 @@ export default function CaptainApp() {
 
       {/* header */}
       <div className="absolute inset-x-0 top-0 z-10 mx-auto max-w-[480px] space-y-2 p-4 pt-[max(1rem,env(safe-area-inset-top))]">
-        <div className="flex items-center justify-between rounded-2xl bg-ink/90 px-3 py-2.5 ring-1 ring-line backdrop-blur">
+        <div className="flex items-center justify-between rounded-2xl bg-ink/95 px-3 py-2.5 ring-1 ring-line">
           <Wordmark size={22} sub="Captain" />
           <button onClick={() => !trip && duty(me.duty === "offline")} disabled={!!trip}
             className={`flex items-center gap-2 rounded-full px-3 py-1.5 text-[12px] font-extrabold ${me.duty === "offline" ? "bg-fg/[0.07] text-muted" : "bg-flo text-[#06231A]"}`}>
@@ -167,7 +169,7 @@ export default function CaptainApp() {
         </div>
         <div className="relative">
           <select value={me.id} onChange={(e) => { const c = list.find((x) => x.id === e.target.value); if (c) { setMe(c); setTrip(null); setOffer(null); } }}
-            className="w-full appearance-none truncate rounded-xl bg-ink/90 py-2 pl-3 pr-8 text-[12px] text-muted ring-1 ring-line">
+            className="w-full appearance-none truncate rounded-xl bg-ink/95 py-2 pl-3 pr-8 text-[12px] text-muted ring-1 ring-line">
             {list.map((c) => <option key={c.id} value={c.id}>Demo as: {c.name} · {c.vehicle_class_id} · {c.vehicle_number}</option>)}
           </select>
           <ChevronDown size={14} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted" />
@@ -179,7 +181,7 @@ export default function CaptainApp() {
         )}
       </div>
 
-      <div className="absolute inset-x-0 bottom-0 z-10 mx-auto max-w-[480px]">
+      <BottomSheet resetKey={(offer?.id ?? "") + (trip?.status ?? "") + tab}>
         {/* incoming offer */}
         {offer && !trip && (
           <div className="sheet px-5 pb-6 pt-4">
@@ -271,7 +273,7 @@ export default function CaptainApp() {
             )}
           </div>
         )}
-      </div>
+      </BottomSheet>
     </div>
   );
 }
