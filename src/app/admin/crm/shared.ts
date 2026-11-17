@@ -13,7 +13,7 @@ export const STAGES: { id: Stage; label: string }[] = [
 export const STAGE_LABEL = Object.fromEntries(STAGES.map((s) => [s.id, s.label])) as Record<Stage, string>;
 export const SOURCE_LABEL: Record<Source, string> = {
   enquiry: 'Website form', meta: 'Meta ads', b_chat: 'B chat', booking: 'Booked call',
-  payment: 'Payment', voice: 'AI call', manual: 'Added by hand',
+  payment: 'Payment', voice: 'AI call', manual: 'Added by hand', studio: 'BYBO Studio',
 };
 export const EVENT_ICON: Record<string, string> = {
   created: '✦', enquiry: '✉', meta: 'ⓜ', brief: '❏', summary: '✎', alert: '⚡', booking: '◷', call: '☏',

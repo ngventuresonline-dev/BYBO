@@ -97,7 +97,7 @@ body:has(.crm) .skip-link { display: none !important; }
 
 /* Source colours */
 .src-enquiry { --c: var(--violet-2); } .src-meta { --c: var(--blue); } .src-b_chat { --c: #e58bff; } .src-booking { --c: var(--amber); }
-.src-payment { --c: var(--green); } .src-voice { --c: var(--orange); } .src-manual { --c: #c8c3d6; }
+.src-payment { --c: var(--green); } .src-voice { --c: var(--orange); } .src-manual { --c: #c8c3d6; } .src-studio { --c: #793cff; }
 .crm-bar-fill[class*="src-"] { background: linear-gradient(90deg, color-mix(in srgb, var(--c) 70%, transparent), var(--c)); }
 .crm-chip { display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px; border-radius: 99px; font-size: 11.5px; font-weight: 650; white-space: nowrap;
   color: var(--c, var(--muted)); background: color-mix(in srgb, var(--c, #fff) 14%, transparent); border: 1px solid color-mix(in srgb, var(--c, #fff) 28%, transparent); }
