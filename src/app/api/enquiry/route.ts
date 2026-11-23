@@ -3,6 +3,7 @@ import { CONTACT } from '@/lib/site';
 import { teamRecipients, visitorAck } from '@/lib/enquiry-ack';
 import { teamEnquiry, visitorAckFallback } from '@/lib/enquiry-mail';
 import { scheduleLeadCapture } from '@/lib/instant-call/schedule';
+import { enquirySpamReason } from '@/lib/enquiry-spam';
 
 /**
  * Receives an enquiry from /apply and emails it to the team inboxes
@@ -97,9 +98,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, reason: 'invalid' }, { status: 400 });
   }
 
-  const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
-  if (rateLimited(ip)) return NextResponse.json({ ok: false, reason: 'rate_limited' }, { status: 429 });
-
   const services = form.getAll('services').map(v => str(v, 80)).filter(Boolean);
   const details = {
     name,
@@ -112,6 +110,16 @@ export async function POST(request: Request) {
     website: str(form.get('website'), 200),
     message,
   };
+
+  // Known fake leads: same success body, no email, no call, no alert.
+  const spam = enquirySpamReason(details);
+  if (spam) {
+    console.info('enquiry dropped as spam', spam);
+    return NextResponse.json({ ok: true });
+  }
+
+  const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+  if (rateLimited(ip)) return NextResponse.json({ ok: false, reason: 'rate_limited' }, { status: 429 });
 
   // Persist the enquiry and, only when every gate passes, dial after this
   // response. The team email and the visitor acknowledgement below are unchanged.

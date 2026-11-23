@@ -152,6 +152,46 @@ describe('POST /api/enquiry', () => {
     assert.deepEqual((calls[1] as { to: string[] }).to, ['priya@example.com']);
   });
 
+  it('silently drops a blocked phone and sends nothing', async () => {
+    process.env.RESEND_API_KEY = 're_test';
+    let sent = false;
+    globalThis.fetch = (async () => {
+      sent = true;
+      return new Response(JSON.stringify({ id: 'should-not-send' }), { status: 200 });
+    }) as typeof fetch;
+    const { POST } = await import('./route');
+    const res = await POST(form({
+      name: 'Chloe Anderson',
+      email: 'chloe.anderson@lunoradiamondstudio.com',
+      phone: '+18012044681',
+      company: 'Lunora Diamond Studio',
+      message: 'A jewellery brand looking for advertising help.',
+    }));
+    assert.equal(res.status, 200);
+    assert.deepEqual(await res.json(), { ok: true });
+    assert.equal(sent, false);
+  });
+
+  it('silently drops the Google Premier Partner template and sends nothing', async () => {
+    process.env.RESEND_API_KEY = 're_test';
+    let sent = false;
+    globalThis.fetch = (async () => {
+      sent = true;
+      return new Response(JSON.stringify({ id: 'should-not-send' }), { status: 200 });
+    }) as typeof fetch;
+    const { POST } = await import('./route');
+    const res = await POST(form({
+      name: 'William Hayes',
+      email: 'william.hayes@willowhousehotel.com',
+      phone: '+44 20 7946 0958',
+      company: 'Willow House Hotel',
+      message: 'We are selecting a certified Google Premier Partner to manage Search, Performance Max and Shopping ads.',
+    }));
+    assert.equal(res.status, 200);
+    assert.deepEqual(await res.json(), { ok: true });
+    assert.equal(sent, false);
+  });
+
   it('fails the enquiry when the team send fails', async () => {
     process.env.RESEND_API_KEY = 're_test';
     globalThis.fetch = (async () => new Response('denied', { status: 403 })) as typeof fetch;
